@@ -12,17 +12,15 @@
         h3 { color: #38bdf8; font-size: 16px; margin-top: 0; }
         input[type="text"] { width: 90%; padding: 12px; margin: 8px 0; font-size: 18px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center; }
         .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        button { padding: 12px; font-size: 16px; border-radius: 8px; border: none; background: #334155; color: white; cursor: pointer; transition: 0.2s; }
+        button { padding: 12px; font-size: 16px; border-radius: 8px; border: none; background: #334155; color: white; cursor: pointer; }
         button:active { background: #0ea5e9; }
         .action-btn { background: #0ea5e9; width: 100%; margin-top: 10px; font-weight: bold; }
-        .action-btn:hover { background: #0284c7; }
         .footer { margin-top: 30px; font-size: 13px; color: #64748b; border-top: 1px solid #1e293b; padding-top: 15px; }
     </style>
 </head>
 <body>
     <h1>Mr Xboss Tools</h1>
     <div class="subtitle">تطبيق الأدوات الرقمية المتقدمة</div>
-
     <div class="card">
         <h3>الحاسبة السريعة</h3>
         <input type="text" id="calc-screen" readonly placeholder="0">
@@ -45,34 +43,13 @@
             <button onclick="appendVal('0')">0</button>
         </div>
     </div>
-
-    <div class="card">
-        <h3>مولد كلمات المرور القوية</h3>
-        <input type="text" id="pass-box" readonly placeholder="اضغط توليد">
-        <button class="action-btn" onclick="generatePassword()">توليد كلمة مرور آمنة</button>
-    </div>
-
-    <div class="footer">
-        الحقوق محفوظة بالكامل لـ <b>Mr Xboss</b>
-    </div>
-
+    <div class="footer">الحقوق محفوظة لـ <b>Mr Xboss</b></div>
     <script>
         function appendVal(val) { document.getElementById('calc-screen').value += val; }
         function clearCalc() { document.getElementById('calc-screen').value = ''; }
         function calcResult() { 
-            try { 
-                document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); 
-            } catch(e) { 
-                document.getElementById('calc-screen').value = 'خطأ'; 
-            } 
-        }
-        function generatePassword() {
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!";
-            let pass = "";
-            for(let i=0; i<14; i++) { 
-                pass += chars.charAt(Math.floor(Math.random() * chars.length)); 
-            }
-            document.getElementById('pass-box').value = pass;
+            try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } 
+            catch(e) { document.getElementById('calc-screen').value = 'خطأ'; } 
         }
     </script>
 </body>
