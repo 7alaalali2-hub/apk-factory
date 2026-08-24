@@ -18,16 +18,23 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          api-level: 33
-          build-tools-version: '33.0.2'
-          license-accepted: true
-
-      - name: Create Complete Android Project Files
+      - name: Install System Gradle & Build APK
         run: |
-          # 1. إنشاء ملف إعدادات الجذر الرئيسي
+          # 1. تثبيت حزمة غردل مباشرة على السيرفر لتجنب أي نقص في الملفات
+          sudo apt-get update && sudo apt-get install -y gradle
+
+          # 2. تجهيز هيكل تطبيق أندرويد النظيف
+          mkdir -p app/src/main/assets
+          mkdir -p app/src/main/java/com/mrxboss/app
+          mkdir -p app/src/main/res/values
+
+          if [ -f index.html ]; then
+            cp index.html app/src/main/assets/index.html
+          else
+            echo "<h1>MrXboss App</h1>" > app/src/main/assets/index.html
+          fi
+
+          # 3. إعداد ملفات التكوين الأساسية
           cat << 'EOF' > build.gradle
           buildscript {
               repositories {
@@ -46,58 +53,26 @@ jobs:
           }
           EOF
 
-          # 2. إنشاء ملف إعدادات الحزم الرئيسي
           cat << 'EOF' > settings.gradle
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
           rootProject.name = "MrXbossApp"
           include ':app'
           EOF
 
-          # 3. تجهيز مجلدات التطبيق وملف الـ HTML
-          mkdir -p app/src/main/assets
-          mkdir -p app/src/main/java/com/mrxboss/app
-          mkdir -p app/src/main/res/values
-
-          if [ -f index.html ]; then
-            cp index.html app/src/main/assets/index.html
-          else
-            echo "<h1>MrXboss App</h1>" > app/src/main/assets/index.html
-          fi
-
-          # 4. إعدادات تطبيق أندرويد
           cat << 'EOF' > app/build.gradle
           apply plugin: 'com.android.application'
           android {
-              namespace 'com.mrxboss.app'
-              compileSdk 33
+              compileSdkVersion 33
               defaultConfig {
                   applicationId "com.mrxboss.app"
-                  minSdk 21
-                  targetSdk 33
-                  versionCode 1
-                  versionName "1.0"
+                  minSdkVersion 21
+                  targetSdkVersion 33
               }
           }
           dependencies {
               implementation 'androidx.appcompat:appcompat:1.6.1'
-              implementation 'com.google.android.material:material:1.9.0'
           }
           EOF
 
-          # 5. ملف الواجهة الأساسي AndroidManifest
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android"
               package="com.mrxboss.app">
@@ -113,7 +88,6 @@ jobs:
           </manifest>
           EOF
 
-          # 6. كود تشغيل المتصفح الداخلي MainActivity
           cat << 'EOF' > app/src/main/java/com/mrxboss/app/MainActivity.java
           package com.mrxboss.app;
           import android.os.Bundle;
@@ -126,7 +100,6 @@ jobs:
                   super.onCreate(savedInstanceState);
                   WebView webView = new WebView(this);
                   webView.getSettings().setJavaScriptEnabled(true);
-                  webView.getSettings().setDomStorageEnabled(true);
                   webView.setWebViewClient(new WebViewClient());
                   webView.loadUrl("file:///android_asset/index.html");
                   setContentView(webView);
@@ -134,16 +107,13 @@ jobs:
           }
           EOF
 
-      - name: Build APK with Gradle
-        run: |
-          gradle wrapper --gradle-version 7.5
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          # 4. تنفيذ التجميع المباشر السريع
+          gradle assembleDebug
 
       - name: Extract Final APK
         run: |
           mkdir -p output
-          cp app/build/outputs/apk/debug/app-debug.apk output/MrXbossApp.apk
+          find . -name "*.apk" -exec cp {} output/MrXbossApp.apk \;
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
