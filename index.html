@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr Xboss Tools</title>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: Tahoma, sans-serif; padding: 20px; text-align: center; margin: 0; }
+        h1 { color: #38bdf8; font-size: 22px; margin-bottom: 5px; }
+        .subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+        .card { background: #1e293b; padding: 15px; margin: 15px auto; border-radius: 12px; max-width: 380px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        h3 { color: #38bdf8; font-size: 16px; margin-top: 0; }
+        input[type="text"] { width: 90%; padding: 12px; margin: 8px 0; font-size: 18px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center; }
+        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        button { padding: 12px; font-size: 16px; border-radius: 8px; border: none; background: #334155; color: white; cursor: pointer; transition: 0.2s; }
+        button:active { background: #0ea5e9; }
+        .action-btn { background: #0ea5e9; width: 100%; margin-top: 10px; font-weight: bold; }
+        .action-btn:hover { background: #0284c7; }
+        .footer { margin-top: 30px; font-size: 13px; color: #64748b; border-top: 1px solid #1e293b; padding-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Mr Xboss Tools</h1>
+    <div class="subtitle">تطبيق الأدوات الرقمية المتقدمة</div>
+
+    <div class="card">
+        <h3>الحاسبة السريعة</h3>
+        <input type="text" id="calc-screen" readonly placeholder="0">
+        <div class="btn-grid">
+            <button onclick="clearCalc()">C</button>
+            <button onclick="appendVal('/')">/</button>
+            <button onclick="appendVal('*')">*</button>
+            <button onclick="appendVal('-')">-</button>
+            <button onclick="appendVal('7')">7</button>
+            <button onclick="appendVal('8')">8</button>
+            <button onclick="appendVal('9')">9</button>
+            <button onclick="appendVal('+')">+</button>
+            <button onclick="appendVal('4')">4</button>
+            <button onclick="appendVal('5')">5</button>
+            <button onclick="appendVal('6')">6</button>
+            <button onclick="calcResult()">=</button>
+            <button onclick="appendVal('1')">1</button>
+            <button onclick="appendVal('2')">2</button>
+            <button onclick="appendVal('3')">3</button>
+            <button onclick="appendVal('0')">0</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>مولد كلمات المرور القوية</h3>
+        <input type="text" id="pass-box" readonly placeholder="اضغط توليد">
+        <button class="action-btn" onclick="generatePassword()">توليد كلمة مرور آمنة</button>
+    </div>
+
+    <div class="footer">
+        الحقوق محفوظة بالكامل لـ <b>Mr Xboss</b>
+    </div>
+
+    <script>
+        function appendVal(val) { document.getElementById('calc-screen').value += val; }
+        function clearCalc() { document.getElementById('calc-screen').value = ''; }
+        function calcResult() { 
+            try { 
+                document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); 
+            } catch(e) { 
+                document.getElementById('calc-screen').value = 'خطأ'; 
+            } 
+        }
+        function generatePassword() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!";
+            let pass = "";
+            for(let i=0; i<14; i++) { 
+                pass += chars.charAt(Math.floor(Math.random() * chars.length)); 
+            }
+            document.getElementById('pass-box').value = pass;
+        }
+    </script>
+</body>
+</html>
