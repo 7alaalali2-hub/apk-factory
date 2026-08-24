@@ -1,74 +1,271 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr Xboss</title>
-    <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: Tahoma, sans-serif; padding: 20px; text-align: center; margin: 0; }
-        h1 { color: #38bdf8; font-size: 24px; margin-bottom: 5px; }
-        .subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
-        .card { background: #1e293b; padding: 15px; margin: 15px auto; border-radius: 12px; max-width: 380px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-        h3 { color: #38bdf8; font-size: 16px; margin-top: 0; }
-        input[type="text"] { width: 90%; padding: 12px; margin: 8px 0; font-size: 18px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center; }
-        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        button { padding: 12px; font-size: 16px; border-radius: 8px; border: none; background: #334155; color: white; cursor: pointer; }
-        button:active { background: #0ea5e9; }
-        .action-btn { background: #0ea5e9; width: 100%; margin-top: 10px; font-weight: bold; }
-        .pass-box { font-size: 18px; background: #0f172a; padding: 10px; border-radius: 8px; margin: 10px 0; border: 1px solid #334155; word-break: break-all; color: #38bdf8; }
-        .footer { margin-top: 30px; font-size: 13px; color: #64748b; border-top: 1px solid #1e293b; padding-top: 15px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>اصنع لي تطبيق أدوات رقمية</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Tahoma, sans-serif;
+      background: #f6f7fb;
+      color: #111827;
+    }
+    header {
+      padding: 22px 18px;
+      background: linear-gradient(135deg, #0f766e, #2563eb);
+      color: white;
+    }
+    .brand {
+      font-size: 13px;
+      opacity: .92;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.35;
+    }
+    main {
+      padding: 16px;
+      max-width: 760px;
+      margin: auto;
+    }
+    .box {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .06);
+    }
+    .idea {
+      color: #374151;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-weight: bold;
+      background: #0f766e;
+      color: white;
+      cursor: pointer;
+    }
+    button.secondary { background: #2563eb; }
+    input, textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
+      font-family: inherit;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .item {
+      padding: 10px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      border-radius: 8px;
+      background: #ecfeff;
+      border: 1px solid #bae6fd;
+      display: block;
+      touch-action: none;
+    }
+    .score {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    footer {
+      padding: 18px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Mr Xboss</h1>
-    <div class="subtitle">تطبيق الأدوات الرقمية (Dark Mode)</div>
-    
-    <div class="card">
-        <h3>الحاسبة السريعة</h3>
-        <input type="text" id="calc-screen" readonly placeholder="0">
-        <div class="btn-grid">
-            <button onclick="clearCalc()">C</button>
-            <button onclick="appendVal('/')">/</button>
-            <button onclick="appendVal('*')">*</button>
-            <button onclick="appendVal('-')">-</button>
-            <button onclick="appendVal('7')">7</button>
-            <button onclick="appendVal('8')">8</button>
-            <button onclick="appendVal('9')">9</button>
-            <button onclick="appendVal('+')">+</button>
-            <button onclick="appendVal('4')">4</button>
-            <button onclick="appendVal('5')">5</button>
-            <button onclick="appendVal('6')">6</button>
-            <button onclick="calcResult()">=</button>
-            <button onclick="appendVal('1')">1</button>
-            <button onclick="appendVal('2')">2</button>
-            <button onclick="appendVal('3')">3</button>
-            <button onclick="appendVal('0')">0</button>
-        </div>
-    </div>
+  <header>
+    <div class="brand">برمجة وتصميم: Mr Xboss</div>
+    <h1>اصنع لي تطبيق أدوات رقمية</h1>
+  </header>
 
-    <div class="card">
-        <h3>مولد كلمات المرور</h3>
-        <div class="pass-box" id="pass-display">كلمة المرور ستظهر هنا</div>
-        <button class="action-btn" onclick="generatePassword()">توليد كلمة مرور قوية</button>
-    </div>
+  <main>
+    <section class="box">
+      <b>فكرة التطبيق</b>
+      <div class="idea" id="ideaText"></div>
+    </section>
 
-    <div class="footer">الحقوق محفوظة بالكامل لـ <b>Mr Xboss</b></div>
+    <section class="box" id="normalApp">
+      <b>لوحة التطبيق</b>
+      <input id="taskInput" placeholder="اكتب مهمة أو عنصر جديد">
+      <div class="row">
+        <button onclick="addTask()">إضافة</button>
+        <button class="secondary" onclick="clearTasks()">مسح الكل</button>
+      </div>
+      <div id="tasks"></div>
 
-    <script>
-        function appendVal(val) { document.getElementById('calc-screen').value += val; }
-        function clearCalc() { document.getElementById('calc-screen').value = ''; }
-        function calcResult() { 
-            try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } 
-            catch(e) { document.getElementById('calc-screen').value = 'خطأ'; } 
-        }
-        function generatePassword() {
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&!";
-            let pass = "";
-            for(let i=0; i<12; i++) {
-                pass += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('pass-display').innerText = pass;
-        }
-    </script>
+      <textarea id="noteInput" rows="5" placeholder="اكتب ملاحظة داخل التطبيق"></textarea>
+      <button onclick="saveNote()">حفظ الملاحظة</button>
+    </section>
+
+    <section class="box" id="gameApp" style="display:none">
+      <div class="row">
+        <div class="score">النقاط: <span id="score">0</span></div>
+        <div class="score">الوقت: <span id="time">30</span></div>
+        <button onclick="startGame()">ابدأ</button>
+      </div>
+      <br>
+      <canvas id="game" width="720" height="420"></canvas>
+    </section>
+  </main>
+
+  <footer>جميع الحقوق محفوظة باسم Mr Xboss</footer>
+
+<script>
+const IDEA = "اصنع لي تطبيق أدوات رقمية مفيدة يحتوي على حاسبة سريعة ومولد كلمات مرور قوية بتصميم جذاب ومظلم (Dark Mode)، وليكن اسم التطبيق الرئيسي في الواجهة \"Mr Xboss\" والحقوق محفوظة بالكامل لـ \"Mr Xboss\".";
+const MODE = "app";
+const KEY = "com.mrxboss.apps.app88e41a156d";
+document.getElementById("ideaText").textContent = IDEA;
+
+const normalApp = document.getElementById("normalApp");
+const gameApp = document.getElementById("gameApp");
+
+if (MODE === "game") {
+  normalApp.style.display = "none";
+  gameApp.style.display = "block";
+}
+
+let tasks = JSON.parse(localStorage.getItem(KEY + "_tasks") || "[]");
+let note = localStorage.getItem(KEY + "_note") || "";
+document.getElementById("noteInput").value = note;
+
+function saveAll() {
+  localStorage.setItem(KEY + "_tasks", JSON.stringify(tasks));
+}
+
+function renderTasks() {
+  const box = document.getElementById("tasks");
+  box.innerHTML = "";
+  tasks.forEach((task, index) => {
+    const div = document.createElement("div");
+    div.className = "item";
+    const span = document.createElement("span");
+    span.textContent = task;
+    const btn = document.createElement("button");
+    btn.textContent = "حذف";
+    btn.onclick = () => {
+      tasks.splice(index, 1);
+      saveAll();
+      renderTasks();
+    };
+    div.appendChild(span);
+    div.appendChild(btn);
+    box.appendChild(div);
+  });
+}
+
+function addTask() {
+  const input = document.getElementById("taskInput");
+  const value = input.value.trim();
+  if (!value) return;
+  tasks.push(value);
+  input.value = "";
+  saveAll();
+  renderTasks();
+}
+
+function clearTasks() {
+  tasks = [];
+  saveAll();
+  renderTasks();
+}
+
+function saveNote() {
+  localStorage.setItem(KEY + "_note", document.getElementById("noteInput").value);
+  alert("تم الحفظ");
+}
+
+renderTasks();
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+let score = 0;
+let left = 30;
+let target = { x: 180, y: 160, r: 34 };
+let timer = null;
+let playing = false;
+
+function drawGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#ecfeff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0f766e";
+  ctx.beginPath();
+  ctx.arc(target.x, target.y, target.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#111827";
+  ctx.font = "22px Arial";
+  ctx.fillText("اضغط على الدائرة قبل انتهاء الوقت", 24, 38);
+}
+
+function moveTarget() {
+  target.x = 60 + Math.random() * (canvas.width - 120);
+  target.y = 70 + Math.random() * (canvas.height - 130);
+  target.r = 24 + Math.random() * 24;
+  drawGame();
+}
+
+function startGame() {
+  score = 0;
+  left = 30;
+  playing = true;
+  document.getElementById("score").textContent = score;
+  document.getElementById("time").textContent = left;
+  moveTarget();
+  clearInterval(timer);
+  timer = setInterval(() => {
+    left--;
+    document.getElementById("time").textContent = left;
+    if (left <= 0) {
+      playing = false;
+      clearInterval(timer);
+      alert("انتهى الوقت. نقاطك: " + score);
+    }
+  }, 1000);
+}
+
+canvas.addEventListener("pointerdown", function(e) {
+  if (!playing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const dx = x - target.x;
+  const dy = y - target.y;
+  if (Math.sqrt(dx * dx + dy * dy) <= target.r) {
+    score++;
+    document.getElementById("score").textContent = score;
+    moveTarget();
+  }
+});
+
+drawGame();
+</script>
 </body>
 </html>
