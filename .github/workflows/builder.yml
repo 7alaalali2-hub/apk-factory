@@ -32,13 +32,15 @@ jobs:
           if [ -f index.html ]; then
             cp index.html app/src/main/assets/index.html
           else
-            echo "<h1>MrXboss App</h1>" > app/src/main/assets/index.html
+            echo "<h1>MrXboss App</h1>" > index.html
+            cp index.html app/src/main/assets/index.html
           fi
 
       - name: Build APK with Gradle
         run: |
-          # استخدام التجميع المباشر السريع
-          chmod +x gradlew || true
+          # توليد ملفات التجميع المطلوبة أولاً لتجنب أي نقص
+          gradle wrapper --gradle-version 7.5
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Extract Final APK
