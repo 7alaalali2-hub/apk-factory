@@ -1,4 +1,4 @@
-name: Stable APK Builder
+name: Stable WebView APK Builder
 
 on:
   push:
@@ -12,33 +12,42 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
-      - name: Create Web Wrapper APK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create Android Project Structure
         run: |
-          sudo apt-get update && sudo apt-get install -y zip default-jdk
-          
-          # تجهيز مجلد التطبيق البسيط
-          mkdir -p workspace/assets
-          if [ ! -f index.html ]; then
-            echo "<h1>MrXboss App</h1>" > index.html
-          fi
-          cp index.html workspace/assets/index.html
+          mkdir -p app/src/main/java/com/mrxboss/app
+          mkdir -p app/src/main/assets
+          mkdir -p app/src/main/res/values
 
-          # إنشاء هيكل التطبيق الأساسي
-          cd workspace
-          cat << 'EOF' > AndroidManifest.xml
+          # التحقق من ملف الـ HTML ووضعه في مجلد الأصول
+          if [ -f index.html ]; then
+            cp index.html app/src/main/assets/index.html
+          else
+            echo "<h1>MrXboss App</h1>" > app/src/main/assets/index.html
+          fi
+
+          # إعداد ملف الـ AndroidManifest
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-              package="com.mrxboss.app"
-              android:versionCode="1"
-              android:versionName="1.0">
+              package="com.mrxboss.app">
               <uses-permission android:name="android.permission.INTERNET" />
-              <application android:label="MrXboss App" android:usesCleartextTraffic="true">
-                  <activity android:name=".MainActivity" android:exported="true">
+              <application
+                  android:allowBackup="true"
+                  android:label="Mr Xboss"
+                  android:usesCleartextTraffic="true"
+                  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
@@ -48,18 +57,124 @@ jobs:
           </manifest>
           EOF
 
-          # ضغط الحزمة وتجهيزها للاستخدام
-          zip -r ../app_raw.apk .
-          cd ..
+          # إعداد ملف كود الجافا لتشغيل الـ WebView
+          cat << 'EOF' > app/src/main/java/com/mrxboss/app/MainActivity.java
+          package com.mrxboss.app;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import androidx.appcompat.app.AppCompatActivity;
+          public class MainActivity extends AppCompatActivity {
+              private WebView webView;
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  webView = new WebView(this);
+                  WebSettings webSettings = webView.getSettings();
+                  webSettings.setJavaScriptEnabled(true);
+                  webSettings.setDomStorageEnabled(true);
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/index.html");
+                  setContentView(webView);
+              }
+              @Override
+              public void onBackPressed() {
+                  if (webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+          }
+          EOF
 
-          # إنشاء مفتاح توقيع مؤقت وتوقيع التطبيق ليكون قابلاً للتثبيت الفوري
-          keytool -genkey -v -keystore my-key.keystore -alias mykeyalias -keypass password -storepass password -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android,O=Dev,C=US"
-          
-          mkdir -p output
-          cp app_raw.apk output/MrXbossApp.apk
+          # إعداد ملف أسماء الموارد
+          cat << 'EOF' > app/src/main/res/values/strings.xml
+          <resources>
+              <string name="app_name">Mr Xboss</string>
+          </resources>
+          EOF
+
+          # إعداد ملف البناء الرئيسي للمشروع
+          cat << 'EOF' > build.gradle
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:7.4.2'
+              }
+          }
+          allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          task clean(type: Delete) {
+              delete rootProject.buildDir
+          }
+          EOF
+
+          # إعداد إعدادات الحزمة
+          cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "MrXbossApp"
+          include ':app'
+          EOF
+
+          # إعداد إعدادات تطبيق أندرويد
+          cat << 'EOF' > app/build.gradle
+          apply plugin: 'com.android.application'
+          android {
+              namespace 'com.mrxboss.app'
+              compileSdk 33
+              defaultConfig {
+                  applicationId "com.mrxboss.app"
+                  minSdk 21
+                  targetSdk 33
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                  }
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation 'com.google.android.material:material:1.9.0'
+          }
+          EOF
+
+      - name: Build APK with Gradle
+        run: |
+          gradle wrapper --gradle-version 7.5
+          ./gradlew assembleDebug
+
+      - name: Prepare Final APK
+        run: |
+          mkdir -p build_output
+          cp app/build/outputs/apk/debug/app-debug.apk build_output/MrXbossApp.apk
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: compiled-apk
-          path: output/MrXbossApp.apk
+          path: build_output/MrXbossApp.apk
