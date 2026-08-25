@@ -3,1050 +3,1027 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mr Xboss Runner</title>
+<title>Mr Xboss XO</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    user-select: none;
-    -webkit-user-select: none;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    touch-action: manipulation;
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #0ea5e9;
+  --danger: #f43f5e;
+  --success: #10b981;
+  --x-color: #38bdf8;
+  --o-color: #f43f5e;
+  --radius: 16px;
+  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
-:root {
-    --bg-color: #0c0f1d;
-    --panel-bg: #161b33;
-    --primary: #00f0ff;
-    --secondary: #7000ff;
-    --accent: #ff0055;
-    --text-color: #ffffff;
-    --text-muted: #a0aec0;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
-#app-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    max-width: 480px;
-    max-height: 900px;
-    background: var(--bg-color);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+header {
+  background-color: var(--bg-secondary);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--x-color), var(--o-color));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+}
+
+.logo-text h1 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.logo-text span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: var(--bg-card);
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
 }
 
 .screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px;
-    background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3c 100%);
-    z-index: 10;
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .screen.active {
-    display: flex;
+  display: flex;
 }
 
-/* Typography & Common */
-h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    text-align: center;
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-    margin-bottom: 5px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.subtitle {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    text-align: center;
-    margin-bottom: 20px;
+.card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: var(--accent);
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.input-field {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--accent);
 }
 
 .btn {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+  width: 100%;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn:active {
-    transform: scale(0.96);
-}
-
-.btn-primary {
-    background: linear-gradient(45deg, var(--primary), #0088ff);
-    color: #000;
-    box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
+  transform: scale(0.97);
 }
 
 .btn-secondary {
-    background: var(--panel-bg);
-    color: var(--text-color);
-    border: 2px solid var(--primary);
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: none;
 }
 
 .btn-danger {
-    background: linear-gradient(45deg, var(--accent), #ff5500);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+  background: var(--danger);
+  color: white;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
 }
 
-/* Home Screen */
-.home-logo {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 3rem;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
-    margin: 20px 0;
-    animation: pulse 2s infinite;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
-    50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(0, 240, 255, 0.7); }
-    100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
+.stat-box {
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
 }
 
-.stats-card {
-    background: var(--panel-bg);
-    width: 100%;
-    padding: 15px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-    border: 1px solid rgba(0, 240, 255, 0.2);
+.stat-box .val {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
 }
 
-.stat-item {
-    text-align: center;
+.stat-box .lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
 }
 
-.stat-val {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--primary);
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
 }
 
-.stat-lbl {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+.board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
 }
 
-/* Game Screen */
-#game-screen {
-    padding: 0;
-    justify-content: flex-start;
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
 }
 
-#game-canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-    background: #05070f;
+.player-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
-.hud {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 20;
-    pointer-events: none;
+.player-score span {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-main);
 }
 
-.hud-group {
-    background: rgba(22, 27, 51, 0.8);
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid rgba(0, 240, 255, 0.3);
-    font-weight: bold;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    backdrop-filter: blur(5px);
+.player-score.active-turn {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
 }
 
-.controls-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 35%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 10px;
-    padding: 15px;
-    z-index: 20;
-    pointer-events: none;
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: 20px;
 }
 
-.ctrl-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(0, 240, 255, 0.4);
-    border-radius: 16px;
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.8rem;
-    color: var(--primary);
-    pointer-events: auto;
-    cursor: pointer;
-    transition: background 0.1s;
+.cell {
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: var(--shadow);
 }
 
-.ctrl-btn:active {
-    background: rgba(0, 240, 255, 0.3);
+.cell:active {
+  transform: scale(0.92);
+  background: var(--bg-card);
 }
 
-.ctrl-left { grid-column: 1; grid-row: 1 / 3; }
-.ctrl-right { grid-column: 2; grid-row: 1 / 3; }
-
-.action-bar {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    padding: 0 20px;
-    z-index: 25;
-    pointer-events: none;
+.cell.x {
+  color: var(--x-color);
 }
 
-.act-btn {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: rgba(112, 0, 255, 0.6);
-    border: 2px solid var(--primary);
-    color: #fff;
-    font-size: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: auto;
-    box-shadow: 0 0 15px rgba(112, 0, 255, 0.5);
+.cell.o {
+  color: var(--o-color);
 }
 
-.act-btn:active {
-    transform: scale(0.9);
-}
-
-/* Game Over / Pause Modals */
 .modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(12, 15, 29, 0.85);
-    backdrop-filter: blur(8px);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 30px;
-    z-index: 30;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
 }
 
-.modal-card {
-    background: var(--panel-bg);
-    width: 100%;
-    max-width: 350px;
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid var(--primary);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.modal-title {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: var(--primary);
+.modal-content {
+  background: var(--bg-secondary);
+  width: 90%;
+  max-width: 340px;
+  padding: 25px;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: scale(0.9);
+  transition: transform 0.2s;
 }
 
-.result-row {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-size: 1.1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 8px;
+.modal-overlay.active .modal-content {
+  transform: scale(1);
 }
 
-/* Settings & Help */
-.settings-list {
-    width: 100%;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin: 20px 0;
-    overflow-y: auto;
+.modal-content h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
-.setting-item {
-    background: var(--panel-bg);
-    padding: 15px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid rgba(255,255,255,0.05);
+.modal-content p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 
-.toggle-switch {
-    position: relative;
-    width: 50px;
-    height: 26px;
-    background: #333;
-    border-radius: 13px;
-    cursor: pointer;
-    transition: background 0.3s;
+.room-code-display {
+  background: var(--bg-primary);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  padding: 12px;
+  border-radius: 12px;
+  color: var(--accent);
+  margin-bottom: 20px;
+  border: 1px dashed var(--accent);
 }
 
-.toggle-switch::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.3s;
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-card);
+  color: var(--text-main);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 90%;
+  text-align: center;
 }
 
-.toggle-switch.active {
-    background: var(--primary);
+.toast.show {
+  transform: translateX(-50%) translateY(0);
 }
 
-.toggle-switch.active::after {
-    transform: translateX(24px);
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.help-content {
-    background: var(--panel-bg);
-    width: 100%;
-    flex-grow: 1;
-    border-radius: 12px;
-    padding: 20px;
-    overflow-y: auto;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--text-muted);
-    border: 1px solid rgba(255,255,255,0.05);
-    margin-bottom: 20px;
+.badge {
+  display: inline-block;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
-.help-content h3 {
-    color: var(--primary);
-    margin-top: 10px;
-    margin-bottom: 5px;
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
 }
 
-.footer {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: 10px;
-}
-
-.footer span {
-    color: var(--primary);
-}
-
-.shake {
-    animation: shake 0.3s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translate(0, 0); }
-    20% { transform: translate(-8px, 5px); }
-    40% { transform: translate(8px, -5px); }
-    60% { transform: translate(-5px, -3px); }
-    80% { transform: translate(5px, 3px); }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
 </head>
 <body>
 
-<div id="app-container">
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">XO</div>
+    <div class="logo-text">
+      <h1>Mr Xboss XO</h1>
+      <span>الإصدار الأونلاين</span>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button class="icon-btn" onclick="showScreen('screen-settings')" title="الإعدادات">⚙️</button>
+  </div>
+</header>
 
-    <!-- HOME SCREEN -->
-    <div id="home-screen" class="screen active">
-        <div></div>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <h1>Mr Xboss Runner</h1>
-            <div class="subtitle">المغامرة المستقبلية الأصلية</div>
-            
-            <div class="home-logo">⚡</div>
-
-            <div class="stats-card">
-                <div class="stat-item">
-                    <div class="stat-val" id="best-score-lbl">0</div>
-                    <div class="stat-lbl">أعلى مسافة</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-val" id="total-coins-lbl">0</div>
-                    <div class="stat-lbl">إجمالي العملات</div>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="startGame()">
-                <span>ابدأ الركض</span> 🚀
-            </button>
-            <button class="btn btn-secondary" onclick="showScreen('settings-screen')">
-                <span>الإعدادات</span> ⚙️
-            </button>
-            <button class="btn btn-secondary" onclick="showScreen('help-screen')">
-                <span>طريقة اللعب</span> 📖
-            </button>
-        </div>
-        <div class="footer">تم التطوير بواسطة <span>Mr Xboss</span></div>
+<main>
+  <!-- Main Menu Screen -->
+  <div id="screen-menu" class="screen active">
+    <div class="card" style="text-align: center; padding: 25px 20px;">
+      <span class="badge">اللعبة الجماعية والذكية</span>
+      <h2 style="margin-top: 5px;">مرحباً بك في تحدي XO</h2>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">العب مع أصدقائك عبر الإنترنت في غرف خاصة برمز سري واجمع نقاط الفوز!</p>
+      
+      <div class="input-group" style="text-align: right;">
+        <label>اسم اللاعب</label>
+        <input type="text" id="player-name-input" class="input-field" placeholder="ادخل اسمك هنا..." maxlength="15">
+      </div>
     </div>
 
-    <!-- GAME SCREEN -->
-    <div id="game-screen" class="screen">
-        <div class="hud">
-            <div class="hud-group">
-                <span>📍</span> <span id="hud-score">0</span> م
-            </div>
-            <div class="hud-group">
-                <span>🪙</span> <span id="hud-coins">0</span>
-            </div>
-            <div class="hud-group" style="pointer-events: auto; cursor: pointer;" onclick="pauseGame()">
-                <span>⏸️</span>
-            </div>
-        </div>
-
-        <canvas id="game-canvas"></canvas>
-
-        <div style="position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; z-index: 25;">
-            <div style="display: flex; gap: 15px;">
-                <div class="act-btn" onclick="playerMove(-1)">⬅️</div>
-                <div class="act-btn" onclick="playerMove(1)">➡️</div>
-            </div>
-            <div style="display: flex; gap: 15px;">
-                <div class="act-btn" style="background: rgba(0, 240, 255, 0.4);" onclick="playerSlide()">⬇️</div>
-                <div class="act-btn" style="background: rgba(255, 0, 85, 0.5);" onclick="playerJump()">⬆️</div>
-            </div>
-        </div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="val" id="stat-wins">0</div>
+        <div class="lbl">فوز</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" id="stat-losses">0</div>
+        <div class="lbl">خسارة</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" id="stat-draws">0</div>
+        <div class="lbl">تعادل</div>
+      </div>
     </div>
 
-    <!-- PAUSE MODAL -->
-    <div id="pause-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-title">اللعبة متوقفة</div>
-            <button class="btn btn-primary" onclick="resumeGame()">استئناف</button>
-            <button class="btn btn-secondary" onclick="restartGame()">إعادة اللعب</button>
-            <button class="btn btn-danger" onclick="quitGame()">القائمة الرئيسية</button>
-        </div>
+    <div class="menu-options">
+      <button class="btn" onclick="createRoom()">إنشاء غرفة جديدة 🎮</button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-join')">دخول برمز الغرفة 🔑</button>
+      <button class="btn btn-secondary" onclick="startLocalGame()">اللعب المحلي (مع صديق) 👥</button>
     </div>
+  </div>
 
-    <!-- GAME OVER MODAL -->
-    <div id="gameover-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-title" style="color: var(--accent);">انتهت المغامرة</div>
-            <div class="result-row">
-                <span>المسافة المقطوعة</span>
-                <span id="go-score" style="color: var(--primary);">0 م</span>
-            </div>
-            <div class="result-row">
-                <span>العملات المجمعة</span>
-                <span id="go-coins" style="color: #ffcc00;">0 🪙</span>
-            </div>
-            <div class="result-row" style="border: none;">
-                <span>الرقم القياسي</span>
-                <span id="go-best" style="color: #00ff88;">0 م</span>
-            </div>
-            <button class="btn btn-primary" style="margin-top: 15px;" onclick="restartGame()">العب مجدداً</button>
-            <button class="btn btn-secondary" onclick="quitGame()">الرئيسية</button>
-        </div>
+  <!-- Join Room Screen -->
+  <div id="screen-join" class="screen">
+    <div class="card">
+      <h2>دخول غرفة أونلاين</h2>
+      <div class="input-group">
+        <label>رمز الغرفة (6 أحرف أو أرقام)</label>
+        <input type="text" id="room-code-input" class="input-field" placeholder="مثال: X7K9" style="text-transform: uppercase; text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px;" maxlength="6">
+      </div>
+      <button class="btn" onclick="joinRoom()">الانضمام للغرفة</button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-menu')">رجوع</button>
     </div>
+  </div>
 
-    <!-- SETTINGS SCREEN -->
-    <div id="settings-screen" class="screen">
-        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-            <button class="btn btn-secondary" style="width: auto; padding: 10px 15px; margin: 0;" onclick="showScreen('home-screen')">رجوع</button>
-            <h2 style="color: var(--primary);">الإعدادات</h2>
-            <div style="width: 50px;"></div>
+  <!-- Game Screen -->
+  <div id="screen-game" class="screen">
+    <div class="board-container">
+      <div class="game-info">
+        <div class="player-score" id="p1-info">
+          <span id="p1-name">اللاعب 1 (X)</span>
+          <span id="p1-wins">0</span>
         </div>
-
-        <div class="settings-list">
-            <div class="setting-item">
-                <span>المؤثرات الاهتزازية</span>
-                <div id="setting-vibration" class="toggle-switch active" onclick="toggleSetting('vibration')"></div>
-            </div>
-            <div class="setting-item">
-                <span>مستوى الصعوبة المتسارع</span>
-                <div id="setting-diff" class="toggle-switch active" onclick="toggleSetting('diff')"></div>
-            </div>
-            <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 10px;">
-                <span>إدارة البيانات</span>
-                <button class="btn btn-danger" style="margin: 0; padding: 10px;" onclick="resetData()">مسح جميع البيانات</button>
-            </div>
+        <div class="player-score" id="p2-info">
+          <span id="p2-name">اللاعب 2 (O)</span>
+          <span id="p2-wins">0</span>
         </div>
+      </div>
 
-        <div class="footer">Mr Xboss Runner - الإصدار 1.0.0</div>
+      <div style="text-align: center; margin-bottom: 12px; font-size: 14px; font-weight: bold;" id="game-status-text">
+        جارٍ التحميل...
+      </div>
+
+      <div class="board" id="game-board">
+        <div class="cell" onclick="makeMove(0)"></div>
+        <div class="cell" onclick="makeMove(1)"></div>
+        <div class="cell" onclick="makeMove(2)"></div>
+        <div class="cell" onclick="makeMove(3)"></div>
+        <div class="cell" onclick="makeMove(4)"></div>
+        <div class="cell" onclick="makeMove(5)"></div>
+        <div class="cell" onclick="makeMove(6)"></div>
+        <div class="cell" onclick="makeMove(7)"></div>
+        <div class="cell" onclick="makeMove(8)"></div>
+      </div>
+
+      <button class="btn btn-secondary" onclick="leaveGame()">مغادرة الغرفة</button>
     </div>
+  </div>
 
-    <!-- HELP SCREEN -->
-    <div id="help-screen" class="screen">
-        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-            <button class="btn btn-secondary" style="width: auto; padding: 10px 15px; margin: 0;" onclick="showScreen('home-screen')">رجوع</button>
-            <h2 style="color: var(--primary);">طريقة اللعب</h2>
-            <div style="width: 50px;"></div>
-        </div>
-
-        <div class="help-content">
-            <h3>🤖 القصة</h3>
-            <p>أنت بطل مدينة المستقبل تحت إشراف Mr Xboss. عليك الركض المستمر وتفادي العوائق التقنية.</p>
-            
-            <h3>🎮 طريقة التحكم</h3>
-            <p>• أزرار اليمين واليسار لتغيير المسارات الثلاثة.<br>
-            • زر السهم للأعلى للقفز فوق الحواجز والحفر.<br>
-            • زر السهم للأسفل للانزلاق تحت البوابات المتحركة.</p>
-
-            <h3>⚡ المعززات (Power-ups)</h3>
-            <p>• 🧲 المغناطيس: يجذب العملات المجاورة تلقائياً.<br>
-            • 🛡️ الدرع: يحميك من الاصطدام مرة واحدة.<br>
-            • 🚀 السرعة: يمنحك دفعة سرعة مؤقتة ونقاط مضاعفة.</p>
-        </div>
-
-        <div class="footer">تصميم وبرمجة: Mr Xboss</div>
+  <!-- Settings Screen -->
+  <div id="screen-settings" class="screen">
+    <div class="card">
+      <h2>الإعدادات ومعلومات التطبيق</h2>
+      <div style="margin-bottom: 20px; font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+        <p><strong>Mr Xboss XO</strong> هي لعبة تعتمد على الذكاء وسرعة البديهة مصممة خصيصاً للعمل بسلاسة عبر الإنترنت بنظام الغرف الذكية.</p>
+        <br>
+        <p>رقم الحزمة: <code>com.mrxboss.apps.app015cb904c0</code></p>
+      </div>
+      <button class="btn btn-danger" onclick="resetStats()">إعادة تعيين الاحصائيات</button>
+      <button class="btn btn-secondary" onclick="showScreen('screen-menu')">رجوع للقائمة</button>
     </div>
+  </div>
+</main>
 
+<!-- Room Waiting Modal -->
+<div class="modal-overlay" id="modal-waiting">
+  <div class="modal-content">
+    <h3>انتظار الخصم</h3>
+    <p>شارك رمز الغرفة التالي مع صديقك ليدخل معك:</p>
+    <div class="room-code-display" id="display-room-code">----</div>
+    <div style="margin-bottom: 20px;">
+      <div class="spinner"></div>
+      <div style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">بانتظار انضمام لاعب آخر...</div>
+    </div>
+    <button class="btn btn-secondary" onclick="leaveGame()">إلغاء الغرفة</button>
+  </div>
 </div>
 
+<!-- Game Over Modal -->
+<div class="modal-overlay" id="modal-gameover">
+  <div class="modal-content">
+    <h3 id="gameover-title">انتهت الجولة!</h3>
+    <p id="gameover-desc">النتيجة تم تسجيلها بنجاح.</p>
+    <button class="btn" onclick="restartGame()">لعب دور جديد</button>
+    <button class="btn btn-secondary" onclick="leaveGame()">العودة للقائمة</button>
+  </div>
+</div>
+
+<div class="toast" id="toast-msg">رسالة تنبيهية</div>
+
+<footer>
+  Mr Xboss XO &copy; 2025 | جميع الحقوق محفوظة لـ Mr Xboss
+</footer>
+
 <script>
-// Internal App Configuration & Data Persistence
-const APP_KEY = "com.mrxboss.apps.appa3a126b588";
-let gameData = {
-    bestScore: 0,
-    totalCoins: 0,
-    settings: {
-        vibration: true,
-        difficulty: true
-    }
+// Firebase Config configuration provided
+const firebaseConfig = {
+  apiKey: "AIzaSyDummyKeyForWebViewAppMrXboss015",
+  authDomain: "mrxboss-xo.firebaseapp.com",
+  databaseURL: "https://mrxboss-xo-default-rtdb.firebaseio.com",
+  projectId: "mrxboss-xo",
+  appId: "1:123456789:web:abcdef"
 };
 
-function loadData() {
-    const saved = localStorage.getItem(APP_KEY);
-    if (saved) {
-        try {
-            gameData = JSON.parse(saved);
-        } catch (e) {
-            console.error("Data load error", e);
-        }
-    }
-    updateHomeStats();
+// Initialize Firebase safely
+try {
+  firebase.initializeApp(firebaseConfig);
+} catch(e) {
+  console.log("Firebase init note:", e);
 }
 
-function saveData() {
-    localStorage.setItem(APP_KEY, JSON.stringify(gameData));
-    updateHomeStats();
-}
+const db = firebase.database();
+let auth = firebase.auth();
 
-function updateHomeStats() {
-    document.getElementById('best-score-lbl').innerText = gameData.bestScore;
-    document.getElementById('total-coins-lbl').innerText = gameData.totalCoins;
-    
-    // Sync toggles
-    document.getElementById('setting-vibration').className = `toggle-switch ${gameData.settings.vibration ? 'active' : ''}`;
-    document.getElementById('setting-diff').className = `toggle-switch ${gameData.settings.difficulty ? 'active' : ''}`;
+// App State
+let currentUser = null;
+let currentRoomCode = null;
+let isHost = false;
+let gameMode = 'online'; // 'online' or 'local'
+let playerSymbol = 'X'; // 'X' or 'O'
+let gameState = {
+  board: ['', '', '', '', '', '', '', '', ''],
+  turn: 'X',
+  status: 'waiting', // waiting, playing, finished
+  winner: null,
+  p1: { uid: '', name: 'اللاعب 1', wins: 0 },
+  p2: { uid: '', name: 'اللاعب 2', wins: 0 },
+  draws: 0
+};
+
+let localStats = {
+  wins: 0,
+  losses: 0,
+  draws: 0
+};
+
+let roomRef = null;
+
+// Initialize app on load
+window.onload = async () => {
+  loadLocalStats();
+  setupAuth();
+  
+  // Load saved player name
+  const savedName = localStorage.getItem('mrxboss_player_name');
+  if (savedName) {
+    document.getElementById('player-name-input').value = savedName;
+  } else {
+    document.getElementById('player-name-input').value = 'لاعب ' + Math.floor(Math.random() * 900 + 100);
+  }
+};
+
+function setupAuth() {
+  auth.signInAnonymously().then((userCredential) => {
+    currentUser = userCredential.user;
+    showToast("متصل بالخیر السحابي بنجاح");
+  }).catch((error) => {
+    showToast("خطأ في الاتصال الأونلاين");
+    console.error(error);
+  });
 }
 
 function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
 }
 
-function toggleSetting(key) {
-    if (key === 'vibration') gameData.settings.vibration = !gameData.settings.vibration;
-    if (key === 'diff') gameData.settings.difficulty = !gameData.settings.difficulty;
-    saveData();
+function showToast(msg) {
+  const t = document.getElementById('toast-msg');
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => {
+    t.classList.remove('show');
+  }, 3000);
 }
 
-function resetData() {
-    if (confirm("هل أنت متأكد من مسح جميع البيانات والإنجازات؟")) {
-        gameData = { bestScore: 0, totalCoins: 0, settings: { vibration: true, difficulty: true } };
-        saveData();
-        alert("تم مسح البيانات بنجاح.");
+function loadLocalStats() {
+  const saved = localStorage.getItem('mrxboss_xo_stats');
+  if (saved) {
+    try {
+      localStats = JSON.parse(saved);
+    } catch(e) {}
+  }
+  updateStatsUI();
+}
+
+function saveLocalStats() {
+  localStorage.setItem('mrxboss_xo_stats', JSON.stringify(localStats));
+  updateStatsUI();
+}
+
+function updateStatsUI() {
+  document.getElementById('stat-wins').innerText = localStats.wins;
+  document.getElementById('stat-losses').innerText = localStats.losses;
+  document.getElementById('stat-draws').innerText = localStats.draws;
+}
+
+function resetStats() {
+  if (confirm("هل تريد إعادة تعيين جميع الاحصائيات؟")) {
+    localStats = { wins: 0, losses: 0, draws: 0 };
+    saveLocalStats();
+    showToast("تمت إعادة التعيين");
+  }
+}
+
+function getPlayerName() {
+  const name = document.getElementById('player-name-input').value.trim();
+  if (!name) return "لاعب مجهول";
+  localStorage.setItem('mrxboss_player_name', name);
+  return name;
+}
+
+// Generate random 4 char room code
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0; i<4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+// --- ONLINE ROOM LOGIC ---
+async function createRoom() {
+  if (!currentUser) {
+    showToast("جارٍ الاتصال بالخادم، انتظر قليلاً...");
+    return;
+  }
+  
+  const playerName = getPlayerName();
+  currentRoomCode = generateRoomCode();
+  isHost = true;
+  playerSymbol = 'X';
+  gameMode = 'online';
+
+  gameState = {
+    board: ['', '', '', '', '', '', '', '', ''],
+    turn: 'X',
+    status: 'waiting',
+    winner: null,
+    p1: { uid: currentUser.uid, name: playerName, wins: 0 },
+    p2: { uid: '', name: 'بانتظار اللاعب...', wins: 0 },
+    draws: 0
+  };
+
+  roomRef = db.ref('rooms/' + currentRoomCode);
+  await roomRef.set(gameState);
+  
+  // Listen for changes
+  roomRef.on('value', (snapshot) => {
+    const val = snapshot.val();
+    if (val) {
+      gameState = val;
+      updateGameUI();
+      checkRoomStatus();
     }
+  });
+
+  document.getElementById('display-room-code').innerText = currentRoomCode;
+  document.getElementById('modal-waiting').classList.add('active');
 }
 
-// --- GAME ENGINE ---
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
+async function joinRoom() {
+  if (!currentUser) {
+    showToast("جارٍ الاتصال بالخادم، انتظر قليلاً...");
+    return;
+  }
 
-let canvasWidth, canvasHeight;
-function resizeCanvas() {
-    canvasWidth = canvas.clientWidth;
-    canvasHeight = canvas.clientHeight;
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-}
-window.addEventListener('resize', resizeCanvas);
+  const codeInput = document.getElementById('room-code-input');
+  const code = codeInput.value.trim().toUpperCase();
+  
+  if (code.length < 4) {
+    showToast("يرجى إدخال رمز غرفة صحيح");
+    return;
+  }
 
-let gameState = 'STOPPED'; // STOPPED, RUNNING, PAUSED, GAMEOVER
-let score = 0;
-let coins = 0;
-let gameSpeed = 5;
-let speedTimer = 0;
+  const playerName = getPlayerName();
+  roomRef = db.ref('rooms/' + code);
+  
+  const snapshot = await roomRef.once('value');
+  if (!snapshot.exists()) {
+    showToast("الغرفة غير موجودة!");
+    return;
+  }
 
-// Lanes: 0 = Left, 1 = Center, 2 = Right
-const lanes = [-1, 0, 1];
-let player = {
-    lane: 1,
-    y: 0,
-    vy: 0,
-    isJumping: false,
-    isSliding: false,
-    slideTimer: 0,
-    shield: false,
-    magnet: false,
-    speedBoost: false,
-    effectTimer: 0
-};
+  const roomData = snapshot.val();
+  if (roomData.status !== 'waiting') {
+    showToast("الغرفة ممتلئة أو اللعبة قد بدأت بالفعل!");
+    return;
+  }
 
-let obstacles = [];
-let collectibles = [];
-let particles = [];
-let buildings = [];
+  currentRoomCode = code;
+  isHost = false;
+  playerSymbol = 'O';
+  gameMode = 'online';
 
-function initGame() {
-    resizeCanvas();
-    score = 0;
-    coins = 0;
-    gameSpeed = 6;
-    speedTimer = 0;
-    player.lane = 1;
-    player.isJumping = false;
-    player.isSliding = false;
-    player.shield = false;
-    player.magnet = false;
-    player.speedBoost = false;
-    player.effectTimer = 0;
-    
-    obstacles = [];
-    collectibles = [];
-    particles = [];
-    
-    // Generate background skyline
-    buildings = [];
-    for (let i = 0; i < 10; i++) {
-        buildings.push({
-            x: i * 60,
-            w: 50,
-            h: 150 + Math.random() * 200,
-            color: `rgba(20, 30, 60, ${0.3 + Math.random() * 0.4})`
-        });
+  roomData.p2 = { uid: currentUser.uid, name: playerName, wins: 0 };
+  roomData.status = 'playing';
+
+  await roomRef.set(roomData);
+
+  roomRef.on('value', (snapshot) => {
+    const val = snapshot.val();
+    if (val) {
+      gameState = val;
+      updateGameUI();
+      checkRoomStatus();
     }
+  });
+
+  document.getElementById('modal-waiting').classList.remove('active');
+  showScreen('screen-game');
+  showToast("تم الانضمام للغرفة بنجاح!");
 }
 
-function startGame() {
-    initGame();
-    showScreen('game-screen');
-    gameState = 'RUNNING';
-    requestAnimationFrame(gameLoop);
-}
-
-function pauseGame() {
-    if (gameState === 'RUNNING') {
-        gameState = 'PAUSED';
-        document.getElementById('pause-modal').style.display = 'flex';
+function checkRoomStatus() {
+  if (gameState.status === 'playing') {
+    document.getElementById('modal-waiting').classList.remove('active');
+    if (!document.getElementById('screen-game').classList.contains('active')) {
+      showScreen('screen-game');
     }
+  }
+
+  if (gameState.winner) {
+    showGameOverModal(gameState.winner);
+  }
 }
 
-function resumeGame() {
-    document.getElementById('pause-modal').style.display = 'none';
-    gameState = 'RUNNING';
-    requestAnimationFrame(gameLoop);
+// --- LOCAL GAME LOGIC ---
+function startLocalGame() {
+  gameMode = 'local';
+  currentRoomCode = null;
+  const pName = getPlayerName();
+  
+  gameState = {
+    board: ['', '', '', '', '', '', '', '', ''],
+    turn: 'X',
+    status: 'playing',
+    winner: null,
+    p1: { uid: 'local', name: pName, wins: 0 },
+    p2: { uid: 'local', name: 'اللاعب الثاني', wins: 0 },
+    draws: 0
+  };
+
+  showScreen('screen-game');
+  updateGameUI();
 }
 
-function restartGame() {
-    document.getElementById('pause-modal').style.display = 'none';
-    document.getElementById('gameover-modal').style.display = 'none';
-    startGame();
-}
+// --- GAMEPLAY CORE ---
+function makeMove(index) {
+  if (gameState.board[index] !== '' || gameState.winner || gameState.status !== 'playing') {
+    return;
+  }
 
-function quitGame() {
-    document.getElementById('pause-modal').style.display = 'none';
-    document.getElementById('gameover-modal').style.display = 'none';
-    gameState = 'STOPPED';
-    showScreen('home-screen');
-}
-
-// Controls
-function playerMove(dir) {
-    if (gameState !== 'RUNNING') return;
-    player.lane += dir;
-    if (player.lane < 0) player.lane = 0;
-    if (player.lane > 2) player.lane = 2;
-}
-
-function playerJump() {
-    if (gameState !== 'RUNNING') return;
-    if (!player.isJumping && !player.isSliding) {
-        player.isJumping = true;
-        player.vy = -12;
-    }
-}
-
-function playerSlide() {
-    if (gameState !== 'RUNNING') return;
-    if (!player.isJumping && !player.isSliding) {
-        player.isSliding = true;
-        player.slideTimer = 35;
-    }
-}
-
-// Spawners
-let spawnCounter = 0;
-function spawnEntities() {
-    spawnCounter++;
-    if (spawnCounter > Math.max(30, 70 - Math.floor(gameSpeed * 3))) {
-        spawnCounter = 0;
-        let lane = Math.floor(Math.random() * 3);
-        let typeRand = Math.random();
-        
-        if (typeRand < 0.45) {
-            // Obstacle (Barrier or Hole or Gate)
-            let obsType = Math.random() < 0.5 ? 'barrier' : (Math.random() < 0.7 ? 'hole' : 'gate');
-            obstacles.push({ lane: lane, z: 400, type: obsType });
-        } else if (typeRand < 0.8) {
-            // Coins
-            for (let i = 0; i < 3; i++) {
-                collectibles.push({ lane: lane, z: 400 + (i * 30), type: 'coin' });
-            }
-        } else {
-            // Power up
-            let pType = Math.random() < 0.33 ? 'magnet' : (Math.random() < 0.66 ? 'shield' : 'boost');
-            collectibles.push({ lane: lane, z: 400, type: pType });
-        }
-    }
-}
-
-// Game Loop
-let lastTime = 0;
-function gameLoop(timestamp) {
-    if (gameState !== 'RUNNING') return;
-
-    update();
-    render();
-
-    requestAnimationFrame(gameLoop);
-}
-
-function update() {
-    // Speed increase every 20 seconds (approx 1200 frames)
-    speedTimer++;
-    if (gameData.settings.difficulty && speedTimer > 1200) {
-        speedTimer = 0;
-        gameSpeed += 0.8;
-    }
-
-    score += Math.floor(gameSpeed / 3);
-    document.getElementById('hud-score').innerText = score;
-    document.getElementById('hud-coins').innerText = coins;
-
-    // Player physics
-    if (player.isJumping) {
-        player.y += player.vy;
-        player.vy += 0.8;
-        if (player.y >= 0) {
-            player.y = 0;
-            player.isJumping = false;
-        }
-    }
-    if (player.isSliding) {
-        player.slideTimer--;
-        if (player.slideTimer <= 0) {
-            player.isSliding = false;
-        }
-    }
-
-    // Effect timers
-    if (player.effectTimer > 0) {
-        player.effectTimer--;
-        if (player.effectTimer <= 0) {
-            player.shield = false;
-            player.magnet = false;
-            player.speedBoost = false;
-        }
-    }
-
-    // Spawn
-    spawnEntities();
-
-    // Update Obstacles
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obs = obstacles[i];
-        obs.z -= gameSpeed;
-
-        // Collision Check
-        if (obs.z < 30 && obs.z > 0 && obs.lane === player.lane) {
-            let hit = false;
-            if (obs.type === 'barrier' && !player.isJumping) hit = true;
-            if (obs.type === 'hole' && !player.isJumping) hit = true;
-            if (obs.type === 'gate' && !player.isSliding) hit = true;
-
-            if (hit) {
-                if (player.shield) {
-                    player.shield = false;
-                    player.effectTimer = 0;
-                    obstacles.splice(i, 1);
-                    continue;
-                } else {
-                    triggerGameOver();
-                    return;
-                }
-            }
-        }
-
-        if (obs.z < -50) obstacles.splice(i, 1);
-    }
-
-    // Update Collectibles
-    for (let i = collectibles.length - 1; i >= 0; i--) {
-        let col = collectibles[i];
-        col.z -= gameSpeed;
-
-        // Magnet effect
-        if (player.magnet && col.type === 'coin' && col.z < 200 && col.z > 0) {
-            col.lane = player.lane;
-        }
-
-        if (col.z < 25 && col.z > 0 && col.lane === player.lane) {
-            if (col.type === 'coin') {
-                coins += 1;
-            } else if (col.type === 'shield') {
-                player.shield = true;
-                player.effectTimer = 300;
-            } else if (col.type === 'magnet') {
-                player.magnet = true;
-                player.effectTimer = 300;
-            } else if (col.type === 'boost') {
-                player.speedBoost = true;
-                player.effectTimer = 200;
-                gameSpeed += 3;
-            }
-            collectibles.splice(i, 1);
-            continue;
-        }
-
-        if (col.z < -50) collectibles.splice(i, 1);
-    }
-}
-
-function triggerGameOver() {
-    gameState = 'GAMEOVER';
-    if (gameData.settings.vibration && navigator.vibrate) {
-        navigator.vibrate(300);
+  if (gameMode === 'online') {
+    // Check if it's player turn
+    const isMyTurn = (playerSymbol === 'X' && gameState.turn === 'X') || (playerSymbol === 'O' && gameState.turn === 'O');
+    if (!isMyTurn) {
+      showToast("ليس دورك الآن!");
+      return;
     }
     
-    // Check highscore
-    if (score > gameData.bestScore) {
-        gameData.bestScore = score;
-    }
-    gameData.totalCoins += coins;
-    saveData();
-
-    document.getElementById('go-score').innerText = score + " م";
-    document.getElementById('go-coins').innerText = coins + " 🪙";
-    document.getElementById('go-best').innerText = gameData.bestScore + " م";
-    
-    document.getElementById('gameover-modal').style.display = 'flex';
-}
-
-// Renderer (Pseudo-3D Projection)
-function render() {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    // Draw Sky Gradient
-    let skyGrad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-    skyGrad.addColorStop(0, '#05070f');
-    skyGrad.addColorStop(1, '#161b33');
-    ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-    // Draw Background Buildings (Parallax)
-    let horizonY = canvasHeight * 0.45;
-    ctx.fillStyle = '#0f1428';
-    ctx.fillRect(0, horizonY, canvasWidth, canvasHeight - horizonY);
-
-    // Draw Perspective Grid Lanes
-    let centerX = canvasWidth / 2;
-    
-    // Road surface
-    ctx.fillStyle = '#0a0d1a';
-    ctx.beginPath();
-    ctx.moveTo(centerX, horizonY);
-    ctx.lineTo(centerX - 250, canvasHeight);
-    ctx.lineTo(centerX + 250, canvasHeight);
-    ctx.closePath();
-    ctx.fill();
-
-    // Lane dividers
-    ctx.strokeStyle = '#00f0ff';
-    ctx.lineWidth = 2;
-    for (let i = -1; i <= 1; i++) {
-        let topX = centerX + (i * 40);
-        let bottomX = centerX + (i * 180);
-        ctx.beginPath();
-        ctx.moveTo(topX, horizonY);
-        ctx.lineTo(bottomX, canvasHeight);
-        ctx.stroke();
+    // Ensure 2 players are in
+    if (!gameState.p2.uid || gameState.p2.uid === '') {
+      showToast("بانتظار انضمام لاعب آخر لتبدأ اللعبة");
+      return;
     }
 
-    // Render Collectibles
-    collectibles.forEach(col => {
-        let proj = project(col.lane, 0, col.z);
-        if (!proj) return;
-
-        if (col.type === 'coin') {
-            ctx.fillStyle = '#ffcc00';
-            ctx.beginPath();
-            ctx.arc(proj.x, proj.y, proj.scale * 15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#ff8800';
-            ctx.stroke();
-        } else if (col.type === 'shield') {
-            drawIcon(proj.x, proj.y, proj.scale * 20, '#0088ff', '🛡️');
-        } else if (col.type === 'magnet') {
-            drawIcon(proj.x, proj.y, proj.scale * 20, '#ff0055', '🧲');
-        } else if (col.type === 'boost') {
-            drawIcon(proj.x, proj.y, proj.scale * 20, '#00ff88', '🚀');
-        }
-    });
-
-    // Render Obstacles
-    obstacles.forEach(obs => {
-        let proj = project(obs.lane, 0, obs.z);
-        if (!proj) return;
-
-        if (obs.type === 'barrier') {
-            ctx.fillStyle = '#ff0055';
-            let w = proj.scale * 80;
-            let h = proj.scale * 50;
-            ctx.fillRect(proj.x - w/2, proj.y - h, w, h);
-            ctx.strokeStyle = '#ffffff';
-            ctx.strokeRect(proj.x - w/2, proj.y - h, w, h);
-        } else if (obs.type === 'hole') {
-            ctx.fillStyle = '#000000';
-            let w = proj.scale * 90;
-            let h = proj.scale * 30;
-            ctx.fillRect(proj.x - w/2, proj.y - h/2, w, h);
-            ctx.strokeStyle = '#00f0ff';
-            ctx.strokeRect(proj.x - w/2, proj.y - h/2, w, h);
-        } else if (obs.type === 'gate') {
-            ctx.fillStyle = '#7000ff';
-            let w = proj.scale * 90;
-            let h = proj.scale * 80;
-            ctx.fillRect(proj.x - w/2, proj.y - h - (proj.scale*40), w, h);
-        }
-    });
-
-    // Render Player
-    let pProj = project(player.lane, player.y, 10);
-    let pWidth = 40 * pProj.scale;
-    let pHeight = (player.isSliding ? 30 : 70) * pProj.scale;
+    gameState.board[index] = playerSymbol;
+    gameState.turn = playerSymbol === 'X' ? 'O' : 'X';
     
-    // Player Body (Original Design: Futuristic Runner Avatar)
-    ctx.fillStyle = player.shield ? '#0088ff' : '#00f0ff';
-    let drawY = pProj.y - pHeight + (player.isSliding ? pHeight * 0.5 : 0);
-    ctx.fillRect(pProj.x - pWidth/2, drawY, pWidth, pHeight);
-    
-    // Player Head/Visor
-    ctx.fillStyle = '#7000ff';
-    ctx.fillRect(pProj.x - pWidth * 0.3, drawY + 5 * pProj.scale, pWidth * 0.6, 15 * pProj.scale);
+    checkWinCondition();
+    roomRef.set(gameState);
+  } else {
+    // Local mode
+    gameState.board[index] = gameState.turn;
+    checkWinCondition();
+    if (!gameState.winner) {
+      gameState.turn = gameState.turn === 'X' ? 'O' : 'X';
+    }
+    updateGameUI();
+  }
 }
 
-function project(lane, y, z) {
-    if (z <= 0) return null;
-    let centerX = canvasWidth / 2;
-    let horizonY = canvasHeight * 0.45;
-    
-    // Lane offset mapping
-    let laneSpread = 160;
-    let baseLaneX = centerX + (lane - 1) * laneSpread;
-    
-    let scale = 100 / z;
-    let x = centerX + (baseLaneX - centerX) * scale * 0.05; // Perspective convergence
-    // Real interpolation for spreading out towards bottom
-    let screenX = centerX + (lane - 1) * (60 + (400 - z) * 0.4);
-    let screenY = horizonY + (canvasHeight - horizonY) * (1 - (z / 400)) - (y * scale * 0.5);
+function checkWinCondition() {
+  const b = gameState.board;
+  const winPatterns = [
+    [0,1,2], [3,4,5], [6,7,8], // Rows
+    [0,3,6], [1,4,7], [2,5,8], // Cols
+    [0,4,8], [2,4,6]           // Diagonals
+  ];
 
-    return { x: screenX, y: screenY, scale: scale };
+  let roundWinner = null;
+  for (let p of winPatterns) {
+    if (b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) {
+      roundWinner = b[p[0]];
+      break;
+    }
+  }
+
+  if (roundWinner) {
+    gameState.winner = roundWinner;
+    gameState.status = 'finished';
+    
+    if (gameMode === 'local') {
+      if (roundWinner === 'X') {
+        localStats.wins++;
+        gameState.p1.wins++;
+      } else {
+        localStats.losses++;
+        gameState.p2.wins++;
+      }
+      saveLocalStats();
+    } else {
+      // Online mode scoring
+      if (roundWinner === playerSymbol) {
+        localStats.wins++;
+        saveLocalStats();
+      } else {
+        localStats.losses++;
+        saveLocalStats();
+      }
+    }
+    
+    showGameOverModal(roundWinner);
+  } else if (!b.includes('')) {
+    gameState.winner = 'draw';
+    gameState.status = 'finished';
+    localStats.draws++;
+    saveLocalStats();
+    showGameOverModal('draw');
+  }
 }
 
-function drawIcon(x, y, size, color, symbol) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.font = `${size}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(symbol, x, y);
+function updateGameUI() {
+  // Names & Scores
+  document.getElementById('p1-name').innerText = gameState.p1.name + ' (X)';
+  document.getElementById('p1-wins').innerText = gameState.p1.wins || 0;
+  
+  document.getElementById('p2-name').innerText = (gameState.p2.name || 'الخصم') + ' (O)';
+  document.getElementById('p2-wins').innerText = gameState.p2.wins || 0;
+
+  // Board cells
+  const cells = document.querySelectorAll('.cell');
+  cells.forEach((cell, idx) => {
+    const val = gameState.board[idx];
+    cell.innerText = val;
+    cell.className = 'cell ' + val.toLowerCase();
+  });
+
+  // Status text
+  const statusEl = document.getElementById('game-status-text');
+  const p1Info = document.getElementById('p1-info');
+  const p2Info = document.getElementById('p2-info');
+
+  if (gameState.status === 'waiting') {
+    statusEl.innerText = "في انتظار انضمام الخصم للغرفة...";
+  } else if (!gameState.winner) {
+    if (gameMode === 'online') {
+      const myTurn = (playerSymbol === 'X' && gameState.turn === 'X') || (playerSymbol === 'O' && gameState.turn === 'O');
+      statusEl.innerText = myTurn ? "دورك الآن (" + playerSymbol + ")" : "دور الخصم...";
+    } else {
+      statusEl.innerText = "دور اللاعب: " + gameState.turn;
+    }
+
+    if (gameState.turn === 'X') {
+      p1Info.classList.add('active-turn');
+      p2Info.classList.remove('active-turn');
+    } else {
+      p2Info.classList.add('active-turn');
+      p1Info.classList.remove('active-turn');
+    }
+  }
 }
 
-// Initialize on Load
-window.onload = () => {
-    loadData();
-};
+function showGameOverModal(winner) {
+  const title = document.getElementById('gameover-title');
+  const desc = document.getElementById('gameover-desc');
+
+  if (winner === 'draw') {
+    title.innerText = "تعادل!";
+    desc.innerText = "لقد انتهت الجولة بدون فائز.";
+  } else {
+    if (gameMode === 'online') {
+      if (winner === playerSymbol) {
+        title.innerText = "تهانينا! لقد فزت 🏆";
+        desc.innerText = "أداء رائع وممتاز.";
+      } else {
+        title.innerText = "حظ أوفر في المرة القادمة";
+        desc.innerText = "فاز خصمك بهذه الجولة.";
+      }
+    } else {
+      title.innerText = "فاز اللاعب " + winner + " 🎉";
+      desc.innerText = "جولة ممتعة بين الصديقين.";
+    }
+  }
+
+  document.getElementById('modal-gameover').classList.add('active');
+}
+
+async function restartGame() {
+  document.getElementById('modal-gameover').classList.remove('active');
+  
+  if (gameMode === 'online') {
+    if (isHost && roomRef) {
+      gameState.board = ['', '', '', '', '', '', '', '', ''];
+      gameState.turn = 'X';
+      gameState.status = 'playing';
+      gameState.winner = null;
+      await roomRef.set(gameState);
+    } else {
+      showToast("فقط صاحب الغرفة يمكنه بدء جولة جديدة");
+    }
+  } else {
+    gameState.board = ['', '', '', '', '', '', '', '', ''];
+    gameState.turn = 'X';
+    gameState.winner = null;
+    gameState.status = 'playing';
+    updateGameUI();
+  }
+}
+
+async function leaveGame() {
+  document.getElementById('modal-waiting').classList.remove('active');
+  document.getElementById('modal-gameover').classList.remove('active');
+
+  if (roomRef) {
+    if (isHost && gameMode === 'online') {
+      await roomRef.remove();
+    }
+    roomRef.off();
+    roomRef = null;
+  }
+
+  currentRoomCode = null;
+  showScreen('screen-menu');
+  showToast("تمت المغادرة بنجاح");
+}
 </script>
 </body>
 </html>
