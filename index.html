@@ -1,921 +1,1180 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>اصنع</title>
-<style>
-:root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --accent: #ec4899;
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface-card: #334155;
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
-  --border: #475569;
-  --success: #10b981;
-  --danger: #ef4444;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr Xboss Browser - متصفح المشاهدة الذكي</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-color: #00e676;
+            --accent-hover: #00c853;
+            --danger-color: #ff5252;
+            --warning-color: #ffd600;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --border-radius: 16px;
+            --nav-height: 65px;
+        }
 
-[data-theme="light"] {
-  --primary: #4f46e5;
-  --primary-dark: #4338ca;
-  --accent: #db2777;
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --surface-card: #f1f5f9;
-  --text: #0f172a;
-  --text-muted: #64748b;
-  --border: #cbd5e1;
-  --success: #059669;
-  --danger: #dc2626;
-}
+        [data-theme="light"] {
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #ffffff;
+            --bg-card: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
 
-body {
-  background-color: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding-bottom: var(--nav-height);
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
-  background-color: var(--bg);
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
+        /* Top Header */
+        header {
+            background-color: var(--bg-secondary);
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
 
-header {
-  background-color: var(--surface);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  z-index: 10;
-}
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-header h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary);
-}
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #00e676, #3d5afe);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,230,118,0.3);
+        }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
+        .brand-title {
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--text-primary), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.icon-btn:active {
-  background: var(--surface-card);
-}
+        .icon-btn {
+            background: var(--bg-card);
+            border: none;
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
 
-main {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  position: relative;
-}
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
 
-.screen {
-  display: none;
-  flex-direction: column;
-  gap: 16px;
-  animation: fadeIn 0.3s ease;
-}
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger-color);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 2px solid var(--bg-secondary);
+        }
 
-.screen.active {
-  display: flex;
-}
+        /* App Main Content Container */
+        main {
+            flex: 1;
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+        /* Search Section */
+        .search-box-container {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
 
-nav {
-  background-color: var(--surface);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-around;
-  padding: 8px 0;
-  z-index: 10;
-}
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.nav-item {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  flex: 1;
-  padding: 4px 0;
-  transition: color 0.2s;
-}
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
 
-.nav-item.active {
-  color: var(--primary);
-}
+        .search-input {
+            width: 100%;
+            padding: 14px 48px 14px 16px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
 
-.nav-item svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.2);
+        }
 
-.card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+        .search-icon-inside {
+            position: absolute;
+            right: 14px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
 
-.btn {
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background-color 0.2s, transform 0.1s;
-}
+        .engine-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+        }
 
-.btn:active {
-  transform: scale(0.98);
-}
+        .engine-selector::-webkit-scrollbar {
+            display: none;
+        }
 
-.btn-accent {
-  background-color: var(--accent);
-}
+        .engine-chip {
+            padding: 8px 14px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-.btn-outline {
-  background-color: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-}
+        .engine-chip.active {
+            background: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 10px rgba(0,230,118,0.3);
+        }
 
-input, select, textarea {
-  background-color: var(--surface-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  outline: none;
-}
+        .search-btn {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-input:focus, select:focus, textarea:focus {
-  border-color: var(--primary);
-}
+        .search-btn:active {
+            background: var(--accent-hover);
+        }
 
-.project-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
+        /* AdBlock Status Shield Bar */
+        .shield-banner {
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(61, 90, 254, 0.15));
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
 
-.project-card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
+        .shield-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.project-card:active {
-  border-color: var(--primary);
-}
+        .shield-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #475569;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
 
-.project-info h3 {
-  font-size: 1.1rem;
-  margin-bottom: 4px;
-}
+        .shield-toggle.active {
+            background: var(--accent-color);
+        }
 
-.project-info p {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
+        .shield-toggle-circle {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px;
-  gap: 16px;
-  color: var(--text-muted);
-}
+        .shield-toggle.active .shield-toggle-circle {
+            transform: translateX(-24px);
+        }
 
-.empty-state svg {
-  width: 64px;
-  height: 64px;
-  fill: var(--border);
-}
+        /* Search Cards Grid */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-#game-container {
-  width: 100%;
-  height: 360px;
-  background-color: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  touch-action: none;
-}
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
 
-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+        @media (min-width: 600px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
 
-.game-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.75);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  z-index: 5;
-}
+        .search-card {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.2s, border-color 0.2s;
+            text-align: center;
+        }
 
-.game-overlay.hidden {
-  display: none;
-}
+        .search-card:active {
+            transform: scale(0.96);
+            border-color: var(--accent-color);
+        }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+        }
 
-.stat-box {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  padding: 16px;
-  border-radius: 12px;
-  text-align: center;
-}
+        .card-name {
+            font-size: 14px;
+            font-weight: bold;
+        }
 
-.stat-box h4 {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
+        .card-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
 
-.stat-box p {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-}
+        /* Shortcuts Speed Dial Grid */
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 16px;
-}
+        .shortcut-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
 
-.modal.active {
-  display: flex;
-}
+        .shortcut-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.2s;
+        }
 
-.modal-content {
-  background-color: var(--surface);
-  width: 100%;
-  max-width: 400px;
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  border: 1px solid var(--border);
-  max-height: 90vh;
-  overflow-y: auto;
-}
+        .shortcut-item:active .shortcut-icon {
+            transform: scale(0.9);
+        }
 
-.badge {
-  background: var(--surface-card);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: var(--primary);
-  border: 1px solid var(--border);
-}
+        .shortcut-label {
+            font-size: 12px;
+            color: var(--text-primary);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
 
-.settings-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
+        /* In-App Video Player Section */
+        .video-player-container {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+        }
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 28px;
-}
+        .video-wrapper {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: var(--surface-card);
-  transition: .3s;
-  border-radius: 28px;
-  border: 1px solid var(--border);
-}
+        .video-input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .3s;
-  border-radius: 50%;
-}
+        /* Navigation Bar Bottom */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: var(--bg-secondary);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        }
 
-input:checked + .slider {
-  background-color: var(--primary);
-}
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            width: 20%;
+            padding: 6px 0;
+            transition: color 0.2s;
+        }
 
-input:checked + .slider:before {
-  transform: translateX(22px);
-}
-</style>
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        /* Tab Views Switcher */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Item Lists (Bookmarks & History) */
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .list-card {
+            background: var(--bg-secondary);
+            padding: 14px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .list-card-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .list-card-title {
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-card-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            direction: ltr;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Modal Overlay */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            width: 100%;
+            max-width: 450px;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: auto;
+        }
+
+        .developer-badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 10px;
+            background: rgba(0,230,118,0.1);
+            color: var(--accent-color);
+            border-radius: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<div id="app">
-  <header>
-    <h1 id="header-title">اصنع</h1>
-    <div class="header-actions">
-      <button class="icon-btn" onclick="openModal('settings-modal')" title="الإعدادات">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      </button>
-    </div>
-  </header>
+    <!-- Header Bar -->
+    <header>
+        <div class="brand-info">
+            <div class="brand-logo">X</div>
+            <div>
+                <div class="brand-title">Mr Xboss Browser</div>
+                <div style="font-size: 10px; color: var(--text-secondary);">متصفح المشاهدة ذو السرعة الفائقة</div>
+            </div>
+        </div>
 
-  <main>
-    <!-- Home Screen / Projects -->
-    <section id="screen-home" class="screen active">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>مشاريعي</h2>
-        <button class="btn" style="padding: 8px 14px; font-size: 0.9rem;" onclick="openModal('new-project-modal')">
-          + مشروع جديد
+        <div class="header-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="تبديل المظهر">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+            </button>
+            <button class="icon-btn" onclick="switchTab('adblock')" title="أداة منع الإعلانات">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span class="badge" id="shieldBadge">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+        <!-- TAB 1: HOME PAGE -->
+        <div id="tab-home" class="tab-content active">
+            <!-- AdBlock Shield Banner -->
+            <div class="shield-banner">
+                <div class="shield-info">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent-color);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <div>
+                        <div style="font-weight: bold; font-size: 13px;">حماية من الإعلانات والنوافذ</div>
+                        <div style="font-size: 11px; color: var(--text-secondary);" id="blockedCounterText">تم حجب 0 عنصر إعلاني منبثق</div>
+                    </div>
+                </div>
+                <div class="shield-toggle active" id="shieldToggleBtn" onclick="toggleAdBlock()">
+                    <div class="shield-toggle-circle"></div>
+                </div>
+            </div>
+
+            <!-- Main Search Box -->
+            <div class="search-box-container">
+                <form class="search-form" onsubmit="handleSearch(event)">
+                    <div class="search-input-wrapper">
+                        <svg class="search-icon-inside" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="searchInput" class="search-input" placeholder="ابحث أو أدخل رابط الموقع مباشرة..." required>
+                    </div>
+
+                    <div class="engine-selector">
+                        <div class="engine-chip active" onclick="selectEngine('google', this)">
+                            <span>Google</span>
+                        </div>
+                        <div class="engine-chip" onclick="selectEngine('youtube', this)">
+                            <span>YouTube</span>
+                        </div>
+                        <div class="engine-chip" onclick="selectEngine('bing', this)">
+                            <span>Bing</span>
+                        </div>
+                        <div class="engine-chip" onclick="selectEngine('duckduckgo', this)">
+                            <span>DuckDuckGo</span>
+                        </div>
+                        <div class="engine-chip" onclick="selectEngine('wikipedia', this)">
+                            <span>Wikipedia</span>
+                        </div>
+                        <div class="engine-chip" onclick="selectEngine('github', this)">
+                            <span>GitHub</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="search-btn">
+                        <span>انطلق عبر المتصفح</span>
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Search Engine Cards -->
+            <div class="section-title">
+                <span>محركات البحث السريعة</span>
+                <span style="font-size: 11px; color: var(--text-secondary);">فتح مباشر بدون iframe</span>
+            </div>
+            <div class="cards-grid">
+                <div class="search-card" onclick="openDirectEngine('google')">
+                    <div class="card-icon" style="background: #4285F4;">G</div>
+                    <div class="card-name">Google</div>
+                    <div class="card-desc">بحث غوغل الشامل</div>
+                </div>
+                <div class="search-card" onclick="openDirectEngine('youtube')">
+                    <div class="card-icon" style="background: #FF0000;">▶</div>
+                    <div class="card-name">YouTube</div>
+                    <div class="card-desc">تصفح وتشغيل الفيديوهات</div>
+                </div>
+                <div class="search-card" onclick="openDirectEngine('bing')">
+                    <div class="card-icon" style="background: #008373;">b</div>
+                    <div class="card-name">Bing</div>
+                    <div class="card-desc">محرك بحث مايكروسوفت</div>
+                </div>
+                <div class="search-card" onclick="openDirectEngine('duckduckgo')">
+                    <div class="card-icon" style="background: #DE5833;">🦆</div>
+                    <div class="card-name">DuckDuckGo</div>
+                    <div class="card-desc">بحث آمن وخاص</div>
+                </div>
+                <div class="search-card" onclick="openDirectEngine('wikipedia')">
+                    <div class="card-icon" style="background: #636466;">W</div>
+                    <div class="card-name">Wikipedia</div>
+                    <div class="card-desc">الموسوعة الحرة</div>
+                </div>
+                <div class="search-card" onclick="openDirectEngine('github')">
+                    <div class="card-icon" style="background: #24292e;">🐙</div>
+                    <div class="card-name">GitHub</div>
+                    <div class="card-desc">المشاريع والأكواد</div>
+                </div>
+            </div>
+
+            <!-- Shortcuts Grid -->
+            <div class="section-title">
+                <span>اختصارات المواقع الشهيرة</span>
+                <button class="icon-btn" style="width: 28px; height: 28px;" onclick="openAddBookmarkModal()" title="إضافة اختصار">+ </button>
+            </div>
+            <div class="shortcuts-grid" id="shortcutsContainer">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- TAB 2: BOOKMARKS -->
+        <div id="tab-bookmarks" class="tab-content">
+            <div class="section-title">
+                <span>المفضلة والاختصارات المحفوظة</span>
+                <button class="search-btn" style="padding: 6px 12px; font-size: 12px;" onclick="openAddBookmarkModal()">+ إضافة جديد</button>
+            </div>
+            <div class="data-list" id="bookmarksList">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- TAB 3: HISTORY -->
+        <div id="tab-history" class="tab-content">
+            <div class="section-title">
+                <span>سجل التصفح والبحث</span>
+                <button class="search-btn" style="padding: 6px 12px; font-size: 12px; background: var(--danger-color);" onclick="clearHistory()">مسح السجل</button>
+            </div>
+            <div class="data-list" id="historyList">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- TAB 4: VIDEO PLAYER TOOL -->
+        <div id="tab-player" class="tab-content">
+            <div class="section-title">
+                <span>مشغل فيديو الميديا المباشر</span>
+            </div>
+            <div class="video-player-container">
+                <div class="video-wrapper">
+                    <video id="appVideoPlayer" controls poster="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2300e676' stroke-width='1'><polygon points='5 3 19 12 5 21 5 3'></polygon></svg>">
+                        متصفحك لا يدعم تشغيل هذا الفيديو مباشرة.
+                    </video>
+                </div>
+                <div style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                    شاهد جميع الفيديوهات مباشرة وبدون إعلانات مزعجة عبر وضع رابط الفيديو (MP4 / WebM / Stream):
+                </div>
+                <div class="video-input-group">
+                    <input type="text" id="videoUrlInput" class="search-input" placeholder="ضع رابط الفيديو المباشر هنا..." style="padding: 10px;">
+                    <button class="search-btn" style="padding: 10px 16px; font-size: 13px;" onclick="loadVideoFromInput()">تشغيل</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: SETTINGS & ABOUT -->
+        <div id="tab-settings" class="tab-content">
+            <div class="section-title">الإعدادات والتطوير</div>
+            <div class="search-box-container" style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block;">محرك البحث الافتراضي</label>
+                    <select id="defaultEngineSelect" class="search-input" style="padding: 10px;" onchange="saveDefaultEngine(this.value)">
+                        <option value="google">Google</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="bing">Bing</option>
+                        <option value="duckduckgo">DuckDuckGo</option>
+                        <option value="wikipedia">Wikipedia</option>
+                        <option value="github">GitHub</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: bold;">وضع حجب النوافذ والإعلانات</div>
+                        <div style="font-size: 11px; color: var(--text-secondary);">تقليل العناصر المزعجة تلقائياً داخل Android WebView</div>
+                    </div>
+                    <button class="search-btn" style="padding: 8px 14px; font-size: 12px;" onclick="toggleAdBlock()">تغيير الحالة</button>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+
+                <div>
+                    <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">حقوق التطبيق والمعلومات</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+                        تطبيق <strong>Mr Xboss Browser</strong> هو متصفح ويب عربي ذكي مصمم خصيصاً ليعمل بأعلى كفاءة وسرعة داخل أجهزة أندرويد.
+                    </p>
+                    <div style="margin-top: 12px;">
+                        <span class="developer-badge">تطوير بواسطة: Mr Xboss</span>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">
+                            Package Key: <code>com.mrxboss.apps.app3b76589f55</code>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="search-btn" style="background: var(--danger-color); margin-top: 10px;" onclick="resetAllAppData()">إعادة ضبط كل البيانات</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Credit -->
+    <footer>
+        <div>جميع الحقوق محفوظة © Mr Xboss Browser</div>
+        <div style="margin-top: 4px;">تصميم وتطوير بواسطة <strong style="color: var(--accent-color);">Mr Xboss</strong></div>
+    </footer>
+
+    <!-- Add Bookmark Modal -->
+    <div class="modal" id="addBookmarkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="font-size: 16px;">إضافة موقع للمفضلة</h3>
+                <button class="icon-btn" onclick="closeAddBookmarkModal()">✕</button>
+            </div>
+            <form onsubmit="handleAddBookmark(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="bookmarkTitle" class="search-input" placeholder="اسم الموقع (مثال: جوجل)" required>
+                <input type="url" id="bookmarkUrl" class="search-input" placeholder="رابط الموقع (https://...)" required>
+                <button type="submit" class="search-btn">حفظ في المفضلة</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home')" id="nav-home">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>الرئيسية</span>
         </button>
-      </div>
+        <button class="nav-item" onclick="switchTab('bookmarks')" id="nav-bookmarks">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            <span>المفضلة</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('history')" id="nav-history">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>السجل</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('player')" id="nav-player">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>الفيديو</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('settings')" id="nav-settings">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>الإعدادات</span>
+        </button>
+    </nav>
 
-      <div class="search-box">
-        <input type="text" id="search-input" placeholder="بحث في المشاريع..." oninput="filterProjects()">
-      </div>
+    <!-- App JavaScript Logic -->
+    <script>
+        // Default Search Engines URLs
+        const SEARCH_ENGINES = {
+            google: 'https://www.google.com/search?q=',
+            youtube: 'https://www.youtube.com/results?search_query=',
+            bing: 'https://www.bing.com/search?q=',
+            duckduckgo: 'https://duckduckgo.com/?q=',
+            wikipedia: 'https://ar.wikipedia.org/w/index.php?search=',
+            github: 'https://github.com/search?q='
+        };
 
-      <div id="projects-container" class="project-grid">
-        <!-- Dynamic Projects -->
-      </div>
+        const DIRECT_ENGINE_URLS = {
+            google: 'https://www.google.com',
+            youtube: 'https://www.youtube.com',
+            bing: 'https://www.bing.com',
+            duckduckgo: 'https://duckduckgo.com',
+            wikipedia: 'https://ar.wikipedia.org',
+            github: 'https://github.com'
+        };
 
-      <div id="empty-projects" class="empty-state" style="display: none;">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-        <p>لا توجد مشاريع حالياً. ابدأ بإنشاء مشروعك الأول!</p>
-      </div>
-    </section>
+        // Default Shortcuts
+        const DEFAULT_SHORTCUTS = [
+            { title: 'يوتيوب', url: 'https://m.youtube.com', icon: '▶' },
+            { title: 'جوجل', url: 'https://www.google.com', icon: 'G' },
+            { title: 'فيسبوك', url: 'https://m.facebook.com', icon: 'f' },
+            { title: 'تيك توك', url: 'https://www.tiktok.com', icon: '🎵' },
+            { title: 'تويتر / X', url: 'https://mobile.twitter.com', icon: '𝕏' },
+            { title: 'إنستغرام', url: 'https://www.instagram.com', icon: '📸' },
+            { title: 'ويكيبيديا', url: 'https://ar.m.wikipedia.org', icon: 'W' },
+            { title: 'جيت هب', url: 'https://github.com', icon: '🐙' }
+        ];
 
-    <!-- Create Screen -->
-    <section id="screen-create" class="screen">
-      <h2>صانع الألعاب والتطبيقات</h2>
-      <div class="card">
-        <h3>اختر فكرة للبدء السريع</h3>
-        <p style="color: var::text-muted; font-size: 0.9rem;">قم بتوليد لعبة أو أداة تفاعلية فورياً عبر محرك اصنع الذكي.</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-          <button class="btn btn-outline" onclick="quickCreate('game')">🎮 لعبة مغامرة</button>
-          <button class="btn btn-outline" onclick="quickCreate('tool')">🛠️ أداة حسابية</button>
-        </div>
-      </div>
+        // State Variables
+        let activeEngine = 'google';
+        let isAdBlockActive = true;
+        let blockedCount = 142;
+        let bookmarks = [];
+        let historyData = [];
 
-      <div class="card">
-        <h3>مشارب التطوير السريع</h3>
-        <div class="settings-item">
-          <span>تفعيل وضع البناء السريع</span>
-          <label class="switch">
-            <input type="checkbox" id="fast-build" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-        <button class="btn btn-accent" onclick="openModal('new-project-modal')">إنشاء فكرة مخصصة</button>
-      </div>
-    </section>
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedSettings();
+            renderShortcuts();
+            renderBookmarks();
+            renderHistory();
+            updateAdBlockUI();
+        });
 
-    <!-- Game/Play Screen -->
-    <section id="screen-play" class="screen">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 id="active-game-title">لعبة البناء الميدانية</h2>
-        <span class="badge" id="game-score-badge">النقاط: 0</span>
-      </div>
+        // Load Settings from LocalStorage
+        function loadSavedSettings() {
+            const theme = localStorage.getItem('mrxboss_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
 
-      <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div id="game-start-overlay" class="game-overlay">
-          <h3 style="color: #fff; font-size: 1.5rem;">تحدي البناء</h3>
-          <p style="color: #cbd5e1; text-align: center; padding: 0 20px;">انقر لتفادي العوائق وجمع القطع لبناء عالمك الخاص!</p>
-          <button class="btn" onclick="startGame()">ابدأ اللعب</button>
-        </div>
-        <div id="game-over-overlay" class="game-overlay hidden">
-          <h3 style="color: var(--danger); font-size: 1.5rem;">انتهت اللعبة!</h3>
-          <p id="final-score" style="color: #fff;">النتيجة النهائية: 0</p>
-          <button class="btn" onclick="startGame()">إعادة المحاولة</button>
-        </div>
-      </div>
+            activeEngine = localStorage.getItem('mrxboss_engine') || 'google';
+            document.getElementById('defaultEngineSelect').value = activeEngine;
 
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-outline" style="flex: 1;" onclick="pauseGame()" id="pause-btn">إيقاف مؤقت</button>
-        <button class="btn btn-outline" style="flex: 1;" onclick="switchScreen('home')">الخروج للقائمة</button>
-      </div>
-    </section>
+            const savedAdBlock = localStorage.getItem('mrxboss_adblock');
+            if (savedAdBlock !== null) {
+                isAdBlockActive = savedAdBlock === 'true';
+            }
 
-    <!-- Stats Screen -->
-    <section id="screen-stats" class="screen">
-      <h2>الإحصائيات والإنجازات</h2>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <h4>المشاريع المنشأة</h4>
-          <p id="stat-projects-count">0</p>
-        </div>
-        <div class="stat-box">
-          <h4>أفضل نتيجة لعبة</h4>
-          <p id="stat-best-score">0</p>
-        </div>
-        <div class="stat-box">
-          <h4>ساعات التطوير</h4>
-          <p>12.5</p>
-        </div>
-        <div class="stat-box">
-          <h4>الإنجازات المفتوحة</h4>
-          <p>4/8</p>
-        </div>
-      </div>
+            const savedBlockedCount = localStorage.getItem('mrxboss_blocked_count');
+            if (savedBlockedCount) {
+                blockedCount = parseInt(savedBlockedCount, 10);
+            }
 
-      <div class="card">
-        <h3>الشارات والإنجازات</h3>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
-          <span class="badge">🚀 مبرمج مبتدئ</span>
-          <span class="badge">🎮 صانع ألعاب</span>
-          <span class="badge">⭐ نشط دائم</span>
-          <span class="badge" style="opacity: 0.5;">🔒 خبير التطوير</span>
-        </div>
-      </div>
-    </section>
-  </main>
+            const savedBookmarks = localStorage.getItem('mrxboss_bookmarks');
+            if (savedBookmarks) {
+                bookmarks = JSON.parse(savedBookmarks);
+            } else {
+                bookmarks = [...DEFAULT_SHORTCUTS];
+                saveBookmarks();
+            }
 
-  <nav>
-    <button class="nav-item active" onclick="switchScreen('home')">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      المشاريع
-    </button>
-    <button class="nav-item" onclick="switchScreen('create')">
-      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-      اصنع
-    </button>
-    <button class="nav-item" onclick="switchScreen('play'); initGameCanvas();">
-      <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-4c-.83 0-1.5-.67-1.5-1.5S19.67 8 20.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-      الألعاب
-    </button>
-    <button class="nav-item" onclick="switchScreen('stats')">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-      الإحصائيات
-    </button>
-  </nav>
+            const savedHistory = localStorage.getItem('mrxboss_history');
+            if (savedHistory) {
+                historyData = JSON.parse(savedHistory);
+            }
+        }
 
-  <!-- New Project Modal -->
-  <div id="new-project-modal" class="modal">
-    <div class="modal-content">
-      <h3>إنشاء مشروع جديد</h3>
-      <input type="text" id="new-project-title" placeholder="اسم المشروع (مثال: مغامرة الفضاء)">
-      <select id="new-project-type">
-        <option value="game">لعبة أركيد تفاعلية</option>
-        <option value="app">تطبيق خدمات وأدوات</option>
-        <option value="notes">مفكرة أفكار</option>
-      </select>
-      <textarea id="new-project-desc" placeholder="وصف موجز للفكرة..." rows="3"></textarea>
-      <div style="display: flex; gap: 8px; justify-content: flex-end;">
-        <button class="btn btn-outline" onclick="closeModal('new-project-modal')">إلغاء</button>
-        <button class="btn" onclick="saveNewProject()">إنشاء</button>
-      </div>
-    </div>
-  </div>
+        // Theme Toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('mrxboss_theme', newTheme);
+        }
 
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="modal">
-    <div class="modal-content">
-      <h3>الإعدادات</h3>
-      <div class="settings-item">
-        <span>الوضع الليلي</span>
-        <label class="switch">
-          <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="settings-item">
-        <span>الأصوات والتأثيرات</span>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
-        <p style="font-weight: 600; margin-bottom: 4px;">معلومات المطور</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">المالك والمطور: Mr Xboss</p>
-        <p style="color: var::text-muted; font-size: 0.8rem;">الحزمة: com.mrxboss.apps.app56ef54484e</p>
-      </div>
-      <button class="btn" onclick="closeModal('settings-modal')">إغلاق</button>
-    </div>
-  </div>
-</div>
+        // Engine Selector Switcher
+        function selectEngine(engineKey, element) {
+            activeEngine = engineKey;
+            document.querySelectorAll('.engine-chip').forEach(chip => chip.classList.remove('active'));
+            if (element) element.classList.add('active');
+        }
 
-<script>
-// App State & LocalStorage
-let state = {
-  projects: JSON.parse(localStorage.getItem('mrxboss_projects')) || [
-    { id: 1, title: 'تطبيق المحفظة الذكية', type: 'app', desc: 'إدارة المصروفات اليومية الشخصية.', date: '2023-10-01' },
-    { id: 2, title: 'لعبة القفز المذهلة', type: 'game', desc: 'لعبة أركيد خفيفة وممتعة.', date: '2023-10-05' }
-  ],
-  bestScore: parseInt(localStorage.getItem('mrxboss_best_score')) || 0,
-  darkMode: localStorage.getItem('mrxboss_dark') !== 'false'
-};
+        function saveDefaultEngine(engineKey) {
+            activeEngine = engineKey;
+            localStorage.setItem('mrxboss_engine', engineKey);
+        }
 
-function saveState() {
-  localStorage.setItem('mrxboss_projects', JSON.stringify(state.projects));
-  localStorage.setItem('mrxboss_best_score', state.bestScore);
-  localStorage.setItem('mrxboss_dark', state.darkMode);
-}
+        // Navigation Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
 
-// Navigation Screens
-function switchScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  
-  document.getElementById(`screen-${screenId}`).classList.add('active');
-  
-  const navIndex = { 'home': 0, 'create': 1, 'play': 2, 'stats': 3 }[screenId];
-  if(navIndex !== undefined) {
-    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
-  }
-  
-  if(screenId === 'home') renderProjects();
-  if(screenId === 'stats') updateStats();
-  if(screenId !== 'play') stopGame();
-}
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const navBtn = document.getElementById(`nav-${tabId}`);
+            if (navBtn) navBtn.classList.add('active');
+        }
 
-// Modals
-function openModal(modalId) {
-  document.getElementById(modalId).classList.add('active');
-}
+        // Search Execution
+        function handleSearch(event) {
+            event.preventDefault();
+            const input = document.getElementById('searchInput').value.trim();
+            if (!input) return;
 
-function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove('active');
-}
+            let targetUrl = '';
+            // Check if input is direct URL
+            if (/^(http:\/\/|https:\/\/)/i.test(input)) {
+                targetUrl = input;
+            } else if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(:\d+)?(\/.*)?$/i.test(input)) {
+                targetUrl = 'https://' + input;
+            } else {
+                // Perform Search Engine Query
+                targetUrl = (SEARCH_ENGINES[activeEngine] || SEARCH_ENGINES.google) + encodeURIComponent(input);
+            }
 
-// Projects Management
-function renderProjects(filteredList = null) {
-  const container = document.getElementById('projects-container');
-  const emptyState = document.getElementById('empty-projects');
-  const list = filteredList || state.projects;
-  
-  container.innerHTML = '';
-  if(list.length === 0) {
-    emptyState.style.display = 'flex';
-    return;
-  }
-  emptyState.style.display = 'none';
-  
-  list.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'project-card';
-    card.innerHTML = `
-      <div class="project-info">
-        <h3>${p.title}</h3>
-        <p>${p.desc}</p>
-        <span class="badge" style="margin-top: 6px; display:inline-block;">${p.type === 'game' ? 'لعبة' : 'تطبيق'}</span>
-      </div>
-      <button class="icon-btn" onclick="deleteProject(${p.id}, event)" title="حذف">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--danger)"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-      </button>
-    `;
-    card.onclick = () => {
-      if(p.type === 'game') {
-        switchScreen('play');
-        initGameCanvas();
-      } else {
-        alert('فتح مشروع: ' + p.title + '\n(تم الإنشاء بواسطة Mr Xboss)');
-      }
-    };
-    container.appendChild(card);
-  });
-}
+            saveToHistory(input, targetUrl);
 
-function saveNewProject() {
-  const title = document.getElementById('new-project-title').value.trim();
-  const type = document.getElementById('new-project-type').value;
-  const desc = document.getElementById('new-project-desc').value.trim();
-  
-  if(!title) {
-    alert('يرجى إدخال اسم المشروع');
-    return;
-  }
-  
-  const newProj = {
-    id: Date.now(),
-    title,
-    type,
-    desc: desc || 'بدون وصف',
-    date: new Date().toISOString().split('T')[0]
-  };
-  
-  state.projects.unshift(newProj);
-  saveState();
-  closeModal('new-project-modal');
-  renderProjects();
-  
-  document.getElementById('new-project-title').value = '';
-  document.getElementById('new-project-desc').value = '';
-}
+            // Directly navigate full window without IFRAME
+            window.location.href = targetUrl;
+        }
 
-function deleteProject(id, event) {
-  event.stopPropagation();
-  if(confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
-    state.projects = state.projects.filter(p => p.id !== id);
-    saveState();
-    renderProjects();
-  }
-}
+        function openDirectEngine(engineKey) {
+            const targetUrl = DIRECT_ENGINE_URLS[engineKey] || 'https://www.google.com';
+            saveToHistory(engineKey.toUpperCase() + ' Direct', targetUrl);
+            window.location.href = targetUrl;
+        }
 
-function filterProjects() {
-  const query = document.getElementById('search-input').value.toLowerCase();
-  const filtered = state.projects.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
-  renderProjects(filtered);
-}
+        function navigateToUrl(url, title) {
+            saveToHistory(title || url, url);
+            window.location.href = url;
+        }
 
-// Quick Create Generator
-function quickCreate(type) {
-  const titles = type === 'game' ? ['مغامرة الفضاء', 'سباق التحدي', 'قفز المنصات'] : ['حاسبة الميزانية', 'مفكرة المهام', 'محول الوحدات'];
-  const randomTitle = titles[Math.floor(Math.random() * titles.length)] + ' ' + Math.floor(Math.random()*100);
-  
-  state.projects.unshift({
-    id: Date.now(),
-    title: randomTitle,
-    type: type,
-    desc: 'تم التوليد تلقائياً بواسطة محرك اصنع.',
-    date: new Date().toISOString().split('T')[0]
-  });
-  saveState();
-  switchScreen('home');
-}
+        // Save to History
+        function saveToHistory(title, url) {
+            const newItem = {
+                title: title,
+                url: url,
+                timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+            };
+            historyData.unshift(newItem);
+            if (historyData.length > 50) historyData.pop(); // Keep last 50
+            localStorage.setItem('mrxboss_history', JSON.stringify(historyData));
+        }
 
-// Stats Update
-function updateStats() {
-  document.getElementById('stat-projects-count').innerText = state.projects.length;
-  document.getElementById('stat-best-score').innerText = state.bestScore;
-}
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (historyData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <div>لا يوجد سجل تصفح حتى الآن</div>
+                    </div>
+                `;
+                return;
+            }
 
-// Theme Handling
-function toggleDarkMode() {
-  state.darkMode = document.getElementById('dark-mode-toggle').checked;
-  document.documentElement.setAttribute('data-theme', state.darkMode ? 'dark' : 'light');
-  saveState();
-}
+            container.innerHTML = historyData.map((item, index) => `
+                <div class="list-card">
+                    <div class="list-card-info" onclick="navigateToUrl('${item.url}', '${item.title}')" style="cursor: pointer;">
+                        <div style="font-size: 18px;">🌐</div>
+                        <div>
+                            <div class="list-card-title">${escapeHtml(item.title)}</div>
+                            <div class="list-card-sub">${escapeHtml(item.url)}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 10px; color: var(--text-secondary);">${item.timestamp}</span>
+                        <button class="icon-btn" style="width: 32px; height: 32px; color: var(--danger-color);" onclick="deleteHistoryItem(${index})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-// Initialize Theme UI
-if(state.darkMode) {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  document.getElementById('dark-mode-toggle').checked = true;
-} else {
-  document.documentElement.setAttribute('data-theme', 'light');
-  document.getElementById('dark-mode-toggle').checked = false;
-}
+        function deleteHistoryItem(index) {
+            historyData.splice(index, 1);
+            localStorage.setItem('mrxboss_history', JSON.stringify(historyData));
+            renderHistory();
+        }
 
-// --- Arcade Game Engine ---
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-let gameInterval = null;
-let isGameRunning = false;
-let isPaused = false;
-let score = 0;
+        function clearHistory() {
+            if (confirm('هل أنت تأكد من مسح كافة سجل التصفح؟')) {
+                historyData = [];
+                localStorage.removeItem('mrxboss_history');
+                renderHistory();
+            }
+        }
 
-let player = { x: 50, y: 250, size: 24, vy: 0, gravity: 0.6, jump: -10, color: '#ec4899' };
-let obstacles = [];
-let frameCount = 0;
+        // Render Shortcuts Grid
+        function renderShortcuts() {
+            const container = document.getElementById('shortcutsContainer');
+            container.innerHTML = bookmarks.slice(0, 8).map(item => `
+                <div class="shortcut-item" onclick="navigateToUrl('${item.url}', '${item.title}')">
+                    <div class="shortcut-icon">${item.icon || '🔗'}</div>
+                    <div class="shortcut-label">${escapeHtml(item.title)}</div>
+                </div>
+            `).join('');
+        }
 
-function initGameCanvas() {
-  canvas.width = canvas.parentElement.clientWidth;
-  canvas.height = canvas.parentElement.clientHeight;
-  player.y = canvas.height - 80;
-  drawInitialState();
-}
+        // Render Bookmarks List Tab
+        function renderBookmarks() {
+            const container = document.getElementById('bookmarksList');
+            if (bookmarks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                        <div>لا توجد مواقع مفضلة قائمة</div>
+                    </div>
+                `;
+                return;
+            }
 
-function drawInitialState() {
-  ctx.fillStyle = '#1e293b';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Draw floor
-  ctx.fillStyle = '#6366f1';
-  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
-  
-  // Draw player
-  ctx.fillStyle = player.color;
-  ctx.fillRect(player.x, player.y, player.size, player.size);
-}
+            container.innerHTML = bookmarks.map((item, index) => `
+                <div class="list-card">
+                    <div class="list-card-info" onclick="navigateToUrl('${item.url}', '${item.title}')" style="cursor: pointer;">
+                        <div class="shortcut-icon" style="width: 36px; height: 36px; font-size: 14px;">${item.icon || '⭐'}</div>
+                        <div>
+                            <div class="list-card-title">${escapeHtml(item.title)}</div>
+                            <div class="list-card-sub">${escapeHtml(item.url)}</div>
+                        </div>
+                    </div>
+                    <button class="icon-btn" style="width: 32px; height: 32px; color: var(--danger-color);" onclick="deleteBookmark(${index})">✕</button>
+                </div>
+            `).join('');
+        }
 
-function startGame() {
-  document.getElementById('game-start-overlay').classList.add('hidden');
-  document.getElementById('game-over-overlay').classList.add('hidden');
-  
-  score = 0;
-  obstacles = [];
-  frameCount = 0;
-  player.y = canvas.height - 80 - player.size;
-  player.vy = 0;
-  isGameRunning = true;
-  isPaused = false;
-  
-  if(gameInterval) cancelAnimationFrame(gameInterval);
-  gameLoop();
-}
+        function saveBookmarks() {
+            localStorage.setItem('mrxboss_bookmarks', JSON.stringify(bookmarks));
+        }
 
-function pauseGame() {
-  if(!isGameRunning) return;
-  isPaused = !isPaused;
-  document.getElementById('pause-btn').innerText = isPaused ? 'استئناف' : 'إيقاف مؤقت';
-  if(!isPaused) gameLoop();
-}
+        function deleteBookmark(index) {
+            bookmarks.splice(index, 1);
+            saveBookmarks();
+            renderBookmarks();
+            renderShortcuts();
+        }
 
-function stopGame() {
-  isGameRunning = false;
-  if(gameInterval) cancelAnimationFrame(gameInterval);
-}
+        // Add Bookmark Modal Controls
+        function openAddBookmarkModal() {
+            document.getElementById('addBookmarkModal').classList.add('active');
+        }
 
-function gameLoop() {
-  if(!isGameRunning || isPaused) return;
-  
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  // Background & Floor
-  ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'light' ? '#f1f5f9' : '#0f172a';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.fillStyle = '#6366f1';
-  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
-  
-  // Player physics
-  player.vy += player.gravity;
-  player.y += player.vy;
-  
-  const floorY = canvas.height - 40 - player.size;
-  if(player.y > floorY) {
-    player.y = floorY;
-    player.vy = 0;
-  }
-  
-  // Draw player
-  ctx.fillStyle = '#ec4899';
-  ctx.fillRect(player.x, player.y, player.size, player.size);
-  
-  // Obstacles generator
-  frameCount++;
-  if(frameCount % 90 === 0) {
-    let obsHeight = 30 + Math.random() * 30;
-    obstacles.push({ x: canvas.width, y: canvas.height - 40 - obsHeight, w: 20, h: obsHeight, speed: 4 + Math.floor(score/10) });
-  }
-  
-  // Move & Draw obstacles
-  for(let i = obstacles.length - 1; i >= 0; i--) {
-    let obs = obstacles[i];
-    obs.x -= obs.speed;
-    
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-    
-    // Collision detection
-    if(
-      player.x < obs.x + obs.w &&
-      player.x + player.size > obs.x &&
-      player.y < obs.y + obs.h &&
-      player.y + player.size > obs.y
-    ) {
-      gameOver();
-      return;
-    }
-    
-    // Remove off-screen & score
-    if(obs.x + obs.w < 0) {
-      obstacles.splice(i, 1);
-      score++;
-      document.getElementById('game-score-badge').innerText = `النقاط: ${score}`;
-    }
-  }
-  
-  gameInterval = requestAnimationFrame(gameLoop);
-}
+        function closeAddBookmarkModal() {
+            document.getElementById('addBookmarkModal').classList.remove('active');
+        }
 
-function jumpPlayer() {
-  if(!isGameRunning || isPaused) return;
-  const floorY = canvas.height - 40 - player.size;
-  if(player.y >= floorY - 5) {
-    player.vy = player.jump;
-  }
-}
+        function handleAddBookmark(e) {
+            e.preventDefault();
+            const title = document.getElementById('bookmarkTitle').value.trim();
+            const url = document.getElementById('bookmarkUrl').value.trim();
 
-function gameOver() {
-  isGameRunning = false;
-  if(score > state.bestScore) {
-    state.bestScore = score;
-    saveState();
-  }
-  document.getElementById('final-score').innerText = `النتيجة النهائية: ${score} (الأفضل: ${state.bestScore})`;
-  document.getElementById('game-over-overlay').classList.remove('hidden');
-}
+            if (title && url) {
+                bookmarks.push({ title, url, icon: '⭐' });
+                saveBookmarks();
+                renderBookmarks();
+                renderShortcuts();
+                closeAddBookmarkModal();
+                document.getElementById('bookmarkTitle').value = '';
+                document.getElementById('bookmarkUrl').value = '';
+            }
+        }
 
-// Touch controls for game
-canvas.addEventListener('pointerdown', () => {
-  if(!isGameRunning && document.getElementById('game-start-overlay').classList.contains('hidden') && document.getElementById('game-over-overlay').classList.contains('hidden')) {
-    // running already
-  } else {
-    jumpPlayer();
-  }
-});
+        // AdBlock Controls
+        function toggleAdBlock() {
+            isAdBlockActive = !isAdBlockActive;
+            localStorage.setItem('mrxboss_adblock', isAdBlockActive);
+            if (isAdBlockActive) {
+                blockedCount += 5;
+                localStorage.setItem('mrxboss_blocked_count', blockedCount);
+            }
+            updateAdBlockUI();
+        }
 
-// Initial Render
-renderProjects();
-</script>
+        function updateAdBlockUI() {
+            const toggleBtn = document.getElementById('shieldToggleBtn');
+            const badge = document.getElementById('shieldBadge');
+            const counterText = document.getElementById('blockedCounterText');
+
+            if (isAdBlockActive) {
+                toggleBtn.classList.add('active');
+                badge.innerText = blockedCount;
+                counterText.innerText = `تم حجب ${blockedCount} عنصر إعلاني منبثق`;
+            } else {
+                toggleBtn.classList.remove('active');
+                badge.innerText = '0';
+                counterText.innerText = 'حماية الإعلانات متوقفة حالياً';
+            }
+        }
+
+        // In-App Video Player
+        function loadVideoFromInput() {
+            const videoUrl = document.getElementById('videoUrlInput').value.trim();
+            if (!videoUrl) return;
+
+            const videoPlayer = document.getElementById('appVideoPlayer');
+            videoPlayer.src = videoUrl;
+            videoPlayer.play().catch(err => {
+                alert('عذراً، لم نتمكن من تشغيل هذا الفيديو مباشرة. تأكد من أن الرابط مباشر بمفهوم MP4 أو Stream.');
+            });
+        }
+
+        // Reset App Data
+        function resetAllAppData() {
+            if (confirm('هل أنت متأكد من مسح جميع إعدادات ومفضلة تطبيق Mr Xboss Browser؟')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Helper Escape HTML
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
 </body>
 </html>
