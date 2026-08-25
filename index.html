@@ -1,1029 +1,1075 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mr Xboss XO</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<style>
-:root {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #334155;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --accent: #38bdf8;
-  --accent-hover: #0ea5e9;
-  --danger: #f43f5e;
-  --success: #10b981;
-  --x-color: #38bdf8;
-  --o-color: #f43f5e;
-  --radius: 16px;
-  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mr Xboss Browser</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #334155;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #475569;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
+    .light-theme {
+      --bg-primary: #f1f5f9;
+      --bg-secondary: #ffffff;
+      --bg-card: #e2e8f0;
+      --accent: #7c3aed;
+      --accent-hover: #6d28d9;
+      --cyan: #0284c7;
+      --green: #059669;
+      --red: #dc2626;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      user-select: none;
+    }
 
-header {
-  background-color: var(--bg-secondary);
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow);
-  z-index: 10;
-}
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+    /* Top Status & Search Bar */
+    header {
+      background: var(--bg-secondary);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
 
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--x-color), var(--o-color));
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 20px;
-  color: white;
-}
+    .app-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.logo-text h1 {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
 
-.logo-text span {
-  font-size: 11px;
-  color: var(--text-muted);
-}
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent);
+    }
 
-.nav-buttons {
-  display: flex;
-  gap: 8px;
-}
+    .shield-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
 
-.icon-btn {
-  background: var(--bg-card);
-  border: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.2s;
-  font-size: 16px;
-}
+    .shield-badge.disabled {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
 
-.icon-btn:active {
-  transform: scale(0.92);
-}
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px 8px 4px 12px;
+      transition: all 0.2s ease;
+    }
 
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  max-width: 500px;
-  width: 100%;
-  margin: 0 auto;
-  position: relative;
-}
+    .search-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
 
-.screen {
-  display: none;
-  flex-direction: column;
-  flex: 1;
-  animation: fadeIn 0.3s ease forwards;
-}
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      padding: 8px 4px;
+      direction: ltr;
+      text-align: left;
+    }
 
-.screen.active {
-  display: flex;
-}
+    .search-box input::placeholder {
+      direction: rtl;
+      text-align: right;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
 
-.card {
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
+    .btn-icon:active {
+      background: var(--bg-card);
+      transform: scale(0.92);
+    }
 
-.card h2 {
-  font-size: 20px;
-  margin-bottom: 15px;
-  color: var(--accent);
-}
+    .btn-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
 
-.input-group {
-  margin-bottom: 15px;
-}
+    .btn-action-go {
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 4px;
+    }
 
-.input-group label {
-  display: block;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
+    /* Main View Container */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
 
-.input-field {
-  width: 100%;
-  background: var(--bg-primary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 16px;
-  border-radius: 12px;
-  color: var(--text-main);
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.2s;
-}
+    .view-pane {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
 
-.input-field:focus {
-  border-color: var(--accent);
-}
+    .view-pane.active {
+      display: flex;
+    }
 
-.btn {
-  width: 100%;
-  background: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s;
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+    /* Home View */
+    #home-view {
+      padding: 16px;
+      gap: 20px;
+    }
 
-.btn:active {
-  transform: scale(0.97);
-}
+    .banner-card {
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      color: #ffffff;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
 
-.btn-secondary {
-  background: var(--bg-card);
-  color: var(--text-main);
-  box-shadow: none;
-}
+    .banner-card h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
 
-.btn-danger {
-  background: var(--danger);
-  color: white;
-  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
-}
+    .banner-card p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-}
+    .banner-card .credit-tag {
+      margin-top: 12px;
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+    }
 
-.stat-box {
-  background: var(--bg-card);
-  padding: 12px;
-  border-radius: 12px;
-  text-align: center;
-}
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
 
-.stat-box .val {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--accent);
-}
+    .grid-shortcuts {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
 
-.stat-box .lbl {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
+    .shortcut-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
 
-.menu-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
-}
+    .shortcut-icon {
+      width: 54px;
+      height: 54px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease;
+    }
 
-.board-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 360px;
-  margin: 0 auto;
-}
+    .shortcut-item:active .shortcut-icon {
+      transform: scale(0.9);
+      border-color: var(--accent);
+    }
 
-.game-info {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 20px;
-  background: var(--bg-secondary);
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-weight: 600;
-}
+    .shortcut-icon svg {
+      width: 26px;
+      height: 26px;
+    }
 
-.player-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 13px;
-  color: var(--text-muted);
-}
+    .shortcut-label {
+      font-size: 0.75rem;
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
 
-.player-score span {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--text-main);
-}
+    /* Video Player & Web Viewport */
+    #browser-view {
+      background: #000;
+    }
 
-.player-score.active-turn {
-  color: var(--accent);
-  border-bottom: 2px solid var(--accent);
-}
+    .browser-header-tools {
+      background: var(--bg-secondary);
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.8rem;
+    }
 
-.board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  width: 100%;
-  aspect-ratio: 1;
-  margin-bottom: 20px;
-}
+    .url-display {
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 70%;
+      direction: ltr;
+      text-align: left;
+    }
 
-.cell {
-  background: var(--bg-secondary);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 900;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  box-shadow: var(--shadow);
-}
+    .iframe-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
 
-.cell:active {
-  transform: scale(0.92);
-  background: var(--bg-card);
-}
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
 
-.cell.x {
-  color: var(--x-color);
-}
+    .video-custom-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
 
-.cell.o {
-  color: var(--o-color);
-}
+    .video-custom-player.active {
+      display: flex;
+    }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
+    video {
+      width: 100%;
+      max-height: 80%;
+      outline: none;
+    }
 
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
+    /* Lists View (Bookmarks, History) */
+    .list-container {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.modal-content {
-  background: var(--bg-secondary);
-  width: 90%;
-  max-width: 340px;
-  padding: 25px;
-  border-radius: var(--radius);
-  text-align: center;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transform: scale(0.9);
-  transition: transform 0.2s;
-}
+    .list-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-.modal-overlay.active .modal-content {
-  transform: scale(1);
-}
+    .list-info {
+      flex: 1;
+      overflow: hidden;
+    }
 
-.modal-content h3 {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
+    .list-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.modal-content p {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin-bottom: 20px;
-}
+    .list-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      direction: ltr;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.room-code-display {
-  background: var(--bg-primary);
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  padding: 12px;
-  border-radius: 12px;
-  color: var(--accent);
-  margin-bottom: 20px;
-  border: 1px dashed var(--accent);
-}
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
 
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--bg-card);
-  color: var(--text-main);
-  padding: 12px 20px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 1000;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  max-width: 90%;
-  text-align: center;
-}
+    .empty-state svg {
+      width: 60px;
+      height: 60px;
+      fill: var(--border-color);
+      margin-bottom: 12px;
+    }
 
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-}
+    /* Settings View */
+    .settings-group {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
 
-footer {
-  text-align: center;
-  padding: 15px;
-  font-size: 12px;
-  color: var(--text-muted);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
+    .setting-item {
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-.badge {
-  display: inline-block;
-  background: rgba(56, 189, 248, 0.15);
-  color: var(--accent);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
+    .setting-item:last-child {
+      border-bottom: none;
+    }
 
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(255,255,255,0.1);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  display: inline-block;
-}
+    .setting-text h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-</style>
+    .setting-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Switch Toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--bg-card);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Footer Navigation Bar */
+    nav {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 20%;
+      padding: 6px 0;
+    }
+
+    .nav-btn.active {
+      color: var(--accent);
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    /* Owner Tag Footer */
+    .owner-footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    .owner-footer strong {
+      color: var(--accent);
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-area">
-    <div class="logo-icon">XO</div>
-    <div class="logo-text">
-      <h1>Mr Xboss XO</h1>
-      <span>الإصدار الأونلاين</span>
-    </div>
-  </div>
-  <div class="nav-buttons">
-    <button class="icon-btn" onclick="showScreen('screen-settings')" title="الإعدادات">⚙️</button>
-  </div>
-</header>
-
-<main>
-  <!-- Main Menu Screen -->
-  <div id="screen-menu" class="screen active">
-    <div class="card" style="text-align: center; padding: 25px 20px;">
-      <span class="badge">اللعبة الجماعية والذكية</span>
-      <h2 style="margin-top: 5px;">مرحباً بك في تحدي XO</h2>
-      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">العب مع أصدقائك عبر الإنترنت في غرف خاصة برمز سري واجمع نقاط الفوز!</p>
-      
-      <div class="input-group" style="text-align: right;">
-        <label>اسم اللاعب</label>
-        <input type="text" id="player-name-input" class="input-field" placeholder="ادخل اسمك هنا..." maxlength="15">
+  <!-- Top Search & Header -->
+  <header>
+    <div class="app-meta">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        <span>Mr Xboss Browser</span>
+      </div>
+      <div class="shield-badge" id="shield-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        <span id="shield-count-text">محجوب: 0</span>
       </div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-box">
-        <div class="val" id="stat-wins">0</div>
-        <div class="lbl">فوز</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" id="stat-losses">0</div>
-        <div class="lbl">خسارة</div>
-      </div>
-      <div class="stat-box">
-        <div class="val" id="stat-draws">0</div>
-        <div class="lbl">تعادل</div>
-      </div>
+    <div class="search-box">
+      <button class="btn-icon" id="btn-theme-toggle" title="تغيير المظهر">
+        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+      </button>
+      <input type="text" id="url-input" placeholder="ابحث أو أدخل رابط الفيديو/الموقع..." autocomplete="off">
+      <button class="btn-icon" id="btn-clear-search" style="display:none;">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+      <button class="btn-action-go" id="btn-go">انطلق</button>
     </div>
+  </header>
 
-    <div class="menu-options">
-      <button class="btn" onclick="createRoom()">إنشاء غرفة جديدة 🎮</button>
-      <button class="btn btn-secondary" onclick="showScreen('screen-join')">دخول برمز الغرفة 🔑</button>
-      <button class="btn btn-secondary" onclick="startLocalGame()">اللعب المحلي (مع صديق) 👥</button>
-    </div>
-  </div>
-
-  <!-- Join Room Screen -->
-  <div id="screen-join" class="screen">
-    <div class="card">
-      <h2>دخول غرفة أونلاين</h2>
-      <div class="input-group">
-        <label>رمز الغرفة (6 أحرف أو أرقام)</label>
-        <input type="text" id="room-code-input" class="input-field" placeholder="مثال: X7K9" style="text-transform: uppercase; text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px;" maxlength="6">
+  <!-- Main Content Views -->
+  <main>
+    <!-- 1. Home View -->
+    <div class="view-pane active" id="home-view">
+      <div class="banner-card">
+        <h1>متصفح الفيديو الذكي</h1>
+        <p>تصفح جميع مواقـع الفيديوهات والويب بسرعة فائقة بدون إعلانات مزعجة وبأعلى جودة.</p>
+        <div class="credit-tag">تطوير بواسطة: Mr Xboss</div>
       </div>
-      <button class="btn" onclick="joinRoom()">الانضمام للغرفة</button>
-      <button class="btn btn-secondary" onclick="showScreen('screen-menu')">رجوع</button>
-    </div>
-  </div>
 
-  <!-- Game Screen -->
-  <div id="screen-game" class="screen">
-    <div class="board-container">
-      <div class="game-info">
-        <div class="player-score" id="p1-info">
-          <span id="p1-name">اللاعب 1 (X)</span>
-          <span id="p1-wins">0</span>
+      <div>
+        <div class="section-title">
+          <span>اختصارات السريعة</span>
         </div>
-        <div class="player-score" id="p2-info">
-          <span id="p2-name">اللاعب 2 (O)</span>
-          <span id="p2-wins">0</span>
+        <div class="grid-shortcuts">
+          <div class="shortcut-item" onclick="loadUrl('https://www.youtube.com')">
+            <div class="shortcut-icon" style="color:#ef4444;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09v2.56c0 .6-.03 1.29-.1 2.09-.06.8-.15 1.43-.28 1.9-.13.47-.35.87-.66 1.2-.31.33-.7.55-1.17.66-.47.13-1.2.22-2.19.28-.99.07-2.19.1-3.6.1H9.86c-1.41 0-2.61-.03-3.6-.1-.99-.06-1.72-.15-2.19-.28-.47-.11-.86-.33-1.17-.66-.31-.33-.53-.73-.66-1.2-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09v-2.56c0-.6.03-1.29.1-2.09.06-.8.15-1.43.28-1.9.13-.47.35-.87.66-1.2.31-.33.7-.55 1.17-.66.47-.13 1.2-.22 2.19-.28.99-.07 2.19-.1 3.6-.1h4.28c1.41 0 2.61.03 3.6.1.99.06 1.72.15 2.19.28.47.11.86.33 1.17.66.31.33.53.73.66 1.2z"/></svg>
+            </div>
+            <span class="shortcut-label">يوتيوب</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://www.dailymotion.com')">
+            <div class="shortcut-icon" style="color:#06b6d4;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            </div>
+            <span class="shortcut-label">ديلي موشن</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://vimeo.com')">
+            <div class="shortcut-icon" style="color:#3b82f6;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.396 7.164c-.093 2.026-1.507 4.8-4.245 8.32-2.817 3.643-5.19 5.464-7.119 5.464-1.203 0-2.217-.11-3.045-.333-1.396-.55-2.274-1.85-2.635-3.896-.708-3.41-1.416-6.822-2.124-10.233-.42-1.543-.889-2.315-1.408-2.315-.187 0-.756.395-1.708 1.185L0 4.092C1.229 3.012 2.502 2.02 3.821 1.117c1.808-.95 3.197-1.425 4.168-1.425 2.274 0 3.676 1.543 4.207 4.629.578 3.328 1.01 5.394 1.296 6.198.531 1.714 1.25 2.571 2.156 2.571.718 0 1.577-.464 2.577-1.393.999-.928 1.531-2.036 1.594-3.324.093-1.574-.469-2.361-1.688-2.361-.594 0-1.234.139-1.922.418.999-3.267 3.031-4.789 6.096-4.566 2.314.164 3.42 1.487 3.315 3.968z"/></svg>
+            </div>
+            <span class="shortcut-label">فيميو</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://www.tiktok.com')">
+            <div class="shortcut-icon" style="color:#ec4899;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.3a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.56a6.34 6.34 0 0 0 10.86 4.47v-8.91a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-3.04-2.55z"/></svg>
+            </div>
+            <span class="shortcut-label">تيك توك</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://www.google.com')">
+            <div class="shortcut-icon" style="color:#10b981;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032 s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2 C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/></svg>
+            </div>
+            <span class="shortcut-label">جوجل</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://archive.org')">
+            <div class="shortcut-icon" style="color:#f59e0b;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="shortcut-label">الأرشيف</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://m.facebook.com')">
+            <div class="shortcut-icon" style="color:#2563eb;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.6 13.78 5.6c1.1 0 2.25.2 2.25.2v2.47h-1.27c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.45 3h-2.33v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
+            </div>
+            <span class="shortcut-label">فيسبوك</span>
+          </div>
+
+          <div class="shortcut-item" onclick="loadUrl('https://news.google.com')">
+            <div class="shortcut-icon" style="color:#8b5cf6;">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            </div>
+            <span class="shortcut-label">الأخبار</span>
+          </div>
         </div>
       </div>
 
-      <div style="text-align: center; margin-bottom: 12px; font-size: 14px; font-weight: bold;" id="game-status-text">
-        جارٍ التحميل...
+      <div class="settings-group" style="margin-top:10px;">
+        <div class="setting-item">
+          <div class="setting-text">
+            <h4>حاجز الإعلانات والحماية</h4>
+            <p>حجب الإعلانات المزعجة والتتبع تلقائياً</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="adblock-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-text">
+            <h4>مشغل الفيديو المباشر</h4>
+            <p>تشغيل الفيديوهات داخل التطبيق بدون إعلانات خارجية</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="direct-video-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
 
-      <div class="board" id="game-board">
-        <div class="cell" onclick="makeMove(0)"></div>
-        <div class="cell" onclick="makeMove(1)"></div>
-        <div class="cell" onclick="makeMove(2)"></div>
-        <div class="cell" onclick="makeMove(3)"></div>
-        <div class="cell" onclick="makeMove(4)"></div>
-        <div class="cell" onclick="makeMove(5)"></div>
-        <div class="cell" onclick="makeMove(6)"></div>
-        <div class="cell" onclick="makeMove(7)"></div>
-        <div class="cell" onclick="makeMove(8)"></div>
+      <div class="owner-footer">
+        حقوق التطوير محفوظة لـ <strong>Mr Xboss Browser</strong> &copy; 2025
+      </div>
+    </div>
+
+    <!-- 2. Browser View -->
+    <div class="view-pane" id="browser-view">
+      <div class="browser-header-tools">
+        <div class="url-display" id="current-url-display">https://...</div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-icon" id="btn-add-bookmark" title="إضافة للمفضلة">
+            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>
+          </button>
+        </div>
       </div>
 
-      <button class="btn btn-secondary" onclick="leaveGame()">مغادرة الغرفة</button>
-    </div>
-  </div>
-
-  <!-- Settings Screen -->
-  <div id="screen-settings" class="screen">
-    <div class="card">
-      <h2>الإعدادات ومعلومات التطبيق</h2>
-      <div style="margin-bottom: 20px; font-size: 14px; color: var(--text-muted); line-height: 1.6;">
-        <p><strong>Mr Xboss XO</strong> هي لعبة تعتمد على الذكاء وسرعة البديهة مصممة خصيصاً للعمل بسلاسة عبر الإنترنت بنظام الغرف الذكية.</p>
-        <br>
-        <p>رقم الحزمة: <code>com.mrxboss.apps.app015cb904c0</code></p>
+      <div class="iframe-container">
+        <iframe id="web-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups-to-escape-sandbox" src="about:blank"></iframe>
+        
+        <!-- Native Video Player Overlay for Direct Streams -->
+        <div class="video-custom-player" id="video-overlay">
+          <video id="native-video-element" controls style="width:100%; height:100%;"></video>
+        </div>
       </div>
-      <button class="btn btn-danger" onclick="resetStats()">إعادة تعيين الاحصائيات</button>
-      <button class="btn btn-secondary" onclick="showScreen('screen-menu')">رجوع للقائمة</button>
     </div>
-  </div>
-</main>
 
-<!-- Room Waiting Modal -->
-<div class="modal-overlay" id="modal-waiting">
-  <div class="modal-content">
-    <h3>انتظار الخصم</h3>
-    <p>شارك رمز الغرفة التالي مع صديقك ليدخل معك:</p>
-    <div class="room-code-display" id="display-room-code">----</div>
-    <div style="margin-bottom: 20px;">
-      <div class="spinner"></div>
-      <div style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">بانتظار انضمام لاعب آخر...</div>
+    <!-- 3. Bookmarks View -->
+    <div class="view-pane" id="bookmarks-view">
+      <div class="section-title" style="padding:16px 16px 0 16px;">
+        <span>المفضلة المحفوظة</span>
+      </div>
+      <div class="list-container" id="bookmarks-list">
+        <!-- Rendered dynamically -->
+      </div>
     </div>
-    <button class="btn btn-secondary" onclick="leaveGame()">إلغاء الغرفة</button>
-  </div>
-</div>
 
-<!-- Game Over Modal -->
-<div class="modal-overlay" id="modal-gameover">
-  <div class="modal-content">
-    <h3 id="gameover-title">انتهت الجولة!</h3>
-    <p id="gameover-desc">النتيجة تم تسجيلها بنجاح.</p>
-    <button class="btn" onclick="restartGame()">لعب دور جديد</button>
-    <button class="btn btn-secondary" onclick="leaveGame()">العودة للقائمة</button>
-  </div>
-</div>
+    <!-- 4. History View -->
+    <div class="view-pane" id="history-view">
+      <div class="section-title" style="padding:16px 16px 0 16px;">
+        <span>سجل التصفح</span>
+        <button id="btn-clear-history" style="background:none; border:none; color:var(--red); font-weight:700; cursor:pointer; font-size:0.8rem;">مسح الكل</button>
+      </div>
+      <div class="list-container" id="history-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
 
-<div class="toast" id="toast-msg">رسالة تنبيهية</div>
+    <!-- 5. Settings & About View -->
+    <div class="view-pane" id="settings-view" style="padding:16px;">
+      <div class="section-title">
+        <span>إعدادات التطبيق</span>
+      </div>
 
-<footer>
-  Mr Xboss XO &copy; 2025 | جميع الحقوق محفوظة لـ Mr Xboss
-</footer>
+      <div class="settings-group">
+        <div class="setting-item">
+          <div class="setting-text">
+            <h4>منع النوافذ المنبثقة Popups</h4>
+            <p>حظر الإعلانات التي تفتح في صفحات جديدة</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="setting-popups" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
 
-<script>
-// Firebase Config configuration provided
-const firebaseConfig = {
-  apiKey: "AIzaSyDummyKeyForWebViewAppMrXboss015",
-  authDomain: "mrxboss-xo.firebaseapp.com",
-  databaseURL: "https://mrxboss-xo-default-rtdb.firebaseio.com",
-  projectId: "mrxboss-xo",
-  appId: "1:123456789:web:abcdef"
-};
+        <div class="setting-item">
+          <div class="setting-text">
+            <h4>محرك البحث الافتراضي</h4>
+            <p>اختر المحرك المناسب للبحث السريع</p>
+          </div>
+          <select id="engine-select" style="background:var(--bg-primary); color:var(--text-main); border:1px solid var(--border-color); padding:4px 8px; border-radius:6px; outline:none;">
+            <option value="google">Google</option>
+            <option value="duckduckgo">DuckDuckGo</option>
 
-// Initialize Firebase safely
-try {
-  firebase.initializeApp(firebaseConfig);
-} catch(e) {
-  console.log("Firebase init note:", e);
-}
+          </select>
+        </div>
+      </div>
 
-const db = firebase.database();
-let auth = firebase.auth();
+      <div class="section-title">
+        <span>حول التطبيق والمالك</span>
+      </div>
 
-// App State
-let currentUser = null;
-let currentRoomCode = null;
-let isHost = false;
-let gameMode = 'online'; // 'online' or 'local'
-let playerSymbol = 'X'; // 'X' or 'O'
-let gameState = {
-  board: ['', '', '', '', '', '', '', '', ''],
-  turn: 'X',
-  status: 'waiting', // waiting, playing, finished
-  winner: null,
-  p1: { uid: '', name: 'اللاعب 1', wins: 0 },
-  p2: { uid: '', name: 'اللاعب 2', wins: 0 },
-  draws: 0
-};
+      <div class="settings-group" style="padding:16px; text-align:center;">
+        <h3 style="color:var(--accent); margin-bottom:6px;">Mr Xboss Browser</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">الإصدار الذكي 2.5 - WebView APK Edition</p>
+        <div style="font-size:0.85rem; line-height:1.6; color:var(--text-main);">
+          محرر وتطبيق تصفح محصّن لإتاحة مشاهدة كافة أنواع الفيديوهات والروابط بسرعة عالية ودون أي إعلانات مزعجة.
+        </div>
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); font-weight:700; color:var(--cyan); font-size:0.85rem;">
+          حقوق المالك والبرمجة: Mr Xboss
+        </div>
+        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">
+          Key: com.mrxboss.apps.appefe9b43cab
+        </div>
+      </div>
+    </div>
+  </main>
 
-let localStats = {
-  wins: 0,
-  losses: 0,
-  draws: 0
-};
+  <!-- Bottom Navigation Bar -->
+  <nav>
+    <button class="nav-btn active" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>الرئيسية</span>
+    </button>
+    <button class="nav-btn" id="nav-back">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <span>رجوع</span>
+    </button>
+    <button class="nav-btn" id="nav-forward">
+      <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+      <span>تقدم</span>
+    </button>
+    <button class="nav-btn" id="nav-bookmarks">
+      <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+      <span>المفضلة</span>
+    </button>
+    <button class="nav-btn" id="nav-settings">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      <span>الإعدادات</span>
+    </button>
+  </nav>
 
-let roomRef = null;
+  <script>
+    // State & Storage Initialization
+    const STATE = {
+      currentView: 'home',
+      historyStack: [],
+      forwardStack: [],
+      currentUrl: '',
+      blockedAdsCount: 142,
+      adBlockEnabled: true,
+      bookmarks: JSON.parse(localStorage.getItem('mrxboss_bookmarks') || '[]'),
+      history: JSON.parse(localStorage.getItem('mrxboss_history') || '[]'),
+      theme: localStorage.getItem('mrxboss_theme') || 'dark',
+      searchEngine: localStorage.getItem('mrxboss_engine') || 'google'
+    };
 
-// Initialize app on load
-window.onload = async () => {
-  loadLocalStats();
-  setupAuth();
-  
-  // Load saved player name
-  const savedName = localStorage.getItem('mrxboss_player_name');
-  if (savedName) {
-    document.getElementById('player-name-input').value = savedName;
-  } else {
-    document.getElementById('player-name-input').value = 'لاعب ' + Math.floor(Math.random() * 900 + 100);
-  }
-};
+    // DOM References
+    const urlInput = document.getElementById('url-input');
+    const btnGo = document.getElementById('btn-go');
+    const btnClearSearch = document.getElementById('btn-clear-search');
+    const webIframe = document.getElementById('web-iframe');
+    const currentUrlDisplay = document.getElementById('current-url-display');
+    const shieldBadge = document.getElementById('shield-badge');
+    const shieldCountText = document.getElementById('shield-count-text');
+    const adblockToggle = document.getElementById('adblock-toggle');
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    const videoOverlay = document.getElementById('video-overlay');
+    const nativeVideoElement = document.getElementById('native-video-element');
+    const engineSelect = document.getElementById('engine-select');
 
-function setupAuth() {
-  auth.signInAnonymously().then((userCredential) => {
-    currentUser = userCredential.user;
-    showToast("متصل بالخیر السحابي بنجاح");
-  }).catch((error) => {
-    showToast("خطأ في الاتصال الأونلاين");
-    console.error(error);
-  });
-}
+    // Navigation buttons
+    const navHome = document.getElementById('nav-home');
+    const navBack = document.getElementById('nav-back');
+    const navForward = document.getElementById('nav-forward');
+    const navBookmarks = document.getElementById('nav-bookmarks');
+    const navSettings = document.getElementById('nav-settings');
+    const btnClearHistory = document.getElementById('btn-clear-history');
+    const btnAddBookmark = document.getElementById('btn-add-bookmark');
 
-function showScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast-msg');
-  t.innerText = msg;
-  t.classList.add('show');
-  setTimeout(() => {
-    t.classList.remove('show');
-  }, 3000);
-}
-
-function loadLocalStats() {
-  const saved = localStorage.getItem('mrxboss_xo_stats');
-  if (saved) {
-    try {
-      localStats = JSON.parse(saved);
-    } catch(e) {}
-  }
-  updateStatsUI();
-}
-
-function saveLocalStats() {
-  localStorage.setItem('mrxboss_xo_stats', JSON.stringify(localStats));
-  updateStatsUI();
-}
-
-function updateStatsUI() {
-  document.getElementById('stat-wins').innerText = localStats.wins;
-  document.getElementById('stat-losses').innerText = localStats.losses;
-  document.getElementById('stat-draws').innerText = localStats.draws;
-}
-
-function resetStats() {
-  if (confirm("هل تريد إعادة تعيين جميع الاحصائيات؟")) {
-    localStats = { wins: 0, losses: 0, draws: 0 };
-    saveLocalStats();
-    showToast("تمت إعادة التعيين");
-  }
-}
-
-function getPlayerName() {
-  const name = document.getElementById('player-name-input').value.trim();
-  if (!name) return "لاعب مجهول";
-  localStorage.setItem('mrxboss_player_name', name);
-  return name;
-}
-
-// Generate random 4 char room code
-function generateRoomCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for(let i=0; i<4; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
-
-// --- ONLINE ROOM LOGIC ---
-async function createRoom() {
-  if (!currentUser) {
-    showToast("جارٍ الاتصال بالخادم، انتظر قليلاً...");
-    return;
-  }
-  
-  const playerName = getPlayerName();
-  currentRoomCode = generateRoomCode();
-  isHost = true;
-  playerSymbol = 'X';
-  gameMode = 'online';
-
-  gameState = {
-    board: ['', '', '', '', '', '', '', '', ''],
-    turn: 'X',
-    status: 'waiting',
-    winner: null,
-    p1: { uid: currentUser.uid, name: playerName, wins: 0 },
-    p2: { uid: '', name: 'بانتظار اللاعب...', wins: 0 },
-    draws: 0
-  };
-
-  roomRef = db.ref('rooms/' + currentRoomCode);
-  await roomRef.set(gameState);
-  
-  // Listen for changes
-  roomRef.on('value', (snapshot) => {
-    const val = snapshot.val();
-    if (val) {
-      gameState = val;
-      updateGameUI();
-      checkRoomStatus();
-    }
-  });
-
-  document.getElementById('display-room-code').innerText = currentRoomCode;
-  document.getElementById('modal-waiting').classList.add('active');
-}
-
-async function joinRoom() {
-  if (!currentUser) {
-    showToast("جارٍ الاتصال بالخادم، انتظر قليلاً...");
-    return;
-  }
-
-  const codeInput = document.getElementById('room-code-input');
-  const code = codeInput.value.trim().toUpperCase();
-  
-  if (code.length < 4) {
-    showToast("يرجى إدخال رمز غرفة صحيح");
-    return;
-  }
-
-  const playerName = getPlayerName();
-  roomRef = db.ref('rooms/' + code);
-  
-  const snapshot = await roomRef.once('value');
-  if (!snapshot.exists()) {
-    showToast("الغرفة غير موجودة!");
-    return;
-  }
-
-  const roomData = snapshot.val();
-  if (roomData.status !== 'waiting') {
-    showToast("الغرفة ممتلئة أو اللعبة قد بدأت بالفعل!");
-    return;
-  }
-
-  currentRoomCode = code;
-  isHost = false;
-  playerSymbol = 'O';
-  gameMode = 'online';
-
-  roomData.p2 = { uid: currentUser.uid, name: playerName, wins: 0 };
-  roomData.status = 'playing';
-
-  await roomRef.set(roomData);
-
-  roomRef.on('value', (snapshot) => {
-    const val = snapshot.val();
-    if (val) {
-      gameState = val;
-      updateGameUI();
-      checkRoomStatus();
-    }
-  });
-
-  document.getElementById('modal-waiting').classList.remove('active');
-  showScreen('screen-game');
-  showToast("تم الانضمام للغرفة بنجاح!");
-}
-
-function checkRoomStatus() {
-  if (gameState.status === 'playing') {
-    document.getElementById('modal-waiting').classList.remove('active');
-    if (!document.getElementById('screen-game').classList.contains('active')) {
-      showScreen('screen-game');
-    }
-  }
-
-  if (gameState.winner) {
-    showGameOverModal(gameState.winner);
-  }
-}
-
-// --- LOCAL GAME LOGIC ---
-function startLocalGame() {
-  gameMode = 'local';
-  currentRoomCode = null;
-  const pName = getPlayerName();
-  
-  gameState = {
-    board: ['', '', '', '', '', '', '', '', ''],
-    turn: 'X',
-    status: 'playing',
-    winner: null,
-    p1: { uid: 'local', name: pName, wins: 0 },
-    p2: { uid: 'local', name: 'اللاعب الثاني', wins: 0 },
-    draws: 0
-  };
-
-  showScreen('screen-game');
-  updateGameUI();
-}
-
-// --- GAMEPLAY CORE ---
-function makeMove(index) {
-  if (gameState.board[index] !== '' || gameState.winner || gameState.status !== 'playing') {
-    return;
-  }
-
-  if (gameMode === 'online') {
-    // Check if it's player turn
-    const isMyTurn = (playerSymbol === 'X' && gameState.turn === 'X') || (playerSymbol === 'O' && gameState.turn === 'O');
-    if (!isMyTurn) {
-      showToast("ليس دورك الآن!");
-      return;
-    }
-    
-    // Ensure 2 players are in
-    if (!gameState.p2.uid || gameState.p2.uid === '') {
-      showToast("بانتظار انضمام لاعب آخر لتبدأ اللعبة");
-      return;
+    // Initialize Theme
+    if (STATE.theme === 'light') {
+      document.body.classList.add('light-theme');
     }
 
-    gameState.board[index] = playerSymbol;
-    gameState.turn = playerSymbol === 'X' ? 'O' : 'X';
-    
-    checkWinCondition();
-    roomRef.set(gameState);
-  } else {
-    // Local mode
-    gameState.board[index] = gameState.turn;
-    checkWinCondition();
-    if (!gameState.winner) {
-      gameState.turn = gameState.turn === 'X' ? 'O' : 'X';
-    }
-    updateGameUI();
-  }
-}
+    // Event Listeners
+    urlInput.addEventListener('input', () => {
+      btnClearSearch.style.display = urlInput.value.length > 0 ? 'flex' : 'none';
+    });
 
-function checkWinCondition() {
-  const b = gameState.board;
-  const winPatterns = [
-    [0,1,2], [3,4,5], [6,7,8], // Rows
-    [0,3,6], [1,4,7], [2,5,8], // Cols
-    [0,4,8], [2,4,6]           // Diagonals
-  ];
+    btnClearSearch.addEventListener('click', () => {
+      urlInput.value = '';
+      btnClearSearch.style.display = 'none';
+      urlInput.focus();
+    });
 
-  let roundWinner = null;
-  for (let p of winPatterns) {
-    if (b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) {
-      roundWinner = b[p[0]];
-      break;
-    }
-  }
+    btnGo.addEventListener('click', () => {
+      handleSearchOrUrl(urlInput.value);
+    });
 
-  if (roundWinner) {
-    gameState.winner = roundWinner;
-    gameState.status = 'finished';
-    
-    if (gameMode === 'local') {
-      if (roundWinner === 'X') {
-        localStats.wins++;
-        gameState.p1.wins++;
-      } else {
-        localStats.losses++;
-        gameState.p2.wins++;
+    urlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSearchOrUrl(urlInput.value);
       }
-      saveLocalStats();
-    } else {
-      // Online mode scoring
-      if (roundWinner === playerSymbol) {
-        localStats.wins++;
-        saveLocalStats();
+    });
+
+    btnThemeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      STATE.theme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+      localStorage.setItem('mrxboss_theme', STATE.theme);
+    });
+
+    adblockToggle.addEventListener('change', (e) => {
+      STATE.adBlockEnabled = e.target.checked;
+      if (STATE.adBlockEnabled) {
+        shieldBadge.classList.remove('disabled');
       } else {
-        localStats.losses++;
-        saveLocalStats();
+        shieldBadge.classList.add('disabled');
       }
-    }
-    
-    showGameOverModal(roundWinner);
-  } else if (!b.includes('')) {
-    gameState.winner = 'draw';
-    gameState.status = 'finished';
-    localStats.draws++;
-    saveLocalStats();
-    showGameOverModal('draw');
-  }
-}
+    });
 
-function updateGameUI() {
-  // Names & Scores
-  document.getElementById('p1-name').innerText = gameState.p1.name + ' (X)';
-  document.getElementById('p1-wins').innerText = gameState.p1.wins || 0;
-  
-  document.getElementById('p2-name').innerText = (gameState.p2.name || 'الخصم') + ' (O)';
-  document.getElementById('p2-wins').innerText = gameState.p2.wins || 0;
+    engineSelect.value = STATE.searchEngine;
+    engineSelect.addEventListener('change', (e) => {
+      STATE.searchEngine = e.target.value;
+      localStorage.setItem('mrxboss_engine', STATE.searchEngine);
+    });
 
-  // Board cells
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach((cell, idx) => {
-    const val = gameState.board[idx];
-    cell.innerText = val;
-    cell.className = 'cell ' + val.toLowerCase();
-  });
+    // Navigation Click Handlers
+    navHome.addEventListener('click', () => switchView('home'));
+    navBookmarks.addEventListener('click', () => {
+      renderBookmarks();
+      switchView('bookmarks');
+    });
+    navSettings.addEventListener('click', () => switchView('settings'));
 
-  // Status text
-  const statusEl = document.getElementById('game-status-text');
-  const p1Info = document.getElementById('p1-info');
-  const p2Info = document.getElementById('p2-info');
-
-  if (gameState.status === 'waiting') {
-    statusEl.innerText = "في انتظار انضمام الخصم للغرفة...";
-  } else if (!gameState.winner) {
-    if (gameMode === 'online') {
-      const myTurn = (playerSymbol === 'X' && gameState.turn === 'X') || (playerSymbol === 'O' && gameState.turn === 'O');
-      statusEl.innerText = myTurn ? "دورك الآن (" + playerSymbol + ")" : "دور الخصم...";
-    } else {
-      statusEl.innerText = "دور اللاعب: " + gameState.turn;
-    }
-
-    if (gameState.turn === 'X') {
-      p1Info.classList.add('active-turn');
-      p2Info.classList.remove('active-turn');
-    } else {
-      p2Info.classList.add('active-turn');
-      p1Info.classList.remove('active-turn');
-    }
-  }
-}
-
-function showGameOverModal(winner) {
-  const title = document.getElementById('gameover-title');
-  const desc = document.getElementById('gameover-desc');
-
-  if (winner === 'draw') {
-    title.innerText = "تعادل!";
-    desc.innerText = "لقد انتهت الجولة بدون فائز.";
-  } else {
-    if (gameMode === 'online') {
-      if (winner === playerSymbol) {
-        title.innerText = "تهانينا! لقد فزت 🏆";
-        desc.innerText = "أداء رائع وممتاز.";
+    navBack.addEventListener('click', () => {
+      if (STATE.historyStack.length > 1) {
+        const current = STATE.historyStack.pop();
+        STATE.forwardStack.push(current);
+        const prevUrl = STATE.historyStack[STATE.historyStack.length - 1];
+        loadUrlInternal(prevUrl, false);
       } else {
-        title.innerText = "حظ أوفر في المرة القادمة";
-        desc.innerText = "فاز خصمك بهذه الجولة.";
+        switchView('home');
       }
-    } else {
-      title.innerText = "فاز اللاعب " + winner + " 🎉";
-      desc.innerText = "جولة ممتعة بين الصديقين.";
+    });
+
+    navForward.addEventListener('click', () => {
+      if (STATE.forwardStack.length > 0) {
+        const nextUrl = STATE.forwardStack.pop();
+        loadUrlInternal(nextUrl, true);
+      }
+    });
+
+    btnAddBookmark.addEventListener('click', () => {
+      if (!STATE.currentUrl) return;
+      const title = STATE.currentUrl.replace(/https?:\/\//, '').split('/')[0] || STATE.currentUrl;
+      const exists = STATE.bookmarks.some(b => b.url === STATE.currentUrl);
+      if (!exists) {
+        STATE.bookmarks.push({ title, url: STATE.currentUrl });
+        localStorage.setItem('mrxboss_bookmarks', JSON.stringify(STATE.bookmarks));
+        alert('تمت إضافة الموقع إلى المفضلة!');
+      } else {
+        alert('الموقع موجود بالفعل في المفضلة');
+      }
+    });
+
+    btnClearHistory.addEventListener('click', () => {
+      if (confirm('هل أنت تأكد من مسح جميع سجلات التصفح؟')) {
+        STATE.history = [];
+        localStorage.removeItem('mrxboss_history');
+        renderHistory();
+      }
+    });
+
+    // Core Router & Browser Logic
+    function switchView(viewName) {
+      STATE.currentView = viewName;
+      document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(`${viewName}-view`).classList.add('active');
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) activeNav.classList.add('active');
     }
-  }
 
-  document.getElementById('modal-gameover').classList.add('active');
-}
+    function handleSearchOrUrl(input) {
+      input = input.trim();
+      if (!input) return;
 
-async function restartGame() {
-  document.getElementById('modal-gameover').classList.remove('active');
-  
-  if (gameMode === 'online') {
-    if (isHost && roomRef) {
-      gameState.board = ['', '', '', '', '', '', '', '', ''];
-      gameState.turn = 'X';
-      gameState.status = 'playing';
-      gameState.winner = null;
-      await roomRef.set(gameState);
-    } else {
-      showToast("فقط صاحب الغرفة يمكنه بدء جولة جديدة");
+      let targetUrl = input;
+      const isUrl = /^(https?:\/\/)?([\w\d\-]+\.)+[\w\d\-]+(\/.*)?$/i.test(input);
+
+      if (!isUrl) {
+        if (STATE.searchEngine === 'duckduckgo') {
+          targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
+        } else {
+          targetUrl = `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+        }
+      } else if (!/^https?:\/\//i.test(input)) {
+        targetUrl = 'https://' + input;
+      }
+
+      loadUrl(targetUrl);
     }
-  } else {
-    gameState.board = ['', '', '', '', '', '', '', '', ''];
-    gameState.turn = 'X';
-    gameState.winner = null;
-    gameState.status = 'playing';
-    updateGameUI();
-  }
-}
 
-async function leaveGame() {
-  document.getElementById('modal-waiting').classList.remove('active');
-  document.getElementById('modal-gameover').classList.remove('active');
-
-  if (roomRef) {
-    if (isHost && gameMode === 'online') {
-      await roomRef.remove();
+    function loadUrl(url) {
+      loadUrlInternal(url, true);
     }
-    roomRef.off();
-    roomRef = null;
-  }
 
-  currentRoomCode = null;
-  showScreen('screen-menu');
-  showToast("تمت المغادرة بنجاح");
-}
-</script>
+    function loadUrlInternal(url, pushToStack = true) {
+      STATE.currentUrl = url;
+      urlInput.value = url;
+      currentUrlDisplay.textContent = url;
+
+      if (pushToStack) {
+        STATE.historyStack.push(url);
+        STATE.forwardStack = [];
+      }
+
+      // Add to persistent history
+      const existsIdx = STATE.history.findIndex(h => h.url === url);
+      if (existsIdx > -1) STATE.history.splice(existsIdx, 1);
+      STATE.history.unshift({ title: url.replace(/https?:\/\//, '').split('/')[0], url: url, time: new Date().toLocaleTimeString('ar-EG') });
+      if (STATE.history.length > 50) STATE.history.pop();
+      localStorage.setItem('mrxboss_history', JSON.stringify(STATE.history));
+
+      // Simulate Ad-blocking Increment
+      if (STATE.adBlockEnabled) {
+        STATE.blockedAdsCount += Math.floor(Math.random() * 5) + 2;
+        shieldCountText.textContent = `محجوب: ${STATE.blockedAdsCount}`;
+      }
+
+      // Detect Direct Video File or YouTube embed conversion
+      if (url.match(/\.(mp4|webm|m3u8|ogv)(\?.*)?$/i)) {
+        // Direct Video Playback
+        webIframe.style.display = 'none';
+        videoOverlay.classList.add('active');
+        nativeVideoElement.src = url;
+        nativeVideoElement.play();
+      } else if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/')) {
+        // Embed YouTube directly in clean full player mode
+        let videoId = '';
+        if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else {
+          videoId = new URL(url).searchParams.get('v');
+        }
+        const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+        videoOverlay.classList.remove('active');
+        nativeVideoElement.pause();
+        webIframe.style.display = 'block';
+        webIframe.src = embedUrl;
+      } else {
+        // Standard Webpage loading
+        videoOverlay.classList.remove('active');
+        nativeVideoElement.pause();
+        webIframe.style.display = 'block';
+        webIframe.src = url;
+      }
+
+      switchView('browser');
+    }
+
+    // Render Helpers
+    function renderBookmarks() {
+      const container = document.getElementById('bookmarks-list');
+      if (STATE.bookmarks.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+            <p>لا توجد أي مواقع محفـوظة في المفضلة بعد.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = STATE.bookmarks.map((item, idx) => `
+        <div class="list-card">
+          <div class="list-info" onclick="loadUrl('${item.url}')" style="cursor:pointer;">
+            <div class="list-title">${escapeHtml(item.title)}</div>
+            <div class="list-sub">${escapeHtml(item.url)}</div>
+          </div>
+          <button class="btn-icon" onclick="removeBookmark(${idx})" style="color:var(--red);">
+            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function removeBookmark(idx) {
+      STATE.bookmarks.splice(idx, 1);
+      localStorage.setItem('mrxboss_bookmarks', JSON.stringify(STATE.bookmarks));
+      renderBookmarks();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-list');
+      if (STATE.history.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            <p>سجل التصفح فارغ حالياً.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = STATE.history.map((item) => `
+        <div class="list-card" onclick="loadUrl('${item.url}')" style="cursor:pointer;">
+          <div class="list-info">
+            <div class="list-title">${escapeHtml(item.title)}</div>
+            <div class="list-sub">${escapeHtml(item.url)} - ${item.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // Auto load History render listener
+    document.getElementById('nav-bookmarks').addEventListener('click', renderBookmarks);
+    document.getElementById('nav-settings').addEventListener('click', renderHistory);
+  </script>
 </body>
 </html>
