@@ -5,818 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mr Xboss Wallet</title>
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --radius: 16px;
-        }
-
-        [data-theme="dark"] {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --success: #34d399;
-            --danger: #f87171;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border: #334155;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        header {
-            background: var(--card-bg);
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--primary);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .icon-btn {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: 0.2s;
-        }
-
-        .icon-btn:active {
-            transform: scale(0.95);
-        }
-
-        main {
-            flex: 1;
-            padding: 1rem;
-            max-width: 600px;
-            width: 100%;
-            margin: 0 auto;
-            padding-bottom: 5rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 1rem;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .balance-card h2 {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-
-        .balance-card .amount {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-
-        .balance-stats {
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 0.75rem;
-        }
-
-        .stat-item span {
-            display: block;
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
-        .stat-item strong {
-            font-size: 1rem;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .btn {
-            border: none;
-            padding: 0.8rem;
-            border-radius: var(--radius);
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            color: white;
-            transition: 0.2s;
-            box-shadow: var(--shadow);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-income { background-color: var(--success); }
-        .btn-expense { background-color: var(--danger); }
-        .btn-primary { background-color: var(--primary); width: 100%; }
-
-        .section-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .filters {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            overflow-x: auto;
-            padding-bottom: 0.25rem;
-        }
-
-        .filter-chip {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: 0.2s;
-        }
-
-        .filter-chip.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .transaction-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .transaction-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .tx-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .tx-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            background: var(--bg);
-        }
-
-        .tx-details h4 {
-            font-size: 0.95rem;
-            margin-bottom: 0.1rem;
-        }
-
-        .tx-details span {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .tx-amount {
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .tx-amount.income { color: var(--success); }
-        .tx-amount.expense { color: var(--danger); }
-
-        .tx-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .tx-del {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 2rem 1rem;
-            color: var(--text-secondary);
-        }
-
-        .empty-state div {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: flex-end;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.3s;
-        }
-
-        .modal.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            width: 100%;
-            max-height: 90vh;
-            border-radius: 24px 24px 0 0;
-            padding: 1.5rem;
-            transform: translateY(100%);
-            transition: 0.3s cubic-bezier(0.1, 1, 0.1, 1);
-            overflow-y: auto;
-        }
-
-        .modal.open .modal-content {
-            transform: translateY(0);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.4rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            border-radius: 12px;
-            font-size: 1rem;
-        }
-
-        .form-control:focus {
-            outline: 2px solid var(--primary);
-        }
-
-        /* Nav Bar Bottom */
-        nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--card-bg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 0.5rem 0;
-            z-index: 99;
-        }
-
-        .nav-item {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.2rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-            width: 25%;
-            transition: 0.2s;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .nav-item span:first-child {
-            font-size: 1.3rem;
-        }
-
-        .view {
-            display: none;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        /* Stats & Analytics */
-        .analytics-box {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .progress-bar-container {
-            background: var(--border);
-            border-radius: 10px;
-            height: 12px;
-            width: 100%;
-            overflow: hidden;
-            margin-top: 0.4rem;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .category-stat-item {
-            margin-bottom: 0.75rem;
-        }
-
-        .category-stat-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .about-box {
-            text-align: center;
-            padding: 1.5rem;
-        }
-
-        .about-box h3 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .about-box p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .badge {
-            background: rgba(79, 70, 229, 0.1);
-            color: var(--primary);
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            display: inline-block;
-        }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --card: #ffffff; }
+        .dark { --primary: #3b82f6; --bg: #0f172a; --text: #f1f5f9; --card: #1e293b; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; }
+        header { background: var(--primary); color: white; padding: 1rem; text-align: center; font-weight: bold; }
+        .container { padding: 1rem; }
+        .card { background: var(--card); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; }
+        .stats { display: flex; justify-content: space-between; text-align: center; }
+        .history-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+        .delete-btn { color: red; cursor: pointer; font-size: 0.8rem; }
+        footer { text-align: center; padding: 2rem; font-size: 0.8rem; color: #64748b; }
     </style>
 </head>
-<body data-theme="light">
+<body>
 
-    <header>
-        <div class="brand">
-            <span>💰</span> Mr Xboss Wallet
-        </div>
-        <div class="header-actions">
-            <button class="icon-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
-        </div>
-    </header>
+<header>Mr Xboss Wallet</header>
 
-    <main>
-        <!-- Home View -->
-        <div id="homeView" class="view active">
-            <div class="card balance-card">
-                <h2>الرصيد الإجمالي</h2>
-                <div class="amount" id="totalBalance">0.00 ر.س</div>
-                <div class="balance-stats">
-                    <div class="stat-item">
-                        <span>إجمالي الدخل</span>
-                        <strong id="totalIncome">0.00</strong>
-                    </div>
-                    <div class="stat-item">
-                        <span>إجمالي المصروف</span>
-                        <strong id="totalExpense">0.00</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="quick-actions">
-                <button class="btn btn-income" onclick="openModal('income')">➕ دخل جديد</button>
-                <button class="btn btn-expense" onclick="openModal('expense')">➖ مصروف جديد</button>
-            </div>
-
-            <div class="section-title">
-                <span>العمليات الأخيرة</span>
-            </div>
-
-            <div class="filters" id="filterContainer">
-                <div class="filter-chip active" onclick="setFilter('all', this)">الكل</div>
-                <div class="filter-chip" onclick="setFilter('income', this)">دخل</div>
-                <div class="filter-chip" onclick="setFilter('expense', this)">مصروف</div>
-            </div>
-
-            <div class="transaction-list" id="transactionList">
-                <!-- Transactions injected via JS -->
-            </div>
-        </div>
-
-        <!-- Statistics View -->
-        <div id="statsView" class="view">
-            <div class="card">
-                <h3 class="section-title"><span>إحصائيات التصنيفات</span></h3>
-                <div class="analytics-box" id="categoryStats">
-                    <!-- Category stats injected via JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Categories View -->
-        <div id="categoriesView" class="view">
-            <div class="card">
-                <h3 class="section-title"><span>إدارة التصنيفات</span></h3>
-                <div class="form-group">
-                    <input type="text" id="newCategoryName" class="form-control" placeholder="اسم التصنيف الجديد...">
-                </div>
-                <button class="btn btn-primary" onclick="addCategory()">إضافة تصنيف</button>
-            </div>
-            <div class="card">
-                <h3 class="section-title"><span>التصنيفات المتاحة</span></h3>
-                <div id="categoriesList" class="transaction-list">
-                    <!-- Categories injected here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings View -->
-        <div id="settingsView" class="view">
-            <div class="card about-box">
-                <h3>Mr Xboss Wallet</h3>
-                <p>تطبيق إدارة المصاريف والدخل الشخصي المتقدم</p>
-                <div class="badge">الإصدار 1.0.0</div>
-                <p style="margin-top: 1rem; font-size: 0.8rem;">صُمم خصيصاً بواسطة Mr Xboss</p>
-            </div>
-            <div class="card">
-                <h3 class="section-title"><span>البيانات</span></h3>
-                <button class="btn btn-expense" style="width:100%; margin-bottom: 0.5rem;" onclick="clearAllData()">حذف كافة البيانات</button>
-            </div>
-        </div>
-    </main>
-
-    <!-- Bottom Nav -->
-    <nav>
-        <button class="nav-item active" onclick="switchView('home', this)">
-            <span>🏠</span>
-            <span>الرئيسية</span>
-        </button>
-        <button class="nav-item" onclick="switchView('stats', this)">
-            <span>📊</span>
-            <span>الإحصائيات</span>
-        </button>
-        <button class="nav-item" onclick="switchView('categories', this)">
-            <span>🏷️</span>
-            <span>التصنيفات</span>
-        </button>
-        <button class="nav-item" onclick="switchView('settings', this)">
-            <span>⚙️</span>
-            <span>الإعدادات</span>
-        </button>
-    </nav>
-
-    <!-- Add Transaction Modal -->
-    <div class="modal" id="txModal" onclick="outsideClose(event)">
-        <div class="modal-content">
-            <h3 class="section-title" id="modalTitle">إضافة عملية</h3>
-            <form id="txForm" onsubmit="saveTransaction(event)">
-                <input type="hidden" id="txType">
-                <div class="form-group">
-                    <label>المبلغ (ر.س)</label>
-                    <input type="number" step="0.01" id="txAmount" class="form-control" required placeholder="0.00">
-                </div>
-                <div class="form-group">
-                    <label>العنوان / الوصف</label>
-                    <input type="text" id="txTitle" class="form-control" required placeholder="مثال: راتب، قهوة، تسوق...">
-                </div>
-                <div class="form-group">
-                    <label>التصنيف</label>
-                    <select id="txCategory" class="form-control">
-                        <!-- Options injected -->
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">حفظ العملية</button>
-            </form>
-        </div>
+<div class="container">
+    <div class="card stats">
+        <div>الميزانية<br><strong id="total">0</strong></div>
+        <div>دخل<br><strong id="income" style="color:green">0</strong></div>
+        <div>مصروف<br><strong id="expense" style="color:red">0</strong></div>
     </div>
 
-    <script>
-        const STORAGE_KEY_TX = 'mrxboss_wallet_tx';
-        const STORAGE_KEY_CAT = 'mrxboss_wallet_cat';
-        const STORAGE_KEY_THEME = 'mrxboss_wallet_theme';
+    <div class="card">
+        <input type="text" id="desc" placeholder="الوصف">
+        <input type="number" id="amount" placeholder="المبلغ">
+        <select id="type"><option value="income">دخل</option><option value="expense">مصروف</option></select>
+        <button onclick="addEntry()">إضافة</button>
+    </div>
 
-        let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY_TX)) || [
-            { id: 1, title: 'راتب شهري', amount: 5000, type: 'income', category: 'عمل', date: new Date().toISOString() },
-            { id: 2, title: 'سوبرماركت', amount: 250, type: 'expense', category: 'طعام', date: new Date().toISOString() }
-        ];
+    <button onclick="toggleTheme()" style="background: #64748b;">تغيير الوضع (ليلي/نهاري)</button>
 
-        let categories = JSON.parse(localStorage.getItem(STORAGE_KEY_CAT)) || ['طعام', 'عمل', 'فواتير', 'مترفيهات', 'نقل', 'أخرى'];
-        let currentFilter = 'all';
+    <div id="history" class="card">
+        <h3>السجل</h3>
+        <div id="list"></div>
+    </div>
+</div>
 
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeToggle').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
-            renderApp();
-        });
+<footer>
+    <p>com.mrxboss.apps.appdff68aca81</p>
+    <p>Powered by Mr Xboss</p>
+</footer>
 
-        function toggleTheme() {
-            const current = document.body.getAttribute('data-theme');
-            const next = current === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', next);
-            localStorage.setItem(STORAGE_KEY_THEME, next);
-            document.getElementById('themeToggle').innerText = next === 'dark' ? '☀️' : '🌙';
-        }
-
-        function switchView(viewName, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-            document.getElementById(viewName + 'View').classList.add('active');
-            el.classList.add('active');
-
-            if(viewName === 'stats') renderStats();
-            if(viewName === 'categories') renderCategories();
-        }
-
-        function openModal(type) {
-            document.getElementById('txType').value = type;
-            document.getElementById('modalTitle').innerText = type === 'income' ? '➕ إضافة دخل جديد' : '➖ إضافة مصروف جديد';
-            document.getElementById('txAmount').value = '';
-            document.getElementById('txTitle').value = '';
+<script>
+    let data = JSON.parse(localStorage.getItem('walletData')) || [];
+    
+    function updateUI() {
+        let list = document.getElementById('list');
+        list.innerHTML = '';
+        let inc = 0, exp = 0;
+        
+        data.forEach((item, index) => {
+            if(item.type === 'income') inc += parseFloat(item.amount);
+            else exp += parseFloat(item.amount);
             
-            const catSelect = document.getElementById('txCategory');
-            catSelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
-
-            document.getElementById('txModal').classList.add('open');
-        }
-
-        function outsideClose(e) {
-            if(e.target.id === 'txModal') {
-                document.getElementById('txModal').classList.remove('open');
-            }
-        }
-
-        function saveTransaction(e) {
-            e.preventDefault();
-            const type = document.getElementById('txType').value;
-            const amount = parseFloat(document.getElementById('txAmount').value);
-            const title = document.getElementById('txTitle').value;
-            const category = document.getElementById('txCategory').value;
-
-            if(!amount || !title) return;
-
-            const newTx = {
-                id: Date.now(),
-                title,
-                amount,
-                type,
-                category,
-                date: new Date().toISOString()
-            };
-
-            transactions.unshift(newTx);
-            persistAndRender();
-            document.getElementById('txModal').classList.remove('open');
-        }
-
-        function deleteTransaction(id) {
-            transactions = transactions.filter(t => t.id !== id);
-            persistAndRender();
-        }
-
-        function persistAndRender() {
-            localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
-            renderApp();
-        }
-
-        function setFilter(filter, el) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderTransactions();
-        }
-
-        function renderApp() {
-            renderSummary();
-            renderTransactions();
-        }
-
-        function renderSummary() {
-            let income = 0;
-            let expense = 0;
-
-            transactions.forEach(t => {
-                if(t.type === 'income') income += t.amount;
-                else expense += t.amount;
-            });
-
-            const total = income - expense;
-
-            document.getElementById('totalBalance').innerText = total.toFixed(2) + ' ر.س';
-            document.getElementById('totalIncome').innerText = income.toFixed(2);
-            document.getElementById('totalExpense').innerText = expense.toFixed(2);
-        }
-
-        function renderTransactions() {
-            const list = document.getElementById('transactionList');
-            let filtered = transactions;
-
-            if(currentFilter !== 'all') {
-                filtered = transactions.filter(t => t.type === currentFilter);
-            }
-
-            if(filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div>📭</div>
-                        <p>لا توجد عمليات مضافة بعد</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = filtered.map(t => `
-                <div class="transaction-item">
-                    <div class="tx-info">
-                        <div class="tx-icon">${t.type === 'income' ? '📥' : '📤'}</div>
-                        <div class="tx-details">
-                            <h4>${t.title}</h4>
-                            <span>${t.category} • ${new Date(t.date).toLocaleDateString('ar-SA')}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="tx-amount ${t.type}">${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}</div>
-                        <button class="tx-del" onclick="deleteTransaction(${t.id})">حذف</button>
-                    </div>
+            list.innerHTML += `
+                <div class="history-item">
+                    <span>${item.desc} (${item.amount})</span>
+                    <span class="delete-btn" onclick="deleteEntry(${index})">حذف</span>
                 </div>
-            `).join('');
-        }
+            `;
+        });
+        
+        document.getElementById('total').innerText = inc - exp;
+        document.getElementById('income').innerText = inc;
+        document.getElementById('expense').innerText = exp;
+        localStorage.setItem('walletData', JSON.stringify(data));
+    }
 
-        function renderStats() {
-            const container = document.getElementById('categoryStats');
-            const expenseItems = transactions.filter(t => t.type === 'expense');
-            const totalExpense = expenseItems.reduce((acc, t) => acc + t.amount, 0);
+    function addEntry() {
+        let desc = document.getElementById('desc').value;
+        let amount = document.getElementById('amount').value;
+        let type = document.getElementById('type').value;
+        if(!desc || !amount) return;
+        data.push({desc, amount, type});
+        updateUI();
+    }
 
-            if(expenseItems.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div>📊</div><p>لا توجد مصروفات لإحصائها</p></div>`;
-                return;
-            }
+    function deleteEntry(index) {
+        data.splice(index, 1);
+        updateUI();
+    }
 
-            const catTotals = {};
-            expenseItems.forEach(t => {
-                catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
-            });
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
 
-            container.innerHTML = Object.keys(catTotals).map(cat => {
-                const amount = catTotals[cat];
-                const percentage = totalExpense > 0 ? (amount / totalExpense) * 100 : 0;
-                return `
-                    <div class="category-stat-item">
-                        <div class="category-stat-info">
-                            <span>${cat}</span>
-                            <span>${amount.toFixed(2)} ر.س (${percentage.toFixed(1)}%)</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderCategories() {
-            const list = document.getElementById('categoriesList');
-            list.innerHTML = categories.map((c, index) => `
-                <div class="transaction-item">
-                    <span>🏷️ ${c}</span>
-                    ${categories.length > 1 ? `<button class="tx-del" onclick="deleteCategory(${index})">حذف</button>` : ''}
-                </div>
-            `).join('');
-        }
-
-        function addCategory() {
-            const input = document.getElementById('newCategoryName');
-            const name = input.value.trim();
-            if(name && !categories.includes(name)) {
-                categories.push(name);
-                localStorage.setItem(STORAGE_KEY_CAT, JSON.stringify(categories));
-                input.value = '';
-                renderCategories();
-            }
-        }
-
-        function deleteCategory(index) {
-            if(categories.length > 1) {
-                categories.splice(index, 1);
-                localStorage.setItem(STORAGE_KEY_CAT, JSON.stringify(categories));
-                renderCategories();
-            }
-        }
-
-        function clearAllData() {
-            if(confirm('هل أنت متأكد من حذف كافة البيانات؟')) {
-                localStorage.clear();
-                transactions = [];
-                categories = ['طعام', 'عمل', 'فواتير', 'أخرى'];
-                renderApp();
-                switchView('home', document.querySelector('.nav-item'));
-            }
-        }
-    </script>
+    if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    updateUI();
+</script>
 </body>
 </html>
