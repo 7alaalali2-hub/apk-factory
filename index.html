@@ -1,1075 +1,921 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mr Xboss Browser</title>
-  <style>
-    :root {
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-card: #334155;
-      --accent: #8b5cf6;
-      --accent-hover: #7c3aed;
-      --cyan: #06b6d4;
-      --green: #10b981;
-      --red: #ef4444;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #475569;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-    }
-
-    .light-theme {
-      --bg-primary: #f1f5f9;
-      --bg-secondary: #ffffff;
-      --bg-card: #e2e8f0;
-      --accent: #7c3aed;
-      --accent-hover: #6d28d9;
-      --cyan: #0284c7;
-      --green: #059669;
-      --red: #dc2626;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #cbd5e1;
-      --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      user-select: none;
-    }
-
-    body {
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Top Status & Search Bar */
-    header {
-      background: var(--bg-secondary);
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 100;
-      box-shadow: var(--shadow);
-    }
-
-    .app-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: var(--accent);
-      letter-spacing: -0.5px;
-    }
-
-    .brand-logo svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--accent);
-    }
-
-    .shield-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--green);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .shield-badge.disabled {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--red);
-      border-color: rgba(239, 68, 68, 0.3);
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 4px 8px 4px 12px;
-      transition: all 0.2s ease;
-    }
-
-    .search-box:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-    }
-
-    .search-box input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      padding: 8px 4px;
-      direction: ltr;
-      text-align: left;
-    }
-
-    .search-box input::placeholder {
-      direction: rtl;
-      text-align: right;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    .btn-icon {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px;
-      border-radius: 50%;
-      transition: all 0.2s ease;
-    }
-
-    .btn-icon:active {
-      background: var(--bg-card);
-      transform: scale(0.92);
-    }
-
-    .btn-icon svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
-
-    .btn-action-go {
-      background: var(--accent);
-      color: #fff;
-      border-radius: var(--radius-sm);
-      padding: 6px 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-left: 4px;
-    }
-
-    /* Main View Container */
-    main {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg-primary);
-    }
-
-    .view-pane {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-
-    .view-pane.active {
-      display: flex;
-    }
-
-    /* Home View */
-    #home-view {
-      padding: 16px;
-      gap: 20px;
-    }
-
-    .banner-card {
-      background: linear-gradient(135deg, var(--accent), var(--cyan));
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      color: #ffffff;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .banner-card h1 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .banner-card p {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      line-height: 1.4;
-    }
-
-    .banner-card .credit-tag {
-      margin-top: 12px;
-      display: inline-block;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      backdrop-filter: blur(4px);
-    }
-
-    .section-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-main);
-    }
-
-    .grid-shortcuts {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-    }
-
-    .shortcut-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .shortcut-icon {
-      width: 54px;
-      height: 54px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s ease;
-    }
-
-    .shortcut-item:active .shortcut-icon {
-      transform: scale(0.9);
-      border-color: var(--accent);
-    }
-
-    .shortcut-icon svg {
-      width: 26px;
-      height: 26px;
-    }
-
-    .shortcut-label {
-      font-size: 0.75rem;
-      color: var(--text-main);
-      font-weight: 600;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-    }
-
-    /* Video Player & Web Viewport */
-    #browser-view {
-      background: #000;
-    }
-
-    .browser-header-tools {
-      background: var(--bg-secondary);
-      padding: 6px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 0.8rem;
-    }
-
-    .url-display {
-      color: var(--text-muted);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 70%;
-      direction: ltr;
-      text-align: left;
-    }
-
-    .iframe-container {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #ffffff;
-    }
-
-    .video-custom-player {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-
-    .video-custom-player.active {
-      display: flex;
-    }
-
-    video {
-      width: 100%;
-      max-height: 80%;
-      outline: none;
-    }
-
-    /* Lists View (Bookmarks, History) */
-    .list-container {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .list-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .list-info {
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .list-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .list-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      direction: ltr;
-      text-align: right;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state svg {
-      width: 60px;
-      height: 60px;
-      fill: var(--border-color);
-      margin-bottom: 12px;
-    }
-
-    /* Settings View */
-    .settings-group {
-      background: var(--bg-secondary);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .setting-item {
-      padding: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .setting-item:last-child {
-      border-bottom: none;
-    }
-
-    .setting-text h4 {
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    .setting-text p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Switch Toggle */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: var(--bg-card);
-      transition: .3s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: var(--accent);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-
-    /* Footer Navigation Bar */
-    nav {
-      background: var(--bg-secondary);
-      border-top: 1px solid var(--border-color);
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      z-index: 100;
-      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .nav-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      width: 20%;
-      padding: 6px 0;
-    }
-
-    .nav-btn.active {
-      color: var(--accent);
-    }
-
-    .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: currentColor;
-    }
-
-    /* Owner Tag Footer */
-    .owner-footer {
-      text-align: center;
-      padding: 12px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: auto;
-    }
-
-    .owner-footer strong {
-      color: var(--accent);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>اصنع</title>
+<style>
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --accent: #ec4899;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-card: #334155;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #475569;
+  --success: #10b981;
+  --danger: #ef4444;
+}
+
+[data-theme="light"] {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --accent: #db2777;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-card: #f1f5f9;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: #cbd5e1;
+  --success: #059669;
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--bg);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+header {
+  background-color: var(--surface);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.icon-btn:active {
+  background: var(--surface-card);
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  position: relative;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+.screen.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+nav {
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 10;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  flex: 1;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+input, select, textarea {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.project-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.project-card:active {
+  border-color: var(--primary);
+}
+
+.project-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.project-info p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 16px;
+  color: var(--text-muted);
+}
+
+.empty-state svg {
+  width: 64px;
+  height: 64px;
+  fill: var(--border);
+}
+
+#game-container {
+  width: 100%;
+  height: 360px;
+  background-color: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.game-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 5;
+}
+
+.game-overlay.hidden {
+  display: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.stat-box {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-box h4 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-box p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background-color: var(--surface);
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--border);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.badge {
+  background: var(--surface-card);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--surface-card);
+  transition: .3s;
+  border-radius: 28px;
+  border: 1px solid var(--border);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+</style>
 </head>
 <body>
 
-  <!-- Top Search & Header -->
+<div id="app">
   <header>
-    <div class="app-meta">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-        <span>Mr Xboss Browser</span>
-      </div>
-      <div class="shield-badge" id="shield-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-        <span id="shield-count-text">محجوب: 0</span>
-      </div>
-    </div>
-
-    <div class="search-box">
-      <button class="btn-icon" id="btn-theme-toggle" title="تغيير المظهر">
-        <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+    <h1 id="header-title">اصنع</h1>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openModal('settings-modal')" title="الإعدادات">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
       </button>
-      <input type="text" id="url-input" placeholder="ابحث أو أدخل رابط الفيديو/الموقع..." autocomplete="off">
-      <button class="btn-icon" id="btn-clear-search" style="display:none;">
-        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-      </button>
-      <button class="btn-action-go" id="btn-go">انطلق</button>
     </div>
   </header>
 
-  <!-- Main Content Views -->
   <main>
-    <!-- 1. Home View -->
-    <div class="view-pane active" id="home-view">
-      <div class="banner-card">
-        <h1>متصفح الفيديو الذكي</h1>
-        <p>تصفح جميع مواقـع الفيديوهات والويب بسرعة فائقة بدون إعلانات مزعجة وبأعلى جودة.</p>
-        <div class="credit-tag">تطوير بواسطة: Mr Xboss</div>
+    <!-- Home Screen / Projects -->
+    <section id="screen-home" class="screen active">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>مشاريعي</h2>
+        <button class="btn" style="padding: 8px 14px; font-size: 0.9rem;" onclick="openModal('new-project-modal')">
+          + مشروع جديد
+        </button>
       </div>
 
-      <div>
-        <div class="section-title">
-          <span>اختصارات السريعة</span>
-        </div>
-        <div class="grid-shortcuts">
-          <div class="shortcut-item" onclick="loadUrl('https://www.youtube.com')">
-            <div class="shortcut-icon" style="color:#ef4444;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09v2.56c0 .6-.03 1.29-.1 2.09-.06.8-.15 1.43-.28 1.9-.13.47-.35.87-.66 1.2-.31.33-.7.55-1.17.66-.47.13-1.2.22-2.19.28-.99.07-2.19.1-3.6.1H9.86c-1.41 0-2.61-.03-3.6-.1-.99-.06-1.72-.15-2.19-.28-.47-.11-.86-.33-1.17-.66-.31-.33-.53-.73-.66-1.2-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09v-2.56c0-.6.03-1.29.1-2.09.06-.8.15-1.43.28-1.9.13-.47.35-.87.66-1.2.31-.33.7-.55 1.17-.66.47-.13 1.2-.22 2.19-.28.99-.07 2.19-.1 3.6-.1h4.28c1.41 0 2.61.03 3.6.1.99.06 1.72.15 2.19.28.47.11.86.33 1.17.66.31.33.53.73.66 1.2z"/></svg>
-            </div>
-            <span class="shortcut-label">يوتيوب</span>
-          </div>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="بحث في المشاريع..." oninput="filterProjects()">
+      </div>
 
-          <div class="shortcut-item" onclick="loadUrl('https://www.dailymotion.com')">
-            <div class="shortcut-icon" style="color:#06b6d4;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-            </div>
-            <span class="shortcut-label">ديلي موشن</span>
-          </div>
+      <div id="projects-container" class="project-grid">
+        <!-- Dynamic Projects -->
+      </div>
 
-          <div class="shortcut-item" onclick="loadUrl('https://vimeo.com')">
-            <div class="shortcut-icon" style="color:#3b82f6;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.396 7.164c-.093 2.026-1.507 4.8-4.245 8.32-2.817 3.643-5.19 5.464-7.119 5.464-1.203 0-2.217-.11-3.045-.333-1.396-.55-2.274-1.85-2.635-3.896-.708-3.41-1.416-6.822-2.124-10.233-.42-1.543-.889-2.315-1.408-2.315-.187 0-.756.395-1.708 1.185L0 4.092C1.229 3.012 2.502 2.02 3.821 1.117c1.808-.95 3.197-1.425 4.168-1.425 2.274 0 3.676 1.543 4.207 4.629.578 3.328 1.01 5.394 1.296 6.198.531 1.714 1.25 2.571 2.156 2.571.718 0 1.577-.464 2.577-1.393.999-.928 1.531-2.036 1.594-3.324.093-1.574-.469-2.361-1.688-2.361-.594 0-1.234.139-1.922.418.999-3.267 3.031-4.789 6.096-4.566 2.314.164 3.42 1.487 3.315 3.968z"/></svg>
-            </div>
-            <span class="shortcut-label">فيميو</span>
-          </div>
+      <div id="empty-projects" class="empty-state" style="display: none;">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <p>لا توجد مشاريع حالياً. ابدأ بإنشاء مشروعك الأول!</p>
+      </div>
+    </section>
 
-          <div class="shortcut-item" onclick="loadUrl('https://www.tiktok.com')">
-            <div class="shortcut-icon" style="color:#ec4899;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.3a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.56a6.34 6.34 0 0 0 10.86 4.47v-8.91a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-3.04-2.55z"/></svg>
-            </div>
-            <span class="shortcut-label">تيك توك</span>
-          </div>
-
-          <div class="shortcut-item" onclick="loadUrl('https://www.google.com')">
-            <div class="shortcut-icon" style="color:#10b981;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032 s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2 C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/></svg>
-            </div>
-            <span class="shortcut-label">جوجل</span>
-          </div>
-
-          <div class="shortcut-item" onclick="loadUrl('https://archive.org')">
-            <div class="shortcut-icon" style="color:#f59e0b;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            </div>
-            <span class="shortcut-label">الأرشيف</span>
-          </div>
-
-          <div class="shortcut-item" onclick="loadUrl('https://m.facebook.com')">
-            <div class="shortcut-icon" style="color:#2563eb;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.6 13.78 5.6c1.1 0 2.25.2 2.25.2v2.47h-1.27c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.45 3h-2.33v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
-            </div>
-            <span class="shortcut-label">فيسبوك</span>
-          </div>
-
-          <div class="shortcut-item" onclick="loadUrl('https://news.google.com')">
-            <div class="shortcut-icon" style="color:#8b5cf6;">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-            </div>
-            <span class="shortcut-label">الأخبار</span>
-          </div>
+    <!-- Create Screen -->
+    <section id="screen-create" class="screen">
+      <h2>صانع الألعاب والتطبيقات</h2>
+      <div class="card">
+        <h3>اختر فكرة للبدء السريع</h3>
+        <p style="color: var::text-muted; font-size: 0.9rem;">قم بتوليد لعبة أو أداة تفاعلية فورياً عبر محرك اصنع الذكي.</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-outline" onclick="quickCreate('game')">🎮 لعبة مغامرة</button>
+          <button class="btn btn-outline" onclick="quickCreate('tool')">🛠️ أداة حسابية</button>
         </div>
       </div>
 
-      <div class="settings-group" style="margin-top:10px;">
-        <div class="setting-item">
-          <div class="setting-text">
-            <h4>حاجز الإعلانات والحماية</h4>
-            <p>حجب الإعلانات المزعجة والتتبع تلقائياً</p>
-          </div>
+      <div class="card">
+        <h3>مشارب التطوير السريع</h3>
+        <div class="settings-item">
+          <span>تفعيل وضع البناء السريع</span>
           <label class="switch">
-            <input type="checkbox" id="adblock-toggle" checked>
+            <input type="checkbox" id="fast-build" checked>
             <span class="slider"></span>
           </label>
         </div>
-        <div class="setting-item">
-          <div class="setting-text">
-            <h4>مشغل الفيديو المباشر</h4>
-            <p>تشغيل الفيديوهات داخل التطبيق بدون إعلانات خارجية</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="direct-video-toggle" checked>
-            <span class="slider"></span>
-          </label>
+        <button class="btn btn-accent" onclick="openModal('new-project-modal')">إنشاء فكرة مخصصة</button>
+      </div>
+    </section>
+
+    <!-- Game/Play Screen -->
+    <section id="screen-play" class="screen">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="active-game-title">لعبة البناء الميدانية</h2>
+        <span class="badge" id="game-score-badge">النقاط: 0</span>
+      </div>
+
+      <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="game-start-overlay" class="game-overlay">
+          <h3 style="color: #fff; font-size: 1.5rem;">تحدي البناء</h3>
+          <p style="color: #cbd5e1; text-align: center; padding: 0 20px;">انقر لتفادي العوائق وجمع القطع لبناء عالمك الخاص!</p>
+          <button class="btn" onclick="startGame()">ابدأ اللعب</button>
+        </div>
+        <div id="game-over-overlay" class="game-overlay hidden">
+          <h3 style="color: var(--danger); font-size: 1.5rem;">انتهت اللعبة!</h3>
+          <p id="final-score" style="color: #fff;">النتيجة النهائية: 0</p>
+          <button class="btn" onclick="startGame()">إعادة المحاولة</button>
         </div>
       </div>
 
-      <div class="owner-footer">
-        حقوق التطوير محفوظة لـ <strong>Mr Xboss Browser</strong> &copy; 2025
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-outline" style="flex: 1;" onclick="pauseGame()" id="pause-btn">إيقاف مؤقت</button>
+        <button class="btn btn-outline" style="flex: 1;" onclick="switchScreen('home')">الخروج للقائمة</button>
       </div>
-    </div>
+    </section>
 
-    <!-- 2. Browser View -->
-    <div class="view-pane" id="browser-view">
-      <div class="browser-header-tools">
-        <div class="url-display" id="current-url-display">https://...</div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn-icon" id="btn-add-bookmark" title="إضافة للمفضلة">
-            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>
-          </button>
+    <!-- Stats Screen -->
+    <section id="screen-stats" class="screen">
+      <h2>الإحصائيات والإنجازات</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h4>المشاريع المنشأة</h4>
+          <p id="stat-projects-count">0</p>
+        </div>
+        <div class="stat-box">
+          <h4>أفضل نتيجة لعبة</h4>
+          <p id="stat-best-score">0</p>
+        </div>
+        <div class="stat-box">
+          <h4>ساعات التطوير</h4>
+          <p>12.5</p>
+        </div>
+        <div class="stat-box">
+          <h4>الإنجازات المفتوحة</h4>
+          <p>4/8</p>
         </div>
       </div>
 
-      <div class="iframe-container">
-        <iframe id="web-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups-to-escape-sandbox" src="about:blank"></iframe>
-        
-        <!-- Native Video Player Overlay for Direct Streams -->
-        <div class="video-custom-player" id="video-overlay">
-          <video id="native-video-element" controls style="width:100%; height:100%;"></video>
+      <div class="card">
+        <h3>الشارات والإنجازات</h3>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+          <span class="badge">🚀 مبرمج مبتدئ</span>
+          <span class="badge">🎮 صانع ألعاب</span>
+          <span class="badge">⭐ نشط دائم</span>
+          <span class="badge" style="opacity: 0.5;">🔒 خبير التطوير</span>
         </div>
       </div>
-    </div>
-
-    <!-- 3. Bookmarks View -->
-    <div class="view-pane" id="bookmarks-view">
-      <div class="section-title" style="padding:16px 16px 0 16px;">
-        <span>المفضلة المحفوظة</span>
-      </div>
-      <div class="list-container" id="bookmarks-list">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-
-    <!-- 4. History View -->
-    <div class="view-pane" id="history-view">
-      <div class="section-title" style="padding:16px 16px 0 16px;">
-        <span>سجل التصفح</span>
-        <button id="btn-clear-history" style="background:none; border:none; color:var(--red); font-weight:700; cursor:pointer; font-size:0.8rem;">مسح الكل</button>
-      </div>
-      <div class="list-container" id="history-list">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-
-    <!-- 5. Settings & About View -->
-    <div class="view-pane" id="settings-view" style="padding:16px;">
-      <div class="section-title">
-        <span>إعدادات التطبيق</span>
-      </div>
-
-      <div class="settings-group">
-        <div class="setting-item">
-          <div class="setting-text">
-            <h4>منع النوافذ المنبثقة Popups</h4>
-            <p>حظر الإعلانات التي تفتح في صفحات جديدة</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="setting-popups" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-text">
-            <h4>محرك البحث الافتراضي</h4>
-            <p>اختر المحرك المناسب للبحث السريع</p>
-          </div>
-          <select id="engine-select" style="background:var(--bg-primary); color:var(--text-main); border:1px solid var(--border-color); padding:4px 8px; border-radius:6px; outline:none;">
-            <option value="google">Google</option>
-            <option value="duckduckgo">DuckDuckGo</option>
-
-          </select>
-        </div>
-      </div>
-
-      <div class="section-title">
-        <span>حول التطبيق والمالك</span>
-      </div>
-
-      <div class="settings-group" style="padding:16px; text-align:center;">
-        <h3 style="color:var(--accent); margin-bottom:6px;">Mr Xboss Browser</h3>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">الإصدار الذكي 2.5 - WebView APK Edition</p>
-        <div style="font-size:0.85rem; line-height:1.6; color:var(--text-main);">
-          محرر وتطبيق تصفح محصّن لإتاحة مشاهدة كافة أنواع الفيديوهات والروابط بسرعة عالية ودون أي إعلانات مزعجة.
-        </div>
-        <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); font-weight:700; color:var(--cyan); font-size:0.85rem;">
-          حقوق المالك والبرمجة: Mr Xboss
-        </div>
-        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">
-          Key: com.mrxboss.apps.appefe9b43cab
-        </div>
-      </div>
-    </div>
+    </section>
   </main>
 
-  <!-- Bottom Navigation Bar -->
   <nav>
-    <button class="nav-btn active" id="nav-home">
+    <button class="nav-item active" onclick="switchScreen('home')">
       <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      <span>الرئيسية</span>
+      المشاريع
     </button>
-    <button class="nav-btn" id="nav-back">
-      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      <span>رجوع</span>
+    <button class="nav-item" onclick="switchScreen('create')">
+      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      اصنع
     </button>
-    <button class="nav-btn" id="nav-forward">
-      <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
-      <span>تقدم</span>
+    <button class="nav-item" onclick="switchScreen('play'); initGameCanvas();">
+      <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-4c-.83 0-1.5-.67-1.5-1.5S19.67 8 20.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+      الألعاب
     </button>
-    <button class="nav-btn" id="nav-bookmarks">
-      <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-      <span>المفضلة</span>
-    </button>
-    <button class="nav-btn" id="nav-settings">
-      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      <span>الإعدادات</span>
+    <button class="nav-item" onclick="switchScreen('stats')">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      الإحصائيات
     </button>
   </nav>
 
-  <script>
-    // State & Storage Initialization
-    const STATE = {
-      currentView: 'home',
-      historyStack: [],
-      forwardStack: [],
-      currentUrl: '',
-      blockedAdsCount: 142,
-      adBlockEnabled: true,
-      bookmarks: JSON.parse(localStorage.getItem('mrxboss_bookmarks') || '[]'),
-      history: JSON.parse(localStorage.getItem('mrxboss_history') || '[]'),
-      theme: localStorage.getItem('mrxboss_theme') || 'dark',
-      searchEngine: localStorage.getItem('mrxboss_engine') || 'google'
+  <!-- New Project Modal -->
+  <div id="new-project-modal" class="modal">
+    <div class="modal-content">
+      <h3>إنشاء مشروع جديد</h3>
+      <input type="text" id="new-project-title" placeholder="اسم المشروع (مثال: مغامرة الفضاء)">
+      <select id="new-project-type">
+        <option value="game">لعبة أركيد تفاعلية</option>
+        <option value="app">تطبيق خدمات وأدوات</option>
+        <option value="notes">مفكرة أفكار</option>
+      </select>
+      <textarea id="new-project-desc" placeholder="وصف موجز للفكرة..." rows="3"></textarea>
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button class="btn btn-outline" onclick="closeModal('new-project-modal')">إلغاء</button>
+        <button class="btn" onclick="saveNewProject()">إنشاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <h3>الإعدادات</h3>
+      <div class="settings-item">
+        <span>الوضع الليلي</span>
+        <label class="switch">
+          <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settings-item">
+        <span>الأصوات والتأثيرات</span>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <p style="font-weight: 600; margin-bottom: 4px;">معلومات المطور</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">المالك والمطور: Mr Xboss</p>
+        <p style="color: var::text-muted; font-size: 0.8rem;">الحزمة: com.mrxboss.apps.app56ef54484e</p>
+      </div>
+      <button class="btn" onclick="closeModal('settings-modal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// App State & LocalStorage
+let state = {
+  projects: JSON.parse(localStorage.getItem('mrxboss_projects')) || [
+    { id: 1, title: 'تطبيق المحفظة الذكية', type: 'app', desc: 'إدارة المصروفات اليومية الشخصية.', date: '2023-10-01' },
+    { id: 2, title: 'لعبة القفز المذهلة', type: 'game', desc: 'لعبة أركيد خفيفة وممتعة.', date: '2023-10-05' }
+  ],
+  bestScore: parseInt(localStorage.getItem('mrxboss_best_score')) || 0,
+  darkMode: localStorage.getItem('mrxboss_dark') !== 'false'
+};
+
+function saveState() {
+  localStorage.setItem('mrxboss_projects', JSON.stringify(state.projects));
+  localStorage.setItem('mrxboss_best_score', state.bestScore);
+  localStorage.setItem('mrxboss_dark', state.darkMode);
+}
+
+// Navigation Screens
+function switchScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  
+  document.getElementById(`screen-${screenId}`).classList.add('active');
+  
+  const navIndex = { 'home': 0, 'create': 1, 'play': 2, 'stats': 3 }[screenId];
+  if(navIndex !== undefined) {
+    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+  }
+  
+  if(screenId === 'home') renderProjects();
+  if(screenId === 'stats') updateStats();
+  if(screenId !== 'play') stopGame();
+}
+
+// Modals
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('active');
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('active');
+}
+
+// Projects Management
+function renderProjects(filteredList = null) {
+  const container = document.getElementById('projects-container');
+  const emptyState = document.getElementById('empty-projects');
+  const list = filteredList || state.projects;
+  
+  container.innerHTML = '';
+  if(list.length === 0) {
+    emptyState.style.display = 'flex';
+    return;
+  }
+  emptyState.style.display = 'none';
+  
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML = `
+      <div class="project-info">
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <span class="badge" style="margin-top: 6px; display:inline-block;">${p.type === 'game' ? 'لعبة' : 'تطبيق'}</span>
+      </div>
+      <button class="icon-btn" onclick="deleteProject(${p.id}, event)" title="حذف">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--danger)"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+      </button>
+    `;
+    card.onclick = () => {
+      if(p.type === 'game') {
+        switchScreen('play');
+        initGameCanvas();
+      } else {
+        alert('فتح مشروع: ' + p.title + '\n(تم الإنشاء بواسطة Mr Xboss)');
+      }
     };
+    container.appendChild(card);
+  });
+}
 
-    // DOM References
-    const urlInput = document.getElementById('url-input');
-    const btnGo = document.getElementById('btn-go');
-    const btnClearSearch = document.getElementById('btn-clear-search');
-    const webIframe = document.getElementById('web-iframe');
-    const currentUrlDisplay = document.getElementById('current-url-display');
-    const shieldBadge = document.getElementById('shield-badge');
-    const shieldCountText = document.getElementById('shield-count-text');
-    const adblockToggle = document.getElementById('adblock-toggle');
-    const btnThemeToggle = document.getElementById('btn-theme-toggle');
-    const videoOverlay = document.getElementById('video-overlay');
-    const nativeVideoElement = document.getElementById('native-video-element');
-    const engineSelect = document.getElementById('engine-select');
+function saveNewProject() {
+  const title = document.getElementById('new-project-title').value.trim();
+  const type = document.getElementById('new-project-type').value;
+  const desc = document.getElementById('new-project-desc').value.trim();
+  
+  if(!title) {
+    alert('يرجى إدخال اسم المشروع');
+    return;
+  }
+  
+  const newProj = {
+    id: Date.now(),
+    title,
+    type,
+    desc: desc || 'بدون وصف',
+    date: new Date().toISOString().split('T')[0]
+  };
+  
+  state.projects.unshift(newProj);
+  saveState();
+  closeModal('new-project-modal');
+  renderProjects();
+  
+  document.getElementById('new-project-title').value = '';
+  document.getElementById('new-project-desc').value = '';
+}
 
-    // Navigation buttons
-    const navHome = document.getElementById('nav-home');
-    const navBack = document.getElementById('nav-back');
-    const navForward = document.getElementById('nav-forward');
-    const navBookmarks = document.getElementById('nav-bookmarks');
-    const navSettings = document.getElementById('nav-settings');
-    const btnClearHistory = document.getElementById('btn-clear-history');
-    const btnAddBookmark = document.getElementById('btn-add-bookmark');
+function deleteProject(id, event) {
+  event.stopPropagation();
+  if(confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+    state.projects = state.projects.filter(p => p.id !== id);
+    saveState();
+    renderProjects();
+  }
+}
 
-    // Initialize Theme
-    if (STATE.theme === 'light') {
-      document.body.classList.add('light-theme');
+function filterProjects() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const filtered = state.projects.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+  renderProjects(filtered);
+}
+
+// Quick Create Generator
+function quickCreate(type) {
+  const titles = type === 'game' ? ['مغامرة الفضاء', 'سباق التحدي', 'قفز المنصات'] : ['حاسبة الميزانية', 'مفكرة المهام', 'محول الوحدات'];
+  const randomTitle = titles[Math.floor(Math.random() * titles.length)] + ' ' + Math.floor(Math.random()*100);
+  
+  state.projects.unshift({
+    id: Date.now(),
+    title: randomTitle,
+    type: type,
+    desc: 'تم التوليد تلقائياً بواسطة محرك اصنع.',
+    date: new Date().toISOString().split('T')[0]
+  });
+  saveState();
+  switchScreen('home');
+}
+
+// Stats Update
+function updateStats() {
+  document.getElementById('stat-projects-count').innerText = state.projects.length;
+  document.getElementById('stat-best-score').innerText = state.bestScore;
+}
+
+// Theme Handling
+function toggleDarkMode() {
+  state.darkMode = document.getElementById('dark-mode-toggle').checked;
+  document.documentElement.setAttribute('data-theme', state.darkMode ? 'dark' : 'light');
+  saveState();
+}
+
+// Initialize Theme UI
+if(state.darkMode) {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.getElementById('dark-mode-toggle').checked = true;
+} else {
+  document.documentElement.setAttribute('data-theme', 'light');
+  document.getElementById('dark-mode-toggle').checked = false;
+}
+
+// --- Arcade Game Engine ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let gameInterval = null;
+let isGameRunning = false;
+let isPaused = false;
+let score = 0;
+
+let player = { x: 50, y: 250, size: 24, vy: 0, gravity: 0.6, jump: -10, color: '#ec4899' };
+let obstacles = [];
+let frameCount = 0;
+
+function initGameCanvas() {
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight;
+  player.y = canvas.height - 80;
+  drawInitialState();
+}
+
+function drawInitialState() {
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw floor
+  ctx.fillStyle = '#6366f1';
+  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+  
+  // Draw player
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+}
+
+function startGame() {
+  document.getElementById('game-start-overlay').classList.add('hidden');
+  document.getElementById('game-over-overlay').classList.add('hidden');
+  
+  score = 0;
+  obstacles = [];
+  frameCount = 0;
+  player.y = canvas.height - 80 - player.size;
+  player.vy = 0;
+  isGameRunning = true;
+  isPaused = false;
+  
+  if(gameInterval) cancelAnimationFrame(gameInterval);
+  gameLoop();
+}
+
+function pauseGame() {
+  if(!isGameRunning) return;
+  isPaused = !isPaused;
+  document.getElementById('pause-btn').innerText = isPaused ? 'استئناف' : 'إيقاف مؤقت';
+  if(!isPaused) gameLoop();
+}
+
+function stopGame() {
+  isGameRunning = false;
+  if(gameInterval) cancelAnimationFrame(gameInterval);
+}
+
+function gameLoop() {
+  if(!isGameRunning || isPaused) return;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Background & Floor
+  ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'light' ? '#f1f5f9' : '#0f172a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = '#6366f1';
+  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+  
+  // Player physics
+  player.vy += player.gravity;
+  player.y += player.vy;
+  
+  const floorY = canvas.height - 40 - player.size;
+  if(player.y > floorY) {
+    player.y = floorY;
+    player.vy = 0;
+  }
+  
+  // Draw player
+  ctx.fillStyle = '#ec4899';
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+  
+  // Obstacles generator
+  frameCount++;
+  if(frameCount % 90 === 0) {
+    let obsHeight = 30 + Math.random() * 30;
+    obstacles.push({ x: canvas.width, y: canvas.height - 40 - obsHeight, w: 20, h: obsHeight, speed: 4 + Math.floor(score/10) });
+  }
+  
+  // Move & Draw obstacles
+  for(let i = obstacles.length - 1; i >= 0; i--) {
+    let obs = obstacles[i];
+    obs.x -= obs.speed;
+    
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+    
+    // Collision detection
+    if(
+      player.x < obs.x + obs.w &&
+      player.x + player.size > obs.x &&
+      player.y < obs.y + obs.h &&
+      player.y + player.size > obs.y
+    ) {
+      gameOver();
+      return;
     }
-
-    // Event Listeners
-    urlInput.addEventListener('input', () => {
-      btnClearSearch.style.display = urlInput.value.length > 0 ? 'flex' : 'none';
-    });
-
-    btnClearSearch.addEventListener('click', () => {
-      urlInput.value = '';
-      btnClearSearch.style.display = 'none';
-      urlInput.focus();
-    });
-
-    btnGo.addEventListener('click', () => {
-      handleSearchOrUrl(urlInput.value);
-    });
-
-    urlInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        handleSearchOrUrl(urlInput.value);
-      }
-    });
-
-    btnThemeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('light-theme');
-      STATE.theme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
-      localStorage.setItem('mrxboss_theme', STATE.theme);
-    });
-
-    adblockToggle.addEventListener('change', (e) => {
-      STATE.adBlockEnabled = e.target.checked;
-      if (STATE.adBlockEnabled) {
-        shieldBadge.classList.remove('disabled');
-      } else {
-        shieldBadge.classList.add('disabled');
-      }
-    });
-
-    engineSelect.value = STATE.searchEngine;
-    engineSelect.addEventListener('change', (e) => {
-      STATE.searchEngine = e.target.value;
-      localStorage.setItem('mrxboss_engine', STATE.searchEngine);
-    });
-
-    // Navigation Click Handlers
-    navHome.addEventListener('click', () => switchView('home'));
-    navBookmarks.addEventListener('click', () => {
-      renderBookmarks();
-      switchView('bookmarks');
-    });
-    navSettings.addEventListener('click', () => switchView('settings'));
-
-    navBack.addEventListener('click', () => {
-      if (STATE.historyStack.length > 1) {
-        const current = STATE.historyStack.pop();
-        STATE.forwardStack.push(current);
-        const prevUrl = STATE.historyStack[STATE.historyStack.length - 1];
-        loadUrlInternal(prevUrl, false);
-      } else {
-        switchView('home');
-      }
-    });
-
-    navForward.addEventListener('click', () => {
-      if (STATE.forwardStack.length > 0) {
-        const nextUrl = STATE.forwardStack.pop();
-        loadUrlInternal(nextUrl, true);
-      }
-    });
-
-    btnAddBookmark.addEventListener('click', () => {
-      if (!STATE.currentUrl) return;
-      const title = STATE.currentUrl.replace(/https?:\/\//, '').split('/')[0] || STATE.currentUrl;
-      const exists = STATE.bookmarks.some(b => b.url === STATE.currentUrl);
-      if (!exists) {
-        STATE.bookmarks.push({ title, url: STATE.currentUrl });
-        localStorage.setItem('mrxboss_bookmarks', JSON.stringify(STATE.bookmarks));
-        alert('تمت إضافة الموقع إلى المفضلة!');
-      } else {
-        alert('الموقع موجود بالفعل في المفضلة');
-      }
-    });
-
-    btnClearHistory.addEventListener('click', () => {
-      if (confirm('هل أنت تأكد من مسح جميع سجلات التصفح؟')) {
-        STATE.history = [];
-        localStorage.removeItem('mrxboss_history');
-        renderHistory();
-      }
-    });
-
-    // Core Router & Browser Logic
-    function switchView(viewName) {
-      STATE.currentView = viewName;
-      document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-
-      document.getElementById(`${viewName}-view`).classList.add('active');
-      const activeNav = document.getElementById(`nav-${viewName}`);
-      if (activeNav) activeNav.classList.add('active');
+    
+    // Remove off-screen & score
+    if(obs.x + obs.w < 0) {
+      obstacles.splice(i, 1);
+      score++;
+      document.getElementById('game-score-badge').innerText = `النقاط: ${score}`;
     }
+  }
+  
+  gameInterval = requestAnimationFrame(gameLoop);
+}
 
-    function handleSearchOrUrl(input) {
-      input = input.trim();
-      if (!input) return;
+function jumpPlayer() {
+  if(!isGameRunning || isPaused) return;
+  const floorY = canvas.height - 40 - player.size;
+  if(player.y >= floorY - 5) {
+    player.vy = player.jump;
+  }
+}
 
-      let targetUrl = input;
-      const isUrl = /^(https?:\/\/)?([\w\d\-]+\.)+[\w\d\-]+(\/.*)?$/i.test(input);
+function gameOver() {
+  isGameRunning = false;
+  if(score > state.bestScore) {
+    state.bestScore = score;
+    saveState();
+  }
+  document.getElementById('final-score').innerText = `النتيجة النهائية: ${score} (الأفضل: ${state.bestScore})`;
+  document.getElementById('game-over-overlay').classList.remove('hidden');
+}
 
-      if (!isUrl) {
-        if (STATE.searchEngine === 'duckduckgo') {
-          targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
-        } else {
-          targetUrl = `https://www.google.com/search?q=${encodeURIComponent(input)}`;
-        }
-      } else if (!/^https?:\/\//i.test(input)) {
-        targetUrl = 'https://' + input;
-      }
+// Touch controls for game
+canvas.addEventListener('pointerdown', () => {
+  if(!isGameRunning && document.getElementById('game-start-overlay').classList.contains('hidden') && document.getElementById('game-over-overlay').classList.contains('hidden')) {
+    // running already
+  } else {
+    jumpPlayer();
+  }
+});
 
-      loadUrl(targetUrl);
-    }
-
-    function loadUrl(url) {
-      loadUrlInternal(url, true);
-    }
-
-    function loadUrlInternal(url, pushToStack = true) {
-      STATE.currentUrl = url;
-      urlInput.value = url;
-      currentUrlDisplay.textContent = url;
-
-      if (pushToStack) {
-        STATE.historyStack.push(url);
-        STATE.forwardStack = [];
-      }
-
-      // Add to persistent history
-      const existsIdx = STATE.history.findIndex(h => h.url === url);
-      if (existsIdx > -1) STATE.history.splice(existsIdx, 1);
-      STATE.history.unshift({ title: url.replace(/https?:\/\//, '').split('/')[0], url: url, time: new Date().toLocaleTimeString('ar-EG') });
-      if (STATE.history.length > 50) STATE.history.pop();
-      localStorage.setItem('mrxboss_history', JSON.stringify(STATE.history));
-
-      // Simulate Ad-blocking Increment
-      if (STATE.adBlockEnabled) {
-        STATE.blockedAdsCount += Math.floor(Math.random() * 5) + 2;
-        shieldCountText.textContent = `محجوب: ${STATE.blockedAdsCount}`;
-      }
-
-      // Detect Direct Video File or YouTube embed conversion
-      if (url.match(/\.(mp4|webm|m3u8|ogv)(\?.*)?$/i)) {
-        // Direct Video Playback
-        webIframe.style.display = 'none';
-        videoOverlay.classList.add('active');
-        nativeVideoElement.src = url;
-        nativeVideoElement.play();
-      } else if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/')) {
-        // Embed YouTube directly in clean full player mode
-        let videoId = '';
-        if (url.includes('youtu.be/')) {
-          videoId = url.split('youtu.be/')[1].split('?')[0];
-        } else {
-          videoId = new URL(url).searchParams.get('v');
-        }
-        const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
-        videoOverlay.classList.remove('active');
-        nativeVideoElement.pause();
-        webIframe.style.display = 'block';
-        webIframe.src = embedUrl;
-      } else {
-        // Standard Webpage loading
-        videoOverlay.classList.remove('active');
-        nativeVideoElement.pause();
-        webIframe.style.display = 'block';
-        webIframe.src = url;
-      }
-
-      switchView('browser');
-    }
-
-    // Render Helpers
-    function renderBookmarks() {
-      const container = document.getElementById('bookmarks-list');
-      if (STATE.bookmarks.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-            <p>لا توجد أي مواقع محفـوظة في المفضلة بعد.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = STATE.bookmarks.map((item, idx) => `
-        <div class="list-card">
-          <div class="list-info" onclick="loadUrl('${item.url}')" style="cursor:pointer;">
-            <div class="list-title">${escapeHtml(item.title)}</div>
-            <div class="list-sub">${escapeHtml(item.url)}</div>
-          </div>
-          <button class="btn-icon" onclick="removeBookmark(${idx})" style="color:var(--red);">
-            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-          </button>
-        </div>
-      `).join('');
-    }
-
-    function removeBookmark(idx) {
-      STATE.bookmarks.splice(idx, 1);
-      localStorage.setItem('mrxboss_bookmarks', JSON.stringify(STATE.bookmarks));
-      renderBookmarks();
-    }
-
-    function renderHistory() {
-      const container = document.getElementById('history-list');
-      if (STATE.history.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-            <p>سجل التصفح فارغ حالياً.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = STATE.history.map((item) => `
-        <div class="list-card" onclick="loadUrl('${item.url}')" style="cursor:pointer;">
-          <div class="list-info">
-            <div class="list-title">${escapeHtml(item.title)}</div>
-            <div class="list-sub">${escapeHtml(item.url)} - ${item.time}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    // Auto load History render listener
-    document.getElementById('nav-bookmarks').addEventListener('click', renderBookmarks);
-    document.getElementById('nav-settings').addEventListener('click', renderHistory);
-  </script>
+// Initial Render
+renderProjects();
+</script>
 </body>
 </html>
