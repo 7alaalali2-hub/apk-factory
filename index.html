@@ -1,1180 +1,1123 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mr Xboss Browser - متصفح المشاهدة الذكي</title>
-    <style>
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-color: #00e676;
-            --accent-hover: #00c853;
-            --danger-color: #ff5252;
-            --warning-color: #ffd600;
-            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            --border-radius: 16px;
-            --nav-height: 65px;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #f1f5f9;
-            --bg-secondary: #ffffff;
-            --bg-card: #e2e8f0;
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
-            --danger-color: #dc2626;
-            --warning-color: #d97706;
-            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            padding-bottom: var(--nav-height);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Top Header */
-        header {
-            background-color: var(--bg-secondary);
-            padding: 12px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .brand-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand-logo {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #00e676, #3d5afe);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 20px;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(0,230,118,0.3);
-        }
-
-        .brand-title {
-            font-size: 18px;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--text-primary), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            background: var(--bg-card);
-            border: none;
-            color: var(--text-primary);
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .icon-btn:active {
-            transform: scale(0.92);
-        }
-
-        .badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: var(--danger-color);
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            border: 2px solid var(--bg-secondary);
-        }
-
-        /* App Main Content Container */
-        main {
-            flex: 1;
-            padding: 16px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Search Section */
-        .search-box-container {
-            background: var(--bg-secondary);
-            padding: 16px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .search-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 48px 14px 16px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 12px rgba(0, 230, 118, 0.2);
-        }
-
-        .search-icon-inside {
-            position: absolute;
-            right: 14px;
-            color: var(--text-secondary);
-            pointer-events: none;
-        }
-
-        .engine-selector {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            scrollbar-width: none;
-        }
-
-        .engine-selector::-webkit-scrollbar {
-            display: none;
-        }
-
-        .engine-chip {
-            padding: 8px 14px;
-            background: var(--bg-card);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            white-space: nowrap;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border: 1px solid transparent;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .engine-chip.active {
-            background: var(--accent-color);
-            color: #fff;
-            border-color: var(--accent-color);
-            box-shadow: 0 4px 10px rgba(0,230,118,0.3);
-        }
-
-        .search-btn {
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .search-btn:active {
-            background: var(--accent-hover);
-        }
-
-        /* AdBlock Status Shield Bar */
-        .shield-banner {
-            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(61, 90, 254, 0.15));
-            border: 1px solid var(--accent-color);
-            border-radius: 12px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .shield-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .shield-toggle {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: #475569;
-            border-radius: 13px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .shield-toggle.active {
-            background: var(--accent-color);
-        }
-
-        .shield-toggle-circle {
-            position: absolute;
-            top: 3px;
-            right: 3px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-
-        .shield-toggle.active .shield-toggle-circle {
-            transform: translateX(-24px);
-        }
-
-        /* Search Cards Grid */
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        @media (min-width: 600px) {
-            .cards-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .search-card {
-            background: var(--bg-secondary);
-            padding: 16px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: transform 0.2s, border-color 0.2s;
-            text-align: center;
-        }
-
-        .search-card:active {
-            transform: scale(0.96);
-            border-color: var(--accent-color);
-        }
-
-        .card-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: white;
-        }
-
-        .card-name {
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .card-desc {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        /* Shortcuts Speed Dial Grid */
-        .shortcuts-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .shortcut-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .shortcut-icon {
-            width: 52px;
-            height: 52px;
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: transform 0.2s;
-        }
-
-        .shortcut-item:active .shortcut-icon {
-            transform: scale(0.9);
-        }
-
-        .shortcut-label {
-            font-size: 12px;
-            color: var(--text-primary);
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-
-        /* In-App Video Player Section */
-        .video-player-container {
-            background: var(--bg-secondary);
-            border-radius: var(--border-radius);
-            padding: 16px;
-            margin-bottom: 24px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .video-wrapper {
-            width: 100%;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            aspect-ratio: 16 / 9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .video-input-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        /* Navigation Bar Bottom */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: var(--nav-height);
-            background: var(--bg-secondary);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            z-index: 1000;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            color: var(--text-secondary);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            width: 20%;
-            padding: 6px 0;
-            transition: color 0.2s;
-        }
-
-        .nav-item.active {
-            color: var(--accent-color);
-        }
-
-        /* Tab Views Switcher */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Item Lists (Bookmarks & History) */
-        .data-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .list-card {
-            background: var(--bg-secondary);
-            padding: 14px 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .list-card-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            overflow: hidden;
-        }
-
-        .list-card-title {
-            font-size: 14px;
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .list-card-sub {
-            font-size: 11px;
-            color: var(--text-secondary);
-            direction: ltr;
-            text-align: right;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        /* Modal Overlay */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            width: 100%;
-            max-width: 450px;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: auto;
-        }
-
-        .developer-badge {
-            display: inline-block;
-            margin-top: 6px;
-            padding: 4px 10px;
-            background: rgba(0,230,118,0.1);
-            color: var(--accent-color);
-            border-radius: 20px;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mr Xboss Galaxy Party</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    touch-action: manipulation;
+}
+
+:root {
+    --bg-space: #070913;
+    --panel-bg: rgba(13, 17, 38, 0.85);
+    --cyan: #00f0ff;
+    --blue: #0066ff;
+    --gold: #ffb700;
+    --pink: #ff007f;
+    --white: #ffffff;
+    --text-dim: #a0aabf;
+    --radius: 16px;
+}
+
+body {
+    background-color: var(--bg-space);
+    color: var(--white);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+}
+
+#game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* UI Layers */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    background: radial-gradient(circle at center, rgba(10,15,35,0.9) 0%, rgba(5,7,15,0.95) 100%);
+    overflow-y: auto;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Common UI Components */
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel-bg);
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 0 15px var(--cyan);
+}
+
+.logo-text h1 {
+    font-size: 16px;
+    background: linear-gradient(90deg, var(--white), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-text span {
+    font-size: 10px;
+    color: var(--text-dim);
+}
+
+.stats-bar {
+    display: flex;
+    gap: 15px;
+}
+
+.stat-pill {
+    background: rgba(0,0,0,0.5);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-pill.gold { color: var(--gold); border-color: rgba(255,183,0,0.3); }
+.stat-pill.cyan { color: var(--cyan); border-color: rgba(0,240,255,0.3); }
+
+/* Main Menu Screen */
+.main-menu-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+}
+
+.main-title {
+    font-size: 32px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, var(--white), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(0,240,255,0.5);
+    margin-bottom: 5px;
+}
+
+.main-subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 280px;
+}
+
+.btn {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    border: none;
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,102,255,0.4);
+    transition: transform 0.1s, filter 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+}
+
+.btn:active {
+    transform: scale(0.96);
+    filter: brightness(1.2);
+}
+
+.btn.secondary {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: none;
+}
+
+.btn.gold-btn {
+    background: linear-gradient(135deg, #ff8800, var(--gold));
+    box-shadow: 0 4px 20px rgba(255,183,0,0.4);
+    color: #000;
+}
+
+/* Grid Menu Screens */
+.grid-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.grid-card {
+    background: var(--panel-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.grid-card.selected {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0,240,255,0.3);
+    background: rgba(0, 240, 255, 0.05);
+}
+
+.grid-card img, .card-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+/* In-Game HUD */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.hud-panel {
+    background: rgba(7, 9, 19, 0.7);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 10px 16px;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.hud-value {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--white);
+}
+
+.hud-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+/* Touch Controls */
+.touch-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+    pointer-events: none;
+    display: none;
+}
+
+.joystick-zone {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    width: 130px;
+    height: 130px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.joystick-knob {
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 240, 255, 0.5);
+    border: 2px solid var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--cyan);
+    pointer-events: none;
+    transition: transform 0.05s linear;
+}
+
+.action-buttons {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    gap: 15px;
+    pointer-events: auto;
+}
+
+.action-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(0, 102, 255, 0.4);
+    border: 2px solid var(--cyan);
+    color: var(--white);
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+    background: rgba(0, 240, 255, 0.7);
+}
+
+.action-btn.dash {
+    background: rgba(255, 0, 127, 0.4);
+    border-color: var(--pink);
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+    margin-bottom: 20px;
+}
+
+/* Modal / Popups */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 7, 15, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--cyan);
+    border-radius: var(--radius);
+    padding: 25px;
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+}
+
+.footer-credit {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 10px;
+}
+</style>
 </head>
 <body>
 
-    <!-- Header Bar -->
-    <header>
-        <div class="brand-info">
-            <div class="brand-logo">X</div>
-            <div>
-                <div class="brand-title">Mr Xboss Browser</div>
-                <div style="font-size: 10px; color: var(--text-secondary);">متصفح المشاهدة ذو السرعة الفائقة</div>
+<div id="game-container"></div>
+
+<!-- HUD -->
+<div id="hud">
+    <div class="hud-top">
+        <div class="hud-panel">
+            <span class="hud-value" id="hud-round">الجولة 1/3</span>
+            <span class="hud-label" id="hud-mode">سباق العوائق</span>
+        </div>
+        <div class="hud-panel">
+            <span class="hud-value" id="hud-time">01:30</span>
+            <span class="hud-label">الوقت المتبقي</span>
+        </div>
+        <div class="hud-panel">
+            <span class="hud-value" id="hud-rank">1 / 30</span>
+            <span class="hud-label">المركز</span>
+        </div>
+    </div>
+</div>
+
+<!-- Touch Controls -->
+<div class="touch-controls" id="touch-controls">
+    <div class="joystick-zone" id="joystick-zone">
+        <div class="joystick-knob" id="joystick-knob"></div>
+    </div>
+    <div class="action-buttons">
+        <button class="action-btn dash" id="btn-dash">اندفاع</button>
+        <button class="action-btn" id="btn-jump">قفز</button>
+    </div>
+</div>
+
+<!-- Screen: Main Menu -->
+<div id="screen-main" class="screen active">
+    <div class="header-bar">
+        <div class="logo-area">
+            <div class="logo-icon">X</div>
+            <div class="logo-text">
+                <h1>Galaxy Party</h1>
+                <span>Mr Xboss</span>
             </div>
         </div>
-
-        <div class="header-actions">
-            <button class="icon-btn" onclick="toggleTheme()" title="تبديل المظهر">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
-            </button>
-            <button class="icon-btn" onclick="switchTab('adblock')" title="أداة منع الإعلانات">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span class="badge" id="shieldBadge">0</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main>
-        <!-- TAB 1: HOME PAGE -->
-        <div id="tab-home" class="tab-content active">
-            <!-- AdBlock Shield Banner -->
-            <div class="shield-banner">
-                <div class="shield-info">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent-color);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <div>
-                        <div style="font-weight: bold; font-size: 13px;">حماية من الإعلانات والنوافذ</div>
-                        <div style="font-size: 11px; color: var(--text-secondary);" id="blockedCounterText">تم حجب 0 عنصر إعلاني منبثق</div>
-                    </div>
-                </div>
-                <div class="shield-toggle active" id="shieldToggleBtn" onclick="toggleAdBlock()">
-                    <div class="shield-toggle-circle"></div>
-                </div>
-            </div>
-
-            <!-- Main Search Box -->
-            <div class="search-box-container">
-                <form class="search-form" onsubmit="handleSearch(event)">
-                    <div class="search-input-wrapper">
-                        <svg class="search-icon-inside" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input type="text" id="searchInput" class="search-input" placeholder="ابحث أو أدخل رابط الموقع مباشرة..." required>
-                    </div>
-
-                    <div class="engine-selector">
-                        <div class="engine-chip active" onclick="selectEngine('google', this)">
-                            <span>Google</span>
-                        </div>
-                        <div class="engine-chip" onclick="selectEngine('youtube', this)">
-                            <span>YouTube</span>
-                        </div>
-                        <div class="engine-chip" onclick="selectEngine('bing', this)">
-                            <span>Bing</span>
-                        </div>
-                        <div class="engine-chip" onclick="selectEngine('duckduckgo', this)">
-                            <span>DuckDuckGo</span>
-                        </div>
-                        <div class="engine-chip" onclick="selectEngine('wikipedia', this)">
-                            <span>Wikipedia</span>
-                        </div>
-                        <div class="engine-chip" onclick="selectEngine('github', this)">
-                            <span>GitHub</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="search-btn">
-                        <span>انطلق عبر المتصفح</span>
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    </button>
-                </form>
-            </div>
-
-            <!-- Search Engine Cards -->
-            <div class="section-title">
-                <span>محركات البحث السريعة</span>
-                <span style="font-size: 11px; color: var(--text-secondary);">فتح مباشر بدون iframe</span>
-            </div>
-            <div class="cards-grid">
-                <div class="search-card" onclick="openDirectEngine('google')">
-                    <div class="card-icon" style="background: #4285F4;">G</div>
-                    <div class="card-name">Google</div>
-                    <div class="card-desc">بحث غوغل الشامل</div>
-                </div>
-                <div class="search-card" onclick="openDirectEngine('youtube')">
-                    <div class="card-icon" style="background: #FF0000;">▶</div>
-                    <div class="card-name">YouTube</div>
-                    <div class="card-desc">تصفح وتشغيل الفيديوهات</div>
-                </div>
-                <div class="search-card" onclick="openDirectEngine('bing')">
-                    <div class="card-icon" style="background: #008373;">b</div>
-                    <div class="card-name">Bing</div>
-                    <div class="card-desc">محرك بحث مايكروسوفت</div>
-                </div>
-                <div class="search-card" onclick="openDirectEngine('duckduckgo')">
-                    <div class="card-icon" style="background: #DE5833;">🦆</div>
-                    <div class="card-name">DuckDuckGo</div>
-                    <div class="card-desc">بحث آمن وخاص</div>
-                </div>
-                <div class="search-card" onclick="openDirectEngine('wikipedia')">
-                    <div class="card-icon" style="background: #636466;">W</div>
-                    <div class="card-name">Wikipedia</div>
-                    <div class="card-desc">الموسوعة الحرة</div>
-                </div>
-                <div class="search-card" onclick="openDirectEngine('github')">
-                    <div class="card-icon" style="background: #24292e;">🐙</div>
-                    <div class="card-name">GitHub</div>
-                    <div class="card-desc">المشاريع والأكواد</div>
-                </div>
-            </div>
-
-            <!-- Shortcuts Grid -->
-            <div class="section-title">
-                <span>اختصارات المواقع الشهيرة</span>
-                <button class="icon-btn" style="width: 28px; height: 28px;" onclick="openAddBookmarkModal()" title="إضافة اختصار">+ </button>
-            </div>
-            <div class="shortcuts-grid" id="shortcutsContainer">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-
-        <!-- TAB 2: BOOKMARKS -->
-        <div id="tab-bookmarks" class="tab-content">
-            <div class="section-title">
-                <span>المفضلة والاختصارات المحفوظة</span>
-                <button class="search-btn" style="padding: 6px 12px; font-size: 12px;" onclick="openAddBookmarkModal()">+ إضافة جديد</button>
-            </div>
-            <div class="data-list" id="bookmarksList">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-
-        <!-- TAB 3: HISTORY -->
-        <div id="tab-history" class="tab-content">
-            <div class="section-title">
-                <span>سجل التصفح والبحث</span>
-                <button class="search-btn" style="padding: 6px 12px; font-size: 12px; background: var(--danger-color);" onclick="clearHistory()">مسح السجل</button>
-            </div>
-            <div class="data-list" id="historyList">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-
-        <!-- TAB 4: VIDEO PLAYER TOOL -->
-        <div id="tab-player" class="tab-content">
-            <div class="section-title">
-                <span>مشغل فيديو الميديا المباشر</span>
-            </div>
-            <div class="video-player-container">
-                <div class="video-wrapper">
-                    <video id="appVideoPlayer" controls poster="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2300e676' stroke-width='1'><polygon points='5 3 19 12 5 21 5 3'></polygon></svg>">
-                        متصفحك لا يدعم تشغيل هذا الفيديو مباشرة.
-                    </video>
-                </div>
-                <div style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
-                    شاهد جميع الفيديوهات مباشرة وبدون إعلانات مزعجة عبر وضع رابط الفيديو (MP4 / WebM / Stream):
-                </div>
-                <div class="video-input-group">
-                    <input type="text" id="videoUrlInput" class="search-input" placeholder="ضع رابط الفيديو المباشر هنا..." style="padding: 10px;">
-                    <button class="search-btn" style="padding: 10px 16px; font-size: 13px;" onclick="loadVideoFromInput()">تشغيل</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 5: SETTINGS & ABOUT -->
-        <div id="tab-settings" class="tab-content">
-            <div class="section-title">الإعدادات والتطوير</div>
-            <div class="search-box-container" style="display: flex; flex-direction: column; gap: 16px;">
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; margin-bottom: 6px; display: block;">محرك البحث الافتراضي</label>
-                    <select id="defaultEngineSelect" class="search-input" style="padding: 10px;" onchange="saveDefaultEngine(this.value)">
-                        <option value="google">Google</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="bing">Bing</option>
-                        <option value="duckduckgo">DuckDuckGo</option>
-                        <option value="wikipedia">Wikipedia</option>
-                        <option value="github">GitHub</option>
-                    </select>
-                </div>
-
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-size: 14px; font-weight: bold;">وضع حجب النوافذ والإعلانات</div>
-                        <div style="font-size: 11px; color: var(--text-secondary);">تقليل العناصر المزعجة تلقائياً داخل Android WebView</div>
-                    </div>
-                    <button class="search-btn" style="padding: 8px 14px; font-size: 12px;" onclick="toggleAdBlock()">تغيير الحالة</button>
-                </div>
-
-                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
-
-                <div>
-                    <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">حقوق التطبيق والمعلومات</div>
-                    <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
-                        تطبيق <strong>Mr Xboss Browser</strong> هو متصفح ويب عربي ذكي مصمم خصيصاً ليعمل بأعلى كفاءة وسرعة داخل أجهزة أندرويد.
-                    </p>
-                    <div style="margin-top: 12px;">
-                        <span class="developer-badge">تطوير بواسطة: Mr Xboss</span>
-                        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">
-                            Package Key: <code>com.mrxboss.apps.app3b76589f55</code>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="search-btn" style="background: var(--danger-color); margin-top: 10px;" onclick="resetAllAppData()">إعادة ضبط كل البيانات</button>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer Credit -->
-    <footer>
-        <div>جميع الحقوق محفوظة © Mr Xboss Browser</div>
-        <div style="margin-top: 4px;">تصميم وتطوير بواسطة <strong style="color: var(--accent-color);">Mr Xboss</strong></div>
-    </footer>
-
-    <!-- Add Bookmark Modal -->
-    <div class="modal" id="addBookmarkModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="font-size: 16px;">إضافة موقع للمفضلة</h3>
-                <button class="icon-btn" onclick="closeAddBookmarkModal()">✕</button>
-            </div>
-            <form onsubmit="handleAddBookmark(event)" style="display: flex; flex-direction: column; gap: 12px;">
-                <input type="text" id="bookmarkTitle" class="search-input" placeholder="اسم الموقع (مثال: جوجل)" required>
-                <input type="url" id="bookmarkUrl" class="search-input" placeholder="رابط الموقع (https://...)" required>
-                <button type="submit" class="search-btn">حفظ في المفضلة</button>
-            </form>
+        <div class="stats-bar">
+            <div class="stat-pill gold"><span id="lbl-coins">0</span> 💎</div>
         </div>
     </div>
 
-    <!-- Navigation Bar -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchTab('home')" id="nav-home">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>الرئيسية</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('bookmarks')" id="nav-bookmarks">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-            <span>المفضلة</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('history')" id="nav-history">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>السجل</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('player')" id="nav-player">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            <span>الفيديو</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('settings')" id="nav-settings">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>الإعدادات</span>
-        </button>
-    </nav>
+    <div class="main-menu-content">
+        <div>
+            <h2 class="main-title">بطولة المجرة</h2>
+            <p class="main-subtitle">انطلق وتجاوز خصومك في تحديات الحفلة الفضائية</p>
+        </div>
+        <div class="menu-buttons">
+            <button class="btn gold-btn" onclick="GameApp.startTournament()">بدء البطولة</button>
+            <button class="btn" onclick="GameApp.showScreen('screen-characters')">الشخصيات</button>
+            <button class="btn" onclick="GameApp.showScreen('screen-shop')">المتجر والألوان</button>
+            <button class="btn secondary" onclick="GameApp.showScreen('screen-missions')">المهام والإنجازات</button>
+            <button class="btn secondary" onclick="GameApp.showScreen('screen-settings')">الإعدادات والتعليمات</button>
+        </div>
+    </div>
+    <div class="footer-credit">Mr Xboss Galaxy Party v1.0 - All Rights Reserved</div>
+</div>
 
-    <!-- App JavaScript Logic -->
-    <script>
-        // Default Search Engines URLs
-        const SEARCH_ENGINES = {
-            google: 'https://www.google.com/search?q=',
-            youtube: 'https://www.youtube.com/results?search_query=',
-            bing: 'https://www.bing.com/search?q=',
-            duckduckgo: 'https://duckduckgo.com/?q=',
-            wikipedia: 'https://ar.wikipedia.org/w/index.php?search=',
-            github: 'https://github.com/search?q='
-        };
+<!-- Screen: Characters -->
+<div id="screen-characters" class="screen">
+    <div class="header-bar">
+        <div class="logo-area">
+            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
+            <div class="logo-text">
+                <h1>اختيار الشخصية</h1>
+                <span>اختر بطلك الفضائي</span>
+            </div>
+        </div>
+    </div>
+    <div class="grid-container" id="characters-grid"></div>
+    <button class="btn" onclick="GameApp.showScreen('screen-main')">حفظ والعودة</button>
+    <div class="footer-credit">Mr Xboss</div>
+</div>
 
-        const DIRECT_ENGINE_URLS = {
-            google: 'https://www.google.com',
-            youtube: 'https://www.youtube.com',
-            bing: 'https://www.bing.com',
-            duckduckgo: 'https://duckduckgo.com',
-            wikipedia: 'https://ar.wikipedia.org',
-            github: 'https://github.com'
-        };
+<!-- Screen: Shop -->
+<div id="screen-shop" class="screen">
+    <div class="header-bar">
+        <div class="logo-area">
+            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
+            <div class="logo-text">
+                <h1>متجر السكنات والألوان</h1>
+                <span>تخصيص المظهر</span>
+            </div>
+        </div>
+        <div class="stats-bar">
+            <div class="stat-pill gold"><span id="lbl-shop-coins">0</span> 💎</div>
+        </div>
+    </div>
+    <div class="grid-container" id="shop-grid"></div>
+    <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة</button>
+    <div class="footer-credit">Mr Xboss</div>
+</div>
 
-        // Default Shortcuts
-        const DEFAULT_SHORTCUTS = [
-            { title: 'يوتيوب', url: 'https://m.youtube.com', icon: '▶' },
-            { title: 'جوجل', url: 'https://www.google.com', icon: 'G' },
-            { title: 'فيسبوك', url: 'https://m.facebook.com', icon: 'f' },
-            { title: 'تيك توك', url: 'https://www.tiktok.com', icon: '🎵' },
-            { title: 'تويتر / X', url: 'https://mobile.twitter.com', icon: '𝕏' },
-            { title: 'إنستغرام', url: 'https://www.instagram.com', icon: '📸' },
-            { title: 'ويكيبيديا', url: 'https://ar.m.wikipedia.org', icon: 'W' },
-            { title: 'جيت هب', url: 'https://github.com', icon: '🐙' }
-        ];
+<!-- Screen: Missions -->
+<div id="screen-missions" class="screen">
+    <div class="header-bar">
+        <div class="logo-area">
+            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
+            <div class="logo-text">
+                <h1>المهام والإنجازات</h1>
+                <span>اكسب المزيد من الكريستال</span>
+            </div>
+        </div>
+    </div>
+    <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:10px 0;" id="missions-list"></div>
+    <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة</button>
+    <div class="footer-credit">Mr Xboss</div>
+</div>
 
-        // State Variables
-        let activeEngine = 'google';
-        let isAdBlockActive = true;
-        let blockedCount = 142;
-        let bookmarks = [];
-        let historyData = [];
+<!-- Screen: Settings & Help -->
+<div id="screen-settings" class="screen">
+    <div class="header-bar">
+        <div class="logo-area">
+            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
+            <div class="logo-text">
+                <h1>الإعدادات والتعليمات</h1>
+                <span>Mr Xboss Hub</span>
+            </div>
+        </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:15px; padding:15px 0; overflow-y:auto;">
+        <div style="background:var(--panel-bg); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
+            <h3 style="color:var(--cyan); margin-bottom:8px;">طريقة اللعب:</h3>
+            <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
+                - استخدم العصا الافتراضية اليسرى لتحريك شخصيتك.<br>
+                - زر القفز لتجاوز الفراغات والحواجز.<br>
+                - زر الاندفاع (Dash) للسرعة المفاجئة وتجاوز المنافسين.<br>
+                - تخلص من المراحل الـ3 وتأهل حتى تصل للنهائي وتفوز بالبطولة!
+            </p>
+        </div>
+        <div style="background:var(--panel-bg); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
+            <h3 style="color:var(--gold); margin-bottom:8px;">عن التطبيق:</h3>
+            <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
+                اسم التطبيق: Mr Xboss Galaxy Party<br>
+                المפתח: Mr Xboss<br>
+                الحزمة: com.mrxboss.apps.app2ff36a3ba1<br>
+                مصمم خصيصاً للعمل بسلاسة داخل Android WebView.
+            </p>
+        </div>
+    </div>
+    <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة</button>
+    <div class="footer-credit">Mr Xboss</div>
+</div>
 
-        // Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSavedSettings();
-            renderShortcuts();
-            renderBookmarks();
-            renderHistory();
-            updateAdBlockUI();
-        });
+<!-- Modal Notification / Results -->
+<div class="modal-overlay" id="modal-popup">
+    <div class="modal-card">
+        <h2 id="modal-title" style="color:var(--cyan); font-size:22px;">نتيجة الجولة</h2>
+        <p id="modal-desc" style="color:var(--text-dim); font-size:14px;">تهانينا! لقد تأهلت للجولة التالية.</p>
+        <button class="btn" id="modal-btn" onclick="GameApp.closeModal()">استمرار</button>
+    </div>
+</div>
 
-        // Load Settings from LocalStorage
-        function loadSavedSettings() {
-            const theme = localStorage.getItem('mrxboss_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
+<script>
+// --- Game Data & State ---
+const GameData = {
+    coins: 100,
+    selectedChar: 0,
+    selectedSkin: 0,
+    unlockedChars: [0],
+    unlockedSkins: [0],
+    tournamentsWon: 0,
+    bestRank: 99,
+    missions: [
+        { id: 1, title: 'العب أول بطولة', reward: 50, progress: 0, goal: 1, claimed: false },
+        { id: 2, title: 'افوز بـ 3 بطولات', reward: 150, progress: 0, goal: 3, claimed: false },
+        { id: 3, title: 'اجمع 200 كريستال', reward: 100, progress: 100, goal: 200, claimed: false }
+    ],
+    characters: [
+        { id: 0, name: 'Xboss Hero', color: 0x00f0ff, price: 0 },
+        { id: 1, name: 'Nova', color: 0xff007f, price: 100 },
+        { id: 2, name: 'Volt', color: 0xffb700, price: 150 },
+        { id: 3, name: 'Pixel', color: 0x00ff66, price: 200 },
+        { id: 4, name: 'Crystal', color: 0x9900ff, price: 250 },
+        { id: 5, name: 'Shadow', color: 0x333333, price: 300 },
+        { id: 6, name: 'Rocket', color: 0xff3300, price: 350 },
+        { id: 7, name: 'Sky', color: 0x00ccff, price: 400 }
+    ],
+    skins: [
+        { id: 0, name: 'كلاسيكي نيون', color: 0xffffff, price: 0 },
+        { id: 1, name: 'ذهبي ملكي', color: 0xffb700, price: 100 },
+        { id: 2, name: 'سماوي مضيء', color: 0x00f0ff, price: 150 }
+    ]
+};
 
-            activeEngine = localStorage.getItem('mrxboss_engine') || 'google';
-            document.getElementById('defaultEngineSelect').value = activeEngine;
+// AI Names Arabic/English
+const AiNames = [
+    "أحمد", "سارة", "محمد", "فهد", "ريم", "VoltX", "Star99", "GalaxyBoy",
+    "فاطمة", "راشد", "ليلى", "سلطان", "NeoRun", "CyberQueen", "زينة", "خالد",
+    "منى", "سامي", "هند", "نايف", "LunaSpark", "SpaceX", "يوسف", "دانة",
+    "بدر", "نوف", "عمر", "ريم", "ApexHero", "Quantum"
+];
 
-            const savedAdBlock = localStorage.getItem('mrxboss_adblock');
-            if (savedAdBlock !== null) {
-                isAdBlockActive = savedAdBlock === 'true';
-            }
+// Load from LocalStorage
+function loadGameData() {
+    const saved = localStorage.getItem('com_mrxboss_galaxy_party');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            Object.assign(GameData, data);
+        } catch(e) {}
+    }
+}
 
-            const savedBlockedCount = localStorage.getItem('mrxboss_blocked_count');
-            if (savedBlockedCount) {
-                blockedCount = parseInt(savedBlockedCount, 10);
-            }
+function saveGameData() {
+    localStorage.setItem('com_mrxboss_galaxy_party', JSON.stringify(GameData));
+}
 
-            const savedBookmarks = localStorage.getItem('mrxboss_bookmarks');
-            if (savedBookmarks) {
-                bookmarks = JSON.parse(savedBookmarks);
-            } else {
-                bookmarks = [...DEFAULT_SHORTCUTS];
-                saveBookmarks();
-            }
+// --- Application Logic & Screen Manager ---
+const GameApp = {
+    currentScreen: 'screen-main',
+    
+    init() {
+        loadGameData();
+        this.updateUI();
+        this.renderCharacters();
+        this.renderShop();
+        this.renderMissions();
+        GameEngine.init();
+    },
 
-            const savedHistory = localStorage.getItem('mrxboss_history');
-            if (savedHistory) {
-                historyData = JSON.parse(savedHistory);
-            }
+    showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        this.currentScreen = screenId;
+        if(screenId === 'screen-main') {
+            this.updateUI();
         }
+    },
 
-        // Theme Toggle
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('mrxboss_theme', newTheme);
-        }
+    updateUI() {
+        document.getElementById('lbl-coins').innerText = GameData.coins;
+        document.getElementById('lbl-shop-coins').innerText = GameData.coins;
+    },
 
-        // Engine Selector Switcher
-        function selectEngine(engineKey, element) {
-            activeEngine = engineKey;
-            document.querySelectorAll('.engine-chip').forEach(chip => chip.classList.remove('active'));
-            if (element) element.classList.add('active');
-        }
-
-        function saveDefaultEngine(engineKey) {
-            activeEngine = engineKey;
-            localStorage.setItem('mrxboss_engine', engineKey);
-        }
-
-        // Navigation Tab Switcher
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            const navBtn = document.getElementById(`nav-${tabId}`);
-            if (navBtn) navBtn.classList.add('active');
-        }
-
-        // Search Execution
-        function handleSearch(event) {
-            event.preventDefault();
-            const input = document.getElementById('searchInput').value.trim();
-            if (!input) return;
-
-            let targetUrl = '';
-            // Check if input is direct URL
-            if (/^(http:\/\/|https:\/\/)/i.test(input)) {
-                targetUrl = input;
-            } else if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(:\d+)?(\/.*)?$/i.test(input)) {
-                targetUrl = 'https://' + input;
-            } else {
-                // Perform Search Engine Query
-                targetUrl = (SEARCH_ENGINES[activeEngine] || SEARCH_ENGINES.google) + encodeURIComponent(input);
-            }
-
-            saveToHistory(input, targetUrl);
-
-            // Directly navigate full window without IFRAME
-            window.location.href = targetUrl;
-        }
-
-        function openDirectEngine(engineKey) {
-            const targetUrl = DIRECT_ENGINE_URLS[engineKey] || 'https://www.google.com';
-            saveToHistory(engineKey.toUpperCase() + ' Direct', targetUrl);
-            window.location.href = targetUrl;
-        }
-
-        function navigateToUrl(url, title) {
-            saveToHistory(title || url, url);
-            window.location.href = url;
-        }
-
-        // Save to History
-        function saveToHistory(title, url) {
-            const newItem = {
-                title: title,
-                url: url,
-                timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+    renderCharacters() {
+        const grid = document.getElementById('characters-grid');
+        grid.innerHTML = '';
+        GameData.characters.forEach(char => {
+            const unlocked = GameData.unlockedChars.includes(char.id);
+            const selected = GameData.selectedChar === char.id;
+            const card = document.createElement('div');
+            card.className = `grid-card ${selected ? 'selected' : ''}`;
+            card.innerHTML = `
+                <div class="card-avatar" style="background:#${char.color.toString(16)}">🤖</div>
+                <div style="font-size:13px; font-weight:bold;">${char.name}</div>
+                <div style="font-size:11px; color:var(--text-dim);">${unlocked ? (selected ? 'محدد' : 'مملوك') : char.price + ' 💎'}</div>
+            `;
+            card.onclick = () => {
+                if(unlocked) {
+                    GameData.selectedChar = char.id;
+                    saveGameData();
+                    this.renderCharacters();
+                } else if(GameData.coins >= char.price) {
+                    GameData.coins -= char.price;
+                    GameData.unlockedChars.push(char.id);
+                    GameData.selectedChar = char.id;
+                    saveGameData();
+                    this.updateUI();
+                    this.renderCharacters();
+                } else {
+                    alert('لا يوجد كريستال كافي!');
+                }
             };
-            historyData.unshift(newItem);
-            if (historyData.length > 50) historyData.pop(); // Keep last 50
-            localStorage.setItem('mrxboss_history', JSON.stringify(historyData));
-        }
+            grid.appendChild(card);
+        });
+    },
 
-        function renderHistory() {
-            const container = document.getElementById('historyList');
-            if (historyData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        <div>لا يوجد سجل تصفح حتى الآن</div>
-                    </div>
-                `;
-                return;
-            }
+    renderShop() {
+        const grid = document.getElementById('shop-grid');
+        grid.innerHTML = '';
+        GameData.skins.forEach(skin => {
+            const unlocked = GameData.unlockedSkins.includes(skin.id);
+            const selected = GameData.selectedSkin === skin.id;
+            const card = document.createElement('div');
+            card.className = `grid-card ${selected ? 'selected' : ''}`;
+            card.innerHTML = `
+                <div class="card-avatar" style="border: 3px solid #${skin.color.toString(16)}">✨</div>
+                <div style="font-size:13px; font-weight:bold;">${skin.name}</div>
+                <div style="font-size:11px; color:var(--text-dim);">${unlocked ? (selected ? 'محدد' : 'مملوك') : skin.price + ' 💎'}</div>
+            `;
+            card.onclick = () => {
+                if(unlocked) {
+                    GameData.selectedSkin = skin.id;
+                    saveGameData();
+                    this.renderShop();
+                } else if(GameData.coins >= skin.price) {
+                    GameData.coins -= skin.price;
+                    GameData.unlockedSkins.push(skin.id);
+                    GameData.selectedSkin = skin.id;
+                    saveGameData();
+                    this.updateUI();
+                    this.renderShop();
+                } else {
+                    alert('لا يوجد كريستال كافي!');
+                }
+            };
+            grid.appendChild(card);
+        });
+    },
 
-            container.innerHTML = historyData.map((item, index) => `
-                <div class="list-card">
-                    <div class="list-card-info" onclick="navigateToUrl('${item.url}', '${item.title}')" style="cursor: pointer;">
-                        <div style="font-size: 18px;">🌐</div>
-                        <div>
-                            <div class="list-card-title">${escapeHtml(item.title)}</div>
-                            <div class="list-card-sub">${escapeHtml(item.url)}</div>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 10px; color: var(--text-secondary);">${item.timestamp}</span>
-                        <button class="icon-btn" style="width: 32px; height: 32px; color: var(--danger-color);" onclick="deleteHistoryItem(${index})">✕</button>
-                    </div>
+    renderMissions() {
+        const list = document.getElementById('missions-list');
+        list.innerHTML = '';
+        GameData.missions.forEach(m => {
+            const item = document.createElement('div');
+            item.style.cssText = "background:var(--panel-bg); padding:12px 15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;";
+            item.innerHTML = `
+                <div>
+                    <div style="font-size:13px; font-weight:bold; margin-bottom:4px;">${m.title}</div>
+                    <div style="font-size:11px; color:var(--text-dim);">التقدم: ${m.progress}/${m.goal} | المكافأة: ${m.reward} 💎</div>
                 </div>
-            `).join('');
-        }
-
-        function deleteHistoryItem(index) {
-            historyData.splice(index, 1);
-            localStorage.setItem('mrxboss_history', JSON.stringify(historyData));
-            renderHistory();
-        }
-
-        function clearHistory() {
-            if (confirm('هل أنت تأكد من مسح كافة سجل التصفح؟')) {
-                historyData = [];
-                localStorage.removeItem('mrxboss_history');
-                renderHistory();
-            }
-        }
-
-        // Render Shortcuts Grid
-        function renderShortcuts() {
-            const container = document.getElementById('shortcutsContainer');
-            container.innerHTML = bookmarks.slice(0, 8).map(item => `
-                <div class="shortcut-item" onclick="navigateToUrl('${item.url}', '${item.title}')">
-                    <div class="shortcut-icon">${item.icon || '🔗'}</div>
-                    <div class="shortcut-label">${escapeHtml(item.title)}</div>
+                <div>
+                    ${m.claimed ? '<span style="color:var(--cyan); font-size:12px;">منجزة</span>' : (m.progress >= m.goal ? `<button class="btn" style="padding:6px 12px; font-size:11px;" onclick="GameApp.claimMission(${m.id})">استلام</button>` : '<span style="color:var(--text-dim); font-size:11px;">قيد التقدم</span>')}
                 </div>
-            `).join('');
+            `;
+            list.appendChild(item);
+        });
+    },
+
+    claimMission(id) {
+        const m = GameData.missions.find(x => x.id === id);
+        if(m && !m.claimed && m.progress >= m.goal) {
+            m.claimed = true;
+            GameData.coins += m.reward;
+            saveGameData();
+            this.updateUI();
+            this.renderMissions();
         }
+    },
 
-        // Render Bookmarks List Tab
-        function renderBookmarks() {
-            const container = document.getElementById('bookmarksList');
-            if (bookmarks.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                        <div>لا توجد مواقع مفضلة قائمة</div>
-                    </div>
-                `;
-                return;
-            }
+    startTournament() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('touch-controls').style.display = 'block';
+        GameEngine.startTournament();
+    },
 
-            container.innerHTML = bookmarks.map((item, index) => `
-                <div class="list-card">
-                    <div class="list-card-info" onclick="navigateToUrl('${item.url}', '${item.title}')" style="cursor: pointer;">
-                        <div class="shortcut-icon" style="width: 36px; height: 36px; font-size: 14px;">${item.icon || '⭐'}</div>
-                        <div>
-                            <div class="list-card-title">${escapeHtml(item.title)}</div>
-                            <div class="list-card-sub">${escapeHtml(item.url)}</div>
-                        </div>
-                    </div>
-                    <button class="icon-btn" style="width: 32px; height: 32px; color: var(--danger-color);" onclick="deleteBookmark(${index})">✕</button>
-                </div>
-            `).join('');
-        }
+    showModal(title, desc, callback) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-desc').innerText = desc;
+        const btn = document.getElementById('modal-btn');
+        btn.onclick = () => {
+            document.getElementById('modal-popup').style.display = 'none';
+            if(callback) callback();
+        };
+        document.getElementById('modal-popup').style.display = 'flex';
+    },
 
-        function saveBookmarks() {
-            localStorage.setItem('mrxboss_bookmarks', JSON.stringify(bookmarks));
-        }
+    closeModal() {
+        document.getElementById('modal-popup').style.display = 'none';
+    },
 
-        function deleteBookmark(index) {
-            bookmarks.splice(index, 1);
-            saveBookmarks();
-            renderBookmarks();
-            renderShortcuts();
-        }
-
-        // Add Bookmark Modal Controls
-        function openAddBookmarkModal() {
-            document.getElementById('addBookmarkModal').classList.add('active');
-        }
-
-        function closeAddBookmarkModal() {
-            document.getElementById('addBookmarkModal').classList.remove('active');
-        }
-
-        function handleAddBookmark(e) {
-            e.preventDefault();
-            const title = document.getElementById('bookmarkTitle').value.trim();
-            const url = document.getElementById('bookmarkUrl').value.trim();
-
-            if (title && url) {
-                bookmarks.push({ title, url, icon: '⭐' });
-                saveBookmarks();
-                renderBookmarks();
-                renderShortcuts();
-                closeAddBookmarkModal();
-                document.getElementById('bookmarkTitle').value = '';
-                document.getElementById('bookmarkUrl').value = '';
-            }
-        }
-
-        // AdBlock Controls
-        function toggleAdBlock() {
-            isAdBlockActive = !isAdBlockActive;
-            localStorage.setItem('mrxboss_adblock', isAdBlockActive);
-            if (isAdBlockActive) {
-                blockedCount += 5;
-                localStorage.setItem('mrxboss_blocked_count', blockedCount);
-            }
-            updateAdBlockUI();
-        }
-
-        function updateAdBlockUI() {
-            const toggleBtn = document.getElementById('shieldToggleBtn');
-            const badge = document.getElementById('shieldBadge');
-            const counterText = document.getElementById('blockedCounterText');
-
-            if (isAdBlockActive) {
-                toggleBtn.classList.add('active');
-                badge.innerText = blockedCount;
-                counterText.innerText = `تم حجب ${blockedCount} عنصر إعلاني منبثق`;
-            } else {
-                toggleBtn.classList.remove('active');
-                badge.innerText = '0';
-                counterText.innerText = 'حماية الإعلانات متوقفة حالياً';
-            }
-        }
-
-        // In-App Video Player
-        function loadVideoFromInput() {
-            const videoUrl = document.getElementById('videoUrlInput').value.trim();
-            if (!videoUrl) return;
-
-            const videoPlayer = document.getElementById('appVideoPlayer');
-            videoPlayer.src = videoUrl;
-            videoPlayer.play().catch(err => {
-                alert('عذراً، لم نتمكن من تشغيل هذا الفيديو مباشرة. تأكد من أن الرابط مباشر بمفهوم MP4 أو Stream.');
+    endTournament(won) {
+        document.getElementById('hud').style.display = 'none';
+        document.getElementById('touch-controls').style.display = 'none';
+        
+        if(won) {
+            GameData.tournamentsWon++;
+            GameData.coins += 200;
+            saveGameData();
+            this.showModal('فوز مظفر!', 'لقد حققت المركز الأول وفزت ببطولة المجرة الكبرى وحصلت على 200 كريستال!', () => {
+                this.showScreen('screen-main');
+            });
+        } else {
+            this.showModal('هزيمة!', 'لقد خرجت من المنافسة. حاول مرة أخرى!', () => {
+                this.showScreen('screen-main');
             });
         }
+    }
+};
 
-        // Reset App Data
-        function resetAllAppData() {
-            if (confirm('هل أنت متأكد من مسح جميع إعدادات ومفضلة تطبيق Mr Xboss Browser؟')) {
-                localStorage.clear();
-                location.reload();
+// --- Three.js 3D Game Engine ---
+const GameEngine = {
+    scene: null,
+    camera: null,
+    renderer: null,
+    player: null,
+    aiPlayers: [],
+    obstacles: [],
+    crystals: [],
+    platforms: [],
+    
+    // Game state loop
+    isPlaying: false,
+    currentRound: 1,
+    roundType: 1, // 1: Race, 2: Falling Tiles, 3: Crystal Hunt
+    roundTime: 90,
+    playerRank: 1,
+    
+    // Controls state
+    moveVector: { x: 0, z: 0 },
+    isJumping: false,
+    jumpVelocity: 0,
+    isDashing: false,
+    dashCooldown: 0,
+
+    worlds: [
+        { name: "Galaxy Stadium", bg: 0x070913, platformColor: 0x00f0ff },
+        { name: "Neon Factory", bg: 0x13071f, platformColor: 0xff007f },
+        { name: "Crystal Sky", bg: 0x071b1f, platformColor: 0x00ffb7 },
+        { name: "Storm Zone", bg: 0x1f1407, platformColor: 0xffb700 },
+        { name: "Solar Arena", bg: 0x1f0707, platformColor: 0xff3300 }
+    ],
+
+    init() {
+        const container = document.getElementById('game-container');
+        
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x070913);
+
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(this.renderer.domElement);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        this.scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(20, 40, 20);
+        this.scene.add(dirLight);
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        this.setupControls();
+    },
+
+    setupControls() {
+        const zone = document.getElementById('joystick-zone');
+        const knob = document.getElementById('joystick-knob');
+        let touchId = null;
+        let startX = 0, startY = 0;
+
+        zone.addEventListener('touchstart', (e) => {
+            if(touchId !== null) return;
+            const touch = e.changedTouches[0];
+            touchId = touch.identifier;
+            const rect = zone.getBoundingClientRect();
+            startX = rect.left + rect.width / 2;
+            startY = rect.top + rect.height / 2;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if(touchId === null) return;
+            for(let i=0; i<e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                if(touch.identifier === touchId) {
+                    let dx = touch.clientX - startX;
+                    let dy = touch.clientY - startY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const maxDist = 45;
+                    
+                    if(dist > maxDist) {
+                        dx = (dx / dist) * maxDist;
+                        dy = (dy / dist) * maxDist;
+                    }
+                    
+                    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+                    this.moveVector.x = dx / maxDist;
+                    this.moveVector.z = dy / maxDist;
+                }
+            }
+        });
+
+        const endTouch = (e) => {
+            if(touchId === null) return;
+            for(let i=0; i<e.changedTouches.length; i++) {
+                if(e.changedTouches[i].identifier === touchId) {
+                    touchId = null;
+                    knob.style.transform = `translate(0px, 0px)`;
+                    this.moveVector.x = 0;
+                    this.moveVector.z = 0;
+                }
+            }
+        };
+
+        window.addEventListener('touchend', endTouch);
+        window.addEventListener('touchcancel', endTouch);
+
+        document.getElementById('btn-jump').addEventListener('touchstart', () => {
+            if(!this.isJumping) {
+                this.isJumping = true;
+                this.jumpVelocity = 0.22;
+            }
+        });
+
+        document.getElementById('btn-dash').addEventListener('touchstart', () => {
+            if(this.dashCooldown <= 0) {
+                this.isDashing = true;
+                this.dashCooldown = 60;
+                setTimeout(() => { this.isDashing = false; }, 250);
+            }
+        });
+    },
+
+    startTournament() {
+        this.currentRound = 1;
+        this.startRound(1);
+    },
+
+    startRound(roundNum) {
+        this.currentRound = roundNum;
+        this.roundType = roundNum;
+        this.roundTime = 75;
+        this.isPlaying = true;
+        
+        // Setup World Theme
+        const world = this.worlds[Math.floor(Math.random() * this.worlds.length)];
+        this.scene.background = new THREE.Color(world.bg);
+
+        // Clear previous objects
+        this.clearScene();
+
+        // Build Round Track/Arena
+        this.buildRoundGeometry(world);
+
+        // Spawn Player
+        this.spawnPlayer(world.platformColor);
+
+        // Spawn 30 AI bots
+        this.spawnAI();
+
+        // Start Loop
+        if(!this.loopRunning) {
+            this.loopRunning = true;
+            this.animate();
+        }
+    },
+
+    clearScene() {
+        // Remove old dynamic objects
+        const removeList = [];
+        this.scene.traverse(child => {
+            if(child !== this.scene && child.type !== 'AmbientLight' && child.type !== 'DirectionalLight' && child !== this.camera) {
+                removeList.push(child);
+            }
+        });
+        removeList.forEach(obj => this.scene.remove(obj));
+        this.aiPlayers = [];
+        this.obstacles = [];
+        this.crystals = [];
+        this.platforms = [];
+    },
+
+    buildRoundGeometry(world) {
+        // Create 3D platforms and environment based on roundType
+        const mat = new THREE.MeshStandardMaterial({ color: world.platformColor, roughness: 0.2, metalness: 0.8 });
+        
+        if(this.roundType === 1) {
+            // Obstacle Course
+            for(let i=0; i<15; i++) {
+                const p = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 12), mat);
+                p.position.set(0, 0, -i * 14);
+                this.scene.add(p);
+                this.platforms.push(p);
+
+                // Add obstacles
+                if(i > 0 && i < 14) {
+                    const obsMat = new THREE.MeshStandardMaterial({ color: 0xff007f });
+                    const obs = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 1), obsMat);
+                    obs.position.set((Math.random()-0.5)*4, 1.5, -i * 14);
+                    this.scene.add(obs);
+                    this.obstacles.push(obs);
+                }
+            }
+        } else if(this.roundType === 2) {
+            // Falling Tiles / Platforms
+            for(let x=-2; x<=2; x++) {
+                for(let z=0; z>-15; z--) {
+                    const p = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1, 3.8), mat);
+                    p.position.set(x * 4, 0, z * 4);
+                    this.scene.add(p);
+                    this.platforms.push(p);
+                }
+            }
+        } else {
+            // Final: Big Circular Platform
+            const p = new THREE.Mesh(new THREE.CylinderGeometry(25, 25, 2, 32), mat);
+            p.position.set(0, 0, 0);
+            this.scene.add(p);
+            this.platforms.push(p);
+        }
+    },
+
+    spawnPlayer(colorHex) {
+        const charConfig = GameData.characters[GameData.selectedChar];
+        const geom = new THREE.CapsuleGeometry(0.6, 1.2, 4, 8);
+        const mat = new THREE.MeshStandardMaterial({ color: charConfig.color, roughness: 0.3 });
+        this.player = new THREE.Mesh(geom, mat);
+        this.player.position.set(0, 2, 5);
+        this.scene.add(this.player);
+    },
+
+    spawnAI() {
+        for(let i=0; i<30; i++) {
+            const geom = new THREE.CapsuleGeometry(0.6, 1.2, 4, 8);
+            const mat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+            const ai = new THREE.Mesh(geom, mat);
+            ai.position.set((Math.random() - 0.5) * 10, 2, (Math.random() - 0.5) * 10 - 5);
+            ai.userData = { name: AiNames[i], speed: 0.05 + Math.random() * 0.04, targetZ: -200 };
+            this.scene.add(ai);
+            this.aiPlayers.push(ai);
+        }
+    },
+
+    animate() {
+        if(!this.isPlaying) return;
+        requestAnimationFrame(() => this.animate());
+
+        // Update Game Timer
+        this.roundTime -= 1/60;
+        if(this.roundTime <= 0) {
+            this.checkRoundResult(true);
+            return;
+        }
+
+        // Update HUD
+        document.getElementById('hud-round').innerText = `الجولة ${this.currentRound}/3`;
+        document.getElementById('hud-mode').innerText = this.currentRound === 1 ? 'سباق عوائق' : (this.currentRound === 2 ? 'منصات تختفي' : 'النهائي الكبير');
+        const mins = Math.floor(this.roundTime / 60).toString().padStart(2, '0');
+        const secs = Math.floor(this.roundTime % 60).toString().padStart(2, '0');
+        document.getElementById('hud-time').innerText = `${mins}:${secs}`;
+        
+        if(this.dashCooldown > 0) this.dashCooldown--;
+
+        // Player Movement
+        let speed = 0.12;
+        if(this.isDashing) speed = 0.35;
+
+        if(this.moveVector.x !== 0 || this.moveVector.z !== 0) {
+            this.player.position.x += this.moveVector.x * speed;
+            this.player.position.z += this.moveVector.z * speed;
+        }
+
+        // Jump physics
+        if(this.isJumping) {
+            this.player.position.y += this.jumpVelocity;
+            this.jumpVelocity -= 0.015;
+            if(this.player.position.y <= 1.5) {
+                this.player.position.y = 1.5;
+                this.isJumping = false;
             }
         }
 
-        // Helper Escape HTML
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        // Camera follow
+        this.camera.position.x = this.player.position.x;
+        this.camera.position.y = this.player.position.y + 6;
+        this.camera.position.z = this.player.position.z + 10;
+        this.camera.lookAt(this.player.position);
+
+        // AI Movement
+        this.aiPlayers.forEach(ai => {
+            ai.position.z -= ai.userData.speed;
+            // Basic avoidance or wandering
+            if(Math.random() < 0.02) {
+                ai.position.x += (Math.random() - 0.5) * 0.5;
+            }
+        });
+
+        // Calculate Rank
+        let betterCount = 1;
+        this.aiPlayers.forEach(ai => {
+            if(ai.position.z < this.player.position.z) betterCount++;
+        });
+        this.playerRank = betterCount;
+        document.getElementById('hud-rank').innerText = `${this.playerRank} / 31`;
+
+        // Check win/loss condition for round
+        if(this.roundType === 1 && this.player.position.z < -160) {
+            this.checkRoundResult(true);
+        } else if(this.roundType === 2 && this.roundTime < 10 && this.playerRank <= 16) {
+            this.checkRoundResult(true);
+        } else if(this.roundType === 3 && this.playerRank <= 8) {
+            this.checkRoundResult(true);
         }
-    </script>
+
+        this.renderer.render(this.scene, this.camera);
+    },
+
+    checkRoundResult(success) {
+        this.isPlaying = false;
+        if(success) {
+            if(this.currentRound < 3) {
+                GameApp.showModal('تأهل ناجح!', `تهانينا! لقد تأهلت للجولة ${this.currentRound + 1}`, () => {
+                    this.startRound(this.currentRound + 1);
+                });
+            } else {
+                GameApp.endTournament(true);
+            }
+        } else {
+            GameApp.endTournament(false);
+        }
+    }
+};
+
+// Initialize App on Load
+window.onload = () => {
+    GameApp.init();
+};
+</script>
 </body>
 </html>
