@@ -6,11 +6,11 @@ on:
       app_name:
         description: "Application name"
         required: false
-        default: "Mr Xboss App"
+        default: "HTML App"
       package_name:
         description: "Android package name"
         required: false
-        default: "com.mrxboss.apps"
+        default: "com.htmlfactory.app"
 
   push:
     branches:
@@ -20,10 +20,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: apk-build-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   build-apk:
     name: Build APK
@@ -31,8 +27,8 @@ jobs:
     timeout-minutes: 25
 
     env:
-      APP_NAME: ${{ inputs.app_name || 'Mr Xboss App' }}
-      PACKAGE_NAME: ${{ inputs.package_name || 'com.mrxboss.apps' }}
+      APP_NAME: ${{ inputs.app_name || 'HTML App' }}
+      PACKAGE_NAME: ${{ inputs.package_name || 'com.htmlfactory.app' }}
 
     steps:
       - name: Checkout repository
@@ -50,7 +46,10 @@ jobs:
       - name: Install Android packages
         run: |
           yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -62,20 +61,36 @@ jobs:
           set -e
 
           if [ ! -f "index.html" ]; then
-            echo "ERROR: index.html not found"
+            echo "ERROR: index.html not found in repository root"
             exit 1
           fi
 
-          PACKAGE_NAME="$(echo "$PACKAGE_NAME" | tr '[:upper:]' '[:lower:]')"
-          if ! echo "$PACKAGE_NAME" | grep -Eq '^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$'; then
-            PACKAGE_NAME="com.mrxboss.apps.generated"
+          if [ -f "app_name.txt" ]; then
+            APP_NAME="$(head -n 1 app_name.txt | tr -d '\r' | cut -c 1-80)"
+            [ -n "$APP_NAME" ] || APP_NAME="HTML App"
           fi
 
-          APP_NAME_XML="$(python3 - <<'PY'
-          import os, html
-          print(html.escape(os.environ.get("APP_NAME", "Mr Xboss App"), quote=True))
-          PY
-          )"
+          if [ -f "package_name.txt" ]; then
+            PACKAGE_NAME="$(head -n 1 package_name.txt | tr -d '\r' | tr -d ' ')"
+            [ -n "$PACKAGE_NAME" ] || PACKAGE_NAME="com.htmlfactory.app"
+          fi
+
+          PACKAGE_NAME="$(echo "$PACKAGE_NAME" | tr '[:upper:]' '[:lower:]')"
+
+          if ! echo "$PACKAGE_NAME" | grep -Eq '^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$'; then
+            echo "Invalid package name, using default package."
+            PACKAGE_NAME="com.htmlfactory.app"
+          fi
+
+          export APP_NAME PACKAGE_NAME
+
+          ADBLOCK_ENABLED="false"
+          if [ -f "adblock.enabled" ]; then
+            ADBLOCK_ENABLED="true"
+            echo "Native WebView ad blocker: enabled"
+          else
+            echo "Native WebView ad blocker: disabled"
+          fi
 
           PROJECT_DIR="android-build"
           APP_DIR="$PROJECT_DIR/app"
@@ -87,37 +102,33 @@ jobs:
           mkdir -p "$APP_DIR/src/main/res/values"
           mkdir -p "$APP_DIR/src/main/res/drawable"
 
-          find . -mindepth 1 -maxdepth 1 \
-            ! -name ".git" \
-            ! -name ".github" \
-            ! -name "android-build" \
-            ! -name "output" \
-            ! -name "*.apk" \
-            ! -name "*.jks" \
-            ! -name "*.keystore" \
-            ! -name ".env" \
-            -exec cp -R {} "$APP_DIR/src/main/assets/www/" \;
+          rsync -a ./ "$APP_DIR/src/main/assets/www/" \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "android-build" \
+            --exclude "output" \
+            --exclude "*.apk" \
+            --exclude "*.jks" \
+            --exclude "*.keystore" \
+            --exclude ".env"
 
-          ICON_RESOURCE="@drawable/ic_launcher"
           if [ -f "app_icon.png" ]; then
-            cp app_icon.png "$APP_DIR/src/main/res/drawable/app_icon.png"
-            ICON_RESOURCE="@drawable/app_icon"
+            cp "app_icon.png" "$APP_DIR/src/main/res/drawable/app_icon.png"
           elif [ -f "app_icon.jpg" ]; then
-            cp app_icon.jpg "$APP_DIR/src/main/res/drawable/app_icon.jpg"
-            ICON_RESOURCE="@drawable/app_icon"
+            cp "app_icon.jpg" "$APP_DIR/src/main/res/drawable/app_icon.jpg"
           elif [ -f "app_icon.jpeg" ]; then
-            cp app_icon.jpeg "$APP_DIR/src/main/res/drawable/app_icon.jpeg"
-            ICON_RESOURCE="@drawable/app_icon"
+            cp "app_icon.jpeg" "$APP_DIR/src/main/res/drawable/app_icon.jpeg"
           else
-            cat > "$APP_DIR/src/main/res/drawable/ic_launcher.xml" <<'EOF'
+            cat > "$APP_DIR/src/main/res/drawable/app_icon.xml" <<'EOF'
           <vector xmlns:android="http://schemas.android.com/apk/res/android"
               android:width="108dp"
               android:height="108dp"
               android:viewportWidth="108"
               android:viewportHeight="108">
-              <path android:fillColor="#0F172A" android:pathData="M0,0h108v108h-108z"/>
-              <path android:fillColor="#2563EB" android:pathData="M18,18h72v72h-72z"/>
-              <path android:fillColor="#FFFFFF" android:pathData="M31,33h46v10h-46zM31,49h46v10h-46zM31,65h30v10h-30z"/>
+              <path android:fillColor="#111827" android:pathData="M0,0h108v108h-108z"/>
+              <path android:fillColor="#38BDF8" android:pathData="M18,18h72v72h-72z"/>
+              <path android:fillColor="#FFFFFF" android:pathData="M30,48h48v12h-48z"/>
+              <path android:fillColor="#FFFFFF" android:pathData="M48,30h12v48h-12z"/>
           </vector>
           EOF
           fi
@@ -173,6 +184,7 @@ jobs:
           }
           EOF
 
+          APP_NAME_XML="$(python3 -c 'import html, os; print(html.escape(os.environ.get("APP_NAME", "HTML App"), quote=True))')"
           cat > "$APP_DIR/src/main/res/values/strings.xml" <<EOF
           <resources>
               <string name="app_name">$APP_NAME_XML</string>
@@ -185,7 +197,7 @@ jobs:
                   <item name="android:windowNoTitle">true</item>
                   <item name="android:windowActionBar">false</item>
                   <item name="android:windowFullscreen">false</item>
-                  <item name="android:windowLightStatusBar">false</item>
+                  <item name="android:windowLightStatusBar">true</item>
               </style>
           </resources>
           EOF
@@ -197,13 +209,11 @@ jobs:
               <application
                   android:theme="@style/AppTheme"
                   android:label="@string/app_name"
-                  android:icon="$ICON_RESOURCE"
-                  android:roundIcon="$ICON_RESOURCE"
+                  android:icon="@drawable/app_icon"
+                  android:roundIcon="@drawable/app_icon"
                   android:hardwareAccelerated="true"
                   android:usesCleartextTraffic="true"
-                  android:resizeableActivity="true"
-                  android:allowBackup="false"
-                  android:supportsRtl="true">
+                  android:resizeableActivity="true">
 
                   <activity
                       android:name=".MainActivity"
@@ -223,28 +233,60 @@ jobs:
 
           import android.annotation.SuppressLint;
           import android.app.Activity;
+          import android.content.SharedPreferences;
+          import android.net.Uri;
           import android.os.Bundle;
+          import android.os.Message;
           import android.view.ViewGroup;
+          import android.webkit.JavascriptInterface;
           import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebResourceResponse;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
           import android.widget.FrameLayout;
 
-          public class MainActivity extends Activity {
-              private WebView webView;
+          import java.io.ByteArrayInputStream;
+          import java.util.Locale;
 
-              @SuppressLint("SetJavaScriptEnabled")
+          public class MainActivity extends Activity {
+              private static final boolean ADBLOCK_BUILD_ENABLED = $ADBLOCK_ENABLED;
+
+              private static final String[] BLOCKED_HOSTS = new String[] {
+                      "doubleclick.net", "googlesyndication.com", "googleadservices.com",
+                      "adservice.google.com", "amazon-adsystem.com", "adnxs.com",
+                      "adsrvr.org", "taboola.com", "outbrain.com", "criteo.com",
+                      "scorecardresearch.com", "moatads.com", "rubiconproject.com",
+                      "openx.net", "pubmatic.com", "popads.net", "popcash.net",
+                      "propellerads.com", "revcontent.com", "zedo.com"
+              };
+
+              private static final String[] BLOCKED_URL_PARTS = new String[] {
+                      "/ads/", "/adserver/", "/adservice/", "/advert/", "/analytics/",
+                      "/banner/", "/banners/", "/popunder/", "/popup/",
+                      "ad_tag", "adserver", "banner_ad", "interstitial", "preroll",
+                      "vpaid", "vast"
+              };
+
+              private WebView webView;
+              private SharedPreferences prefs;
+              private boolean adBlockEnabled;
+              private long blockedCount = 0;
+
+              @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
+
+                  prefs = getSharedPreferences("mrxboss_settings", MODE_PRIVATE);
+                  adBlockEnabled = ADBLOCK_BUILD_ENABLED && prefs.getBoolean("adblock_enabled", true);
 
                   webView = new WebView(this);
                   webView.setLayoutParams(new FrameLayout.LayoutParams(
                           ViewGroup.LayoutParams.MATCH_PARENT,
                           ViewGroup.LayoutParams.MATCH_PARENT
                   ));
-
                   setContentView(webView);
 
                   WebSettings settings = webView.getSettings();
@@ -253,17 +295,138 @@ jobs:
                   settings.setDatabaseEnabled(true);
                   settings.setAllowFileAccess(true);
                   settings.setAllowContentAccess(true);
-                  settings.setUseWideViewPort(true);
-                  settings.setLoadWithOverviewMode(true);
                   settings.setMediaPlaybackRequiresUserGesture(false);
-                  settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                  settings.setJavaScriptCanOpenWindowsAutomatically(false);
+                  settings.setSupportMultipleWindows(false);
 
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.setWebChromeClient(new WebChromeClient());
+                  if (android.os.Build.VERSION.SDK_INT >= 21) {
+                      settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                  }
+
+                  webView.addJavascriptInterface(new AndroidBridge(), "MrXbossAndroid");
+                  webView.setWebViewClient(new BlockingWebViewClient());
+                  webView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                          return false;
+                      }
+                  });
 
                   if (savedInstanceState == null) {
                       webView.loadUrl("file:///android_asset/www/index.html");
                   }
+              }
+
+              private class AndroidBridge {
+                  @JavascriptInterface
+                  public boolean isAdBlockAvailable() {
+                      return ADBLOCK_BUILD_ENABLED;
+                  }
+
+                  @JavascriptInterface
+                  public boolean isAdBlockEnabled() {
+                      return ADBLOCK_BUILD_ENABLED && adBlockEnabled;
+                  }
+
+                  @JavascriptInterface
+                  public void setAdBlockEnabled(boolean enabled) {
+                      if (!ADBLOCK_BUILD_ENABLED) {
+                          adBlockEnabled = false;
+                          return;
+                      }
+                      adBlockEnabled = enabled;
+                      prefs.edit().putBoolean("adblock_enabled", enabled).apply();
+                  }
+
+                  @JavascriptInterface
+                  public long getBlockedCount() {
+                      return blockedCount;
+                  }
+              }
+
+              private class BlockingWebViewClient extends WebViewClient {
+                  @Override
+                  public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                      if (request == null || request.getUrl() == null) return false;
+                      String url = request.getUrl().toString();
+                      if (isBlockedScheme(url) || shouldBlockUrl(url)) {
+                          blockedCount++;
+                          return true;
+                      }
+                      return false;
+                  }
+
+                  @Override
+                  public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                      if (isBlockedScheme(url) || shouldBlockUrl(url)) {
+                          blockedCount++;
+                          return true;
+                      }
+                      return false;
+                  }
+
+                  @Override
+                  public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                      if (request != null && request.getUrl() != null && shouldBlockUrl(request.getUrl().toString())) {
+                          blockedCount++;
+                          return emptyResponse();
+                      }
+                      return super.shouldInterceptRequest(view, request);
+                  }
+
+                  @Override
+                  public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                      if (shouldBlockUrl(url)) {
+                          blockedCount++;
+                          return emptyResponse();
+                      }
+                      return super.shouldInterceptRequest(view, url);
+                  }
+              }
+
+              private boolean isBlockedScheme(String rawUrl) {
+                  if (!ADBLOCK_BUILD_ENABLED || rawUrl == null) return false;
+                  String url = rawUrl.toLowerCase(Locale.US);
+                  return url.startsWith("intent:") || url.startsWith("market:");
+              }
+
+              private boolean shouldBlockUrl(String rawUrl) {
+                  if (!ADBLOCK_BUILD_ENABLED || !adBlockEnabled || rawUrl == null) return false;
+
+                  String url = rawUrl.toLowerCase(Locale.US);
+                  Uri uri;
+                  try {
+                      uri = Uri.parse(url);
+                  } catch (Exception ignored) {
+                      return false;
+                  }
+
+                  String host = uri.getHost();
+                  if (host == null) return false;
+                  host = host.toLowerCase(Locale.US);
+                  if (host.startsWith("www.")) host = host.substring(4);
+
+                  for (String blockedHost : BLOCKED_HOSTS) {
+                      if (host.equals(blockedHost) || host.endsWith("." + blockedHost)) {
+                          return true;
+                      }
+                  }
+
+                  for (String part : BLOCKED_URL_PARTS) {
+                      if (url.contains(part)) {
+                          return true;
+                      }
+                  }
+
+                  return false;
+              }
+
+              private WebResourceResponse emptyResponse() {
+                  return new WebResourceResponse(
+                          "text/plain",
+                          "utf-8",
+                          new ByteArrayInputStream(new byte[0])
+                  );
               }
 
               @Override
