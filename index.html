@@ -1,1118 +1,1080 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Mr Xboss Galaxy Party</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    touch-action: manipulation;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr Xboss Galaxy Party</title>
+    <style>
+        :root {
+            --bg-space: #05050a;
+            --primary: #00f3ff;
+            --secondary: #7b00ff;
+            --accent: #ffd700;
+            --danger: #ff0055;
+            --success: #00ff66;
+            --text: #ffffff;
+            --panel: rgba(10, 10, 25, 0.85);
+            --border: rgba(0, 243, 255, 0.3);
+        }
 
-:root {
-    --bg-space: #070913;
-    --panel-bg: rgba(13, 17, 38, 0.85);
-    --cyan: #00f0ff;
-    --blue: #0066ff;
-    --gold: #ffb700;
-    --pink: #ff007f;
-    --white: #ffffff;
-    --text-dim: #a0aabf;
-    --radius: 16px;
-}
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+        }
 
-body {
-    background-color: var(--bg-space);
-    color: var(--white);
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-}
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-space);
+            color: var(--text);
+        }
 
-#game-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
+        #app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-/* UI Layers */
-.screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    background: radial-gradient(circle at center, rgba(10,15,35,0.9) 0%, rgba(5,7,15,0.95) 100%);
-    overflow-y: auto;
-}
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
 
-.screen.active {
-    display: flex;
-}
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #101030 0%, #05050a 100%);
+            transition: opacity 0.3s ease;
+            overflow-y: auto;
+        }
 
-/* Common UI Components */
-.header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--panel-bg);
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    border: 1px solid rgba(0, 240, 255, 0.2);
-    backdrop-filter: blur(10px);
-}
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            display: none !important;
+        }
 
-.logo-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        /* UI Components */
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
 
-.logo-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--cyan), var(--blue));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    box-shadow: 0 0 15px var(--cyan);
-}
+        h1, h2, h3 {
+            text-align: center;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            margin-bottom: 15px;
+        }
 
-.logo-text h1 {
-    font-size: 16px;
-    background: linear-gradient(90deg, var(--white), var(--cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.4rem; }
 
-.logo-text span {
-    font-size: 10px;
-    color: var(--text-dim);
-}
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 8px 0;
+            width: 100%;
+            text-align: center;
+        }
 
-.stats-bar {
-    display: flex;
-    gap: 15px;
-}
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 5px rgba(0, 243, 255, 0.8);
+        }
 
-.stat-pill {
-    background: rgba(0,0,0,0.5);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
+        .btn-accent {
+            background: linear-gradient(135deg, #ff8800, var(--accent));
+            color: #000;
+        }
 
-.stat-pill.gold { color: var(--gold); border-color: rgba(255,183,0,0.3); }
-.stat-pill.cyan { color: var(--cyan); border-color: rgba(0,240,255,0.3); }
+        .btn-danger {
+            background: linear-gradient(135deg, #aa0033, var(--danger));
+        }
 
-/* Main Menu Screen */
-.main-menu-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    text-align: center;
-}
+        .currency-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--accent);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--accent);
+            gap: 8px;
+        }
 
-.main-title {
-    font-size: 32px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    background: linear-gradient(180deg, var(--white), var(--cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(0,240,255,0.5);
-    margin-bottom: 5px;
-}
+        /* HUD Screen */
+        #hud-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+        }
 
-.main-subtitle {
-    font-size: 14px;
-    color: var(--text-dim);
-    margin-bottom: 20px;
-}
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            pointer-events: auto;
+        }
 
-.menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    max-width: 280px;
-}
+        .hud-stats {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--primary);
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            gap: 15px;
+        }
 
-.btn {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    color: var(--white);
-    border: none;
-    padding: 14px 20px;
-    border-radius: var(--radius);
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,102,255,0.4);
-    transition: transform 0.1s, filter 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    text-transform: uppercase;
-}
+        .hud-timer {
+            font-size: 1.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
 
-.btn:active {
-    transform: scale(0.96);
-    filter: brightness(1.2);
-}
+        /* Controls */
+        .controls-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 6;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 30px;
+        }
 
-.btn.secondary {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: none;
-}
+        .joystick-zone {
+            width: 130px;
+            height: 130px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            pointer-events: auto;
+            position: relative;
+            touch-action: none;
+        }
 
-.btn.gold-btn {
-    background: linear-gradient(135deg, #ff8800, var(--gold));
-    box-shadow: 0 4px 20px rgba(255,183,0,0.4);
-    color: #000;
-}
+        .joystick-knob {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            box-shadow: 0 0 15px var(--primary);
+            pointer-events: none;
+        }
 
-/* Grid Menu Screens */
-.grid-container {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    overflow-y: auto;
-    padding: 10px 0;
-}
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            pointer-events: auto;
+        }
 
-.grid-card {
-    background: var(--panel-bg);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--radius);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s;
-}
+        .action-btn {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: rgba(0, 243, 255, 0.3);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+            backdrop-filter: blur(5px);
+        }
 
-.grid-card.selected {
-    border-color: var(--cyan);
-    box-shadow: 0 0 15px rgba(0,240,255,0.3);
-    background: rgba(0, 240, 255, 0.05);
-}
+        .action-btn:active {
+            background: rgba(0, 243, 255, 0.7);
+            transform: scale(0.9);
+        }
 
-.grid-card img, .card-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-}
+        #dash-btn {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: var(--accent);
+        }
 
-/* In-Game HUD */
-#hud {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5;
-    pointer-events: none;
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-}
+        /* Grids & Lists */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-height: 250px;
+            overflow-y: auto;
+            margin: 10px 0;
+            padding: 5px;
+        }
 
-.hud-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.hud-panel {
-    background: rgba(7, 9, 19, 0.7);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 10px 16px;
-    border-radius: 12px;
-    backdrop-filter: blur(5px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
+        .card.selected {
+            border-color: var(--accent);
+            background: rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 10px var(--accent);
+        }
 
-.hud-value {
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--white);
-}
+        .footer-credit {
+            font-size: 0.8rem;
+            color: #888;
+            text-align: center;
+            margin-top: 10px;
+        }
 
-.hud-label {
-    font-size: 10px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-}
+        .footer-credit span {
+            color: var(--primary);
+        }
 
-/* Touch Controls */
-.touch-controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 6;
-    pointer-events: none;
-    display: none;
-}
+        /* Leaderboard / List items */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+        }
 
-.joystick-zone {
-    position: absolute;
-    bottom: 30px;
-    left: 30px;
-    width: 130px;
-    height: 130px;
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    pointer-events: auto;
-    touch-action: none;
-}
-
-.joystick-knob {
-    position: absolute;
-    top: 35px;
-    left: 35px;
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 240, 255, 0.5);
-    border: 2px solid var(--cyan);
-    border-radius: 50%;
-    box-shadow: 0 0 15px var(--cyan);
-    pointer-events: none;
-    transition: transform 0.05s linear;
-}
-
-.action-buttons {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    display: flex;
-    gap: 15px;
-    pointer-events: auto;
-}
-
-.action-btn {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: rgba(0, 102, 255, 0.4);
-    border: 2px solid var(--cyan);
-    color: var(--white);
-    font-weight: bold;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-    backdrop-filter: blur(5px);
-    cursor: pointer;
-}
-
-.action-btn:active {
-    transform: scale(0.9);
-    background: rgba(0, 240, 255, 0.7);
-}
-
-.action-btn.dash {
-    background: rgba(255, 0, 127, 0.4);
-    border-color: var(--pink);
-    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
-    margin-bottom: 20px;
-}
-
-/* Modal / Popups */
-.modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(5, 7, 15, 0.85);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.modal-card {
-    background: var(--panel-bg);
-    border: 1px solid var(--cyan);
-    border-radius: var(--radius);
-    padding: 25px;
-    width: 100%;
-    max-width: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
-}
-
-.footer-credit {
-    font-size: 11px;
-    color: var(--text-dim);
-    text-align: center;
-    padding: 10px;
-}
-</style>
+        /* Notification Toast */
+        #toast {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--panel);
+            border: 2px solid var(--accent);
+            padding: 12px 25px;
+            border-radius: 30px;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            font-weight: bold;
+            color: var(--accent);
+        }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-<div id="game-container"></div>
+<div id="app-container">
+    <canvas id="game-canvas"></canvas>
 
-<!-- HUD -->
-<div id="hud">
-    <div class="hud-top">
-        <div class="hud-panel">
-            <span class="hud-value" id="hud-round">الجولة 1/3</span>
-            <span class="hud-label" id="hud-mode">سباق العوائق</span>
+    <div id="toast">إشعار جديد</div>
+
+    <!-- MAIN MENU SCREEN -->
+    <div id="screen-main" class="screen">
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: var(--primary); font-size: 0.9rem; letter-spacing: 2px;">بطولة المجرة الكبرى</p>
+            <h1>Mr Xboss Galaxy Party</h1>
         </div>
-        <div class="hud-panel">
-            <span class="hud-value" id="hud-time">01:30</span>
-            <span class="hud-label">الوقت المتبقي</span>
+
+        <div class="panel" style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <div class="currency-display">
+                    💎 <span id="player-crystals">0</span>
+                </div>
+                <div style="font-size: 0.9rem; color: #aaa;">
+                    بطولات مفلورة: <span id="player-wins" style="color: var(--accent);">0</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="GameApp.startTournament()">البدء في البطولة</button>
+            <button class="btn btn-accent" onclick="GameApp.showScreen('screen-characters')">الشخصيات والسكنات</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn" style="width:100%; font-size:0.9rem;" onclick="GameApp.showScreen('screen-missions')">المهام اليومية</button>
+                <button class="btn" style="width:100%; font-size:0.9rem;" onclick="GameApp.showScreen('screen-achievements')">الإنجازات</button>
+            </div>
+            <button class="btn" style="background: rgba(255,255,255,0.1); font-size:0.9rem;" onclick="GameApp.showScreen('screen-settings')">الإعدادات والتعليمات</button>
         </div>
-        <div class="hud-panel">
-            <span class="hud-value" id="hud-rank">1 / 30</span>
-            <span class="hud-label">المركز</span>
+
+        <div class="footer-credit">
+            Mr Xboss Galaxy Party v1.0 | Developed by <span>Mr Xboss</span>
         </div>
     </div>
-</div>
 
-<!-- Touch Controls -->
-<div class="touch-controls" id="touch-controls">
-    <div class="joystick-zone" id="joystick-zone">
-        <div class="joystick-knob" id="joystick-knob"></div>
-    </div>
-    <div class="action-buttons">
-        <button class="action-btn dash" id="btn-dash">اندفاع</button>
-        <button class="action-btn" id="btn-jump">قفز</button>
-    </div>
-</div>
-
-<!-- Screen: Main Menu -->
-<div id="screen-main" class="screen active">
-    <div class="header-bar">
-        <div class="logo-area">
-            <div class="logo-icon">X</div>
-            <div class="logo-text">
-                <h1>Galaxy Party</h1>
-                <span>Mr Xboss</span>
+    <!-- CHARACTERS SCREEN -->
+    <div id="screen-characters" class="screen hidden">
+        <h2>اختيار الشخصية</h2>
+        <div class="panel" style="flex: 1; display: flex; flex-direction: column; max-height: 70vh;">
+            <div class="grid-container" id="character-grid">
+                <!-- Dynamically populated -->
+            </div>
+            <div style="margin-top: 10px;">
+                <h3>ألوان السكن</h3>
+                <div style="display: flex; gap: 10px; justify-content: center;" id="skin-colors">
+                    <div class="card" style="background: #00f3ff; width: 40px; height: 40px; border-radius: 50%;" onclick="GameApp.setSkinColor('#00f3ff')"></div>
+                    <div class="card" style="background: #7b00ff; width: 40px; height: 40px; border-radius: 50%;" onclick="GameApp.setSkinColor('#7b00ff')"></div>
+                    <div class="card" style="background: #ffd700; width: 40px; height: 40px; border-radius: 50%;" onclick="GameApp.setSkinColor('#ffd700')"></div>
+                    <div class="card" style="background: #ff0055; width: 40px; height: 40px; border-radius: 50%;" onclick="GameApp.setSkinColor('#ff0055')"></div>
+                    <div class="card" style="background: #00ff66; width: 40px; height: 40px; border-radius: 50%;" onclick="GameApp.setSkinColor('#00ff66')"></div>
+                </div>
             </div>
         </div>
-        <div class="stats-bar">
-            <div class="stat-pill gold"><span id="lbl-coins">0</span> 💎</div>
-        </div>
+        <button class="btn" style="margin-top: 10px;" onclick="GameApp.showScreen('screen-main')">العودة للرئيسية</button>
     </div>
 
-    <div class="main-menu-content">
-        <div>
-            <h2 class="main-title">بطولة المجرة</h2>
-            <p class="main-subtitle">انطلق وتجاوز خصومك في تحديات الحفلة الفضائية</p>
+    <!-- MISSIONS SCREEN -->
+    <div id="screen-missions" class="screen hidden">
+        <h2>المهام اليومية</h2>
+        <div class="panel" style="flex: 1; overflow-y: auto;" id="missions-list">
+            <!-- Populated via JS -->
         </div>
-        <div class="menu-buttons">
-            <button class="btn gold-btn" onclick="GameApp.startTournament()">بدء البطولة</button>
-            <button class="btn" onclick="GameApp.showScreen('screen-characters')">الشخصيات</button>
-            <button class="btn" onclick="GameApp.showScreen('screen-shop')">المتجر والألوان</button>
-            <button class="btn secondary" onclick="GameApp.showScreen('screen-missions')">المهام والإنجازات</button>
-            <button class="btn secondary" onclick="GameApp.showScreen('screen-settings')">الإعدادات والتعليمات</button>
-        </div>
+        <button class="btn" style="margin-top: 10px;" onclick="GameApp.showScreen('screen-main')">العودة</button>
     </div>
-    <div class="footer-credit">Mr Xboss Galaxy Party v1.0 - All Rights Reserved</div>
-</div>
 
-<!-- Screen: Characters -->
-<div id="screen-characters" class="screen">
-    <div class="header-bar">
-        <div class="logo-area">
-            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
-            <div class="logo-text">
-                <h1>اختيار الشخصية</h1>
-                <span>اختر بطلك الفضائي</span>
+    <!-- ACHIEVEMENTS SCREEN -->
+    <div id="screen-achievements" class="screen hidden">
+        <h2>الإنجازات</h2>
+        <div class="panel" style="flex: 1; overflow-y: auto;" id="achievements-list">
+            <!-- Populated via JS -->
+        </div>
+        <button class="btn" style="margin-top: 10px;" onclick="GameApp.showScreen('screen-main')">العودة</button>
+    </div>
+
+    <!-- SETTINGS SCREEN -->
+    <div id="screen-settings" class="screen hidden">
+        <h2>الإعدادات والتعليمات</h2>
+        <div class="panel" style="flex: 1; display: flex; flex-direction: column; gap: 15px; font-size: 0.95rem; overflow-y: auto;">
+            <div>
+                <h3>طريقة اللعب:</h3>
+                <p>• استخدم عصا التحكم الافتراضية لتحريك شخصيتك.</p>
+                <p>• زر القفز لتجاوز العوائق.</p>
+                <p>• زر الاندفاع (Dash) للحصول على سرعة مؤقتة.</p>
+                <p>• تهدف لتجاوز المراحل والتأهل للنهائي كـ Mr Xboss الحقيقي!</p>
             </div>
-        </div>
-    </div>
-    <div class="grid-container" id="characters-grid"></div>
-    <button class="btn" onclick="GameApp.showScreen('screen-main')">حفظ والعودة</button>
-    <div class="footer-credit">Mr Xboss</div>
-</div>
-
-<!-- Screen: Shop -->
-<div id="screen-shop" class="screen">
-    <div class="header-bar">
-        <div class="logo-area">
-            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
-            <div class="logo-text">
-                <h1>متجر السكنات والألوان</h1>
-                <span>تخصيص المظهر</span>
+            <div>
+                <h3>معلومات المطور:</h3>
+                <p>صانع التطبيق: <strong>Mr Xboss</strong></p>
+                <p>الحزمة البرمجية: com.mrxboss.apps.appe6b1c6e14b</p>
             </div>
+            <button class="btn btn-danger" onclick="GameApp.resetData()">إعادة ضبط البيانات</button>
         </div>
-        <div class="stats-bar">
-            <div class="stat-pill gold"><span id="lbl-shop-coins">0</span> 💎</div>
+        <button class="btn" style="margin-top: 10px;" onclick="GameApp.showScreen('screen-main')">العودة</button>
+    </div>
+
+    <!-- TOURNAMENT INTRO / ROUND TRANSITION -->
+    <div id="screen-round-intro" class="screen hidden" style="justify-content: center; align-items: center; text-align: center;">
+        <div class="panel">
+            <h3 id="intro-round-title" style="color: var(--primary);">الجولة الأولى</h3>
+            <h1 id="intro-world-name" style="margin: 20px 0;">Galaxy Stadium</h1>
+            <p id="intro-mode-desc" style="margin-bottom: 20px;">سباق عوائق نحو خط النهاية!</p>
+            <button class="btn btn-accent" onclick="GameApp.startRound()">ابدأ التحدي</button>
         </div>
     </div>
-    <div class="grid-container" id="shop-grid"></div>
-    <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة</button>
-    <div class="footer-credit">Mr Xboss</div>
-</div>
 
-<!-- Screen: Missions -->
-<div id="screen-missions" class="screen">
-    <div class="header-bar">
-        <div class="logo-area">
-            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
-            <div class="logo-text">
-                <h1>المهام والإنجازات</h1>
-                <span>اكسب المزيد من الكريستال</span>
+    <!-- HUD GAMEPLAY -->
+    <div id="hud-screen" class="hidden">
+        <div class="hud-top">
+            <div class="hud-stats">
+                <div>المركز: <span id="hud-rank" style="color: var(--accent);">1</span>/30</div>
+                <div>الكريستال: <span id="hud-crystals" style="color: var(--primary);">0</span></div>
             </div>
+            <div class="hud-timer" id="hud-timer">1:20</div>
         </div>
     </div>
-    <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:10px 0;" id="missions-list"></div>
-    <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة</button>
-    <div class="footer-credit">Mr Xboss</div>
-</div>
 
-<!-- Screen: Settings & Help -->
-<div id="screen-settings" class="screen">
-    <div class="header-bar">
-        <div class="logo-area">
-            <div class="logo-icon" onclick="GameApp.showScreen('screen-main')" style="cursor:pointer">⬅</div>
-            <div class="logo-text">
-                <h1>الإعدادات والتعليمات</h1>
-                <span>Mr Xboss Hub</span>
+    <!-- CONTROLS -->
+    <div id="controls-hud" class="controls-container hidden">
+        <div class="joystick-zone" id="joystick-zone">
+            <div class="joystick-knob" id="joystick-knob"></div>
+        </div>
+        <div class="action-buttons">
+            <div class="action-btn" id="jump-btn">قفز</div>
+            <div class="action-btn" id="dash-btn">اندفاع</div>
+        </div>
+    </div>
+
+    <!-- ROUND OVER / QUALIFIED SCREEN -->
+    <div id="screen-round-over" class="screen hidden" style="justify-content: center; align-items: center; text-align: center;">
+        <div class="panel">
+            <h1 id="round-result-title">تأهلت للجولة التالية!</h1>
+            <p id="round-result-desc" style="margin: 20px 0;">أداء رائع يا Mr Xboss!</p>
+            <div class="currency-display" style="margin-bottom: 20px; justify-content: center;">
+                مكافأة: 💎 +<span id="round-reward">50</span>
             </div>
+            <button class="btn btn-accent" onclick="GameApp.nextTournamentStage()">المتابعة</button>
         </div>
     </div>
-    <div style="flex:1; display:flex; flex-direction:column; gap:15px; padding:15px 0; overflow-y:auto;">
-        <div style="background:var(--panel-bg); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
-            <h3 style="color:var(--cyan); margin-bottom:8px;">طريقة اللعب:</h3>
-            <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
-                - استخدم العصا الافتراضية اليسرى لتحريك شخصيتك.<br>
-                - زر القفز لتجاوز الفراغات والحواجز.<br>
-                - زر الاندفاع (Dash) للسرعة المفاجئة وتجاوز المنافسين.<br>
-                - تخلص من المراحل الـ3 وتأهل حتى تصل للنهائي وتفوز بالبطولة!
-            </p>
-        </div>
-        <div style="background:var(--panel-bg); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
-            <h3 style="color:var(--gold); margin-bottom:8px;">عن التطبيق:</h3>
-            <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
-                اسم التطبيق: Mr Xboss Galaxy Party<br>
-                المפתח: Mr Xboss<br>
-                الحزمة: com.mrxboss.apps.app2ff36a3ba1<br>
-                مصمم خصيصاً للعمل بسلاسة داخل Android WebView.
-            </p>
-        </div>
-    </div>
-    <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة</button>
-    <div class="footer-credit">Mr Xboss</div>
-</div>
 
-<!-- Modal Notification / Results -->
-<div class="modal-overlay" id="modal-popup">
-    <div class="modal-card">
-        <h2 id="modal-title" style="color:var(--cyan); font-size:22px;">نتيجة الجولة</h2>
-        <p id="modal-desc" style="color:var(--text-dim); font-size:14px;">تهانينا! لقد تأهلت للجولة التالية.</p>
-        <button class="btn" id="modal-btn" onclick="GameApp.closeModal()">استمرار</button>
+    <!-- GAME OVER / LOSS SCREEN -->
+    <div id="screen-game-over" class="screen hidden" style="justify-content: center; align-items: center; text-align: center;">
+        <div class="panel">
+            <h1 style="color: var(--danger);">انتهت المحاولة!</h1>
+            <p style="margin: 20px 0;">لم تتأهل هذه المرة، حاول مجدداً.</p>
+            <button class="btn" onclick="GameApp.showScreen('screen-main')">العودة للرئيسية</button>
+        </div>
     </div>
+
+    <!-- FINAL WIN SCREEN -->
+    <div id="screen-final-win" class="screen hidden" style="justify-content: center; align-items: center; text-align: center;">
+        <div class="panel">
+            <h1 style="color: var(--accent);">بطل المجرة!</h1>
+            <p style="margin: 20px 0;">لقد فزت ببطولة Mr Xboss Galaxy Party الكبرى!</p>
+            <div class="currency-display" style="margin-bottom: 20px; justify-content: center;">
+                جائزة البطولة: 💎 +<span id="win-reward">200</span>
+            </div>
+            <button class="btn btn-accent" onclick="GameApp.showScreen('screen-main')">احتفال والعودة</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
-// --- Game Data & State ---
+/* 
+  Mr Xboss Galaxy Party - Core Logic & Three.js 3D Engine
+  Internal package key: com.mrxboss.apps.appe6b1c6e14b
+  Owner: Mr Xboss
+*/
+
 const GameData = {
-    coins: 100,
-    selectedChar: 0,
-    selectedSkin: 0,
-    unlockedChars: [0],
-    unlockedSkins: [0],
-    tournamentsWon: 0,
-    bestRank: 99,
-    missions: [
-        { id: 1, title: 'العب أول بطولة', reward: 50, progress: 0, goal: 1, claimed: false },
-        { id: 2, title: 'افوز بـ 3 بطولات', reward: 150, progress: 0, goal: 3, claimed: false },
-        { id: 3, title: 'اجمع 200 كريستال', reward: 100, progress: 100, goal: 200, claimed: false }
-    ],
+    crystals: 0,
+    wins: 0,
+    selectedCharacter: 0,
+    skinColor: '#00f3ff',
     characters: [
-        { id: 0, name: 'Xboss Hero', color: 0x00f0ff, price: 0 },
-        { id: 1, name: 'Nova', color: 0xff007f, price: 100 },
-        { id: 2, name: 'Volt', color: 0xffb700, price: 150 },
-        { id: 3, name: 'Pixel', color: 0x00ff66, price: 200 },
-        { id: 4, name: 'Crystal', color: 0x9900ff, price: 250 },
-        { id: 5, name: 'Shadow', color: 0x333333, price: 300 },
-        { id: 6, name: 'Rocket', color: 0xff3300, price: 350 },
-        { id: 7, name: 'Sky', color: 0x00ccff, price: 400 }
+        { name: 'Xboss Hero', unlocked: true, price: 0 },
+        { name: 'Nova', unlocked: false, price: 100 },
+        { name: 'Volt', unlocked: false, price: 150 },
+        { name: 'Pixel', unlocked: false, price: 200 },
+        { name: 'Crystal', unlocked: false, price: 250 },
+        { name: 'Shadow', unlocked: false, price: 300 },
+        { name: 'Rocket', unlocked: false, price: 350 },
+        { name: 'Sky', unlocked: false, price: 400 }
     ],
-    skins: [
-        { id: 0, name: 'كلاسيكي نيون', color: 0xffffff, price: 0 },
-        { id: 1, name: 'ذهبي ملكي', color: 0xffb700, price: 100 },
-        { id: 2, name: 'سماوي مضيء', color: 0x00f0ff, price: 150 }
+    missions: [
+        { id: 1, title: 'العب بطولتين', target: 2, current: 0, reward: 50, completed: false },
+        { id: 2, title: 'اجمع 50 كريستالة', target: 50, current: 0, reward: 80, completed: false }
+    ],
+    achievements: [
+        { id: 1, title: 'أول فوز بالبطولة', desc: 'فز ببطولة مجرية كاملة', unlocked: false, reward: 150 },
+        { id: 2, title: 'جامع الكريستال', desc: 'اجمع إجمالي 200 كريستالة', unlocked: false, reward: 100 }
     ]
 };
 
-// AI Names Arabic/English
-const AiNames = [
-    "أحمد", "سارة", "محمد", "فهد", "ريم", "VoltX", "Star99", "GalaxyBoy",
-    "فاطمة", "راشد", "ليلى", "سلطان", "NeoRun", "CyberQueen", "زينة", "خالد",
-    "منى", "سامي", "هند", "نايف", "LunaSpark", "SpaceX", "يوسف", "دانة",
-    "بدر", "نوف", "عمر", "ريم", "ApexHero", "Quantum"
+const Worlds = [
+    { name: 'Galaxy Stadium', mode: 'سباق عوائق', desc: 'سباق عوائق فوق منصات فضائية متحركة!' },
+    { name: 'Neon Factory', mode: 'منصات تختفي', desc: 'ابق على قيد الحياة بينما تختفي المنصات تدريجياً!' },
+    { name: 'Crystal Sky', mode: 'جمع الكريستال', desc: 'اجمع أكبر عدد من الكريستالات في الوقت المحدد!' }
 ];
 
-// Load from LocalStorage
+let gameState = {
+    currentScreen: 'screen-main',
+    tournamentRound: 0,
+    maxRounds: 3,
+    roundTime: 90,
+    timerInterval: null,
+    isPlaying: false,
+    playerCrystalsCollected: 0,
+    playerRank: 30
+};
+
+// Storage Handling
 function loadGameData() {
     const saved = localStorage.getItem('com_mrxboss_galaxy_party');
     if (saved) {
         try {
             const data = JSON.parse(saved);
-            Object.assign(GameData, data);
-        } catch(e) {}
+            GameData.crystals = data.crystals || 0;
+            GameData.wins = data.wins || 0;
+            GameData.selectedCharacter = data.selectedCharacter || 0;
+            GameData.skinColor = data.skinColor || '#00f3ff';
+            if(data.characters) GameData.characters = data.characters;
+            if(data.missions) GameData.missions = data.missions;
+            if(data.achievements) GameData.achievements = data.achievements;
+        } catch(e) { console.error(e); }
     }
+    updateUIValues();
 }
 
 function saveGameData() {
     localStorage.setItem('com_mrxboss_galaxy_party', JSON.stringify(GameData));
+    updateUIValues();
 }
 
-// --- Application Logic & Screen Manager ---
+function updateUIValues() {
+    document.getElementById('player-crystals').innerText = GameData.crystals;
+    document.getElementById('player-wins').innerText = GameData.wins;
+    document.getElementById('hud-crystals').innerText = GameData.playerCrystalsCollected;
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Three.js Game Engine
+let scene, camera, renderer;
+let playerMesh, aiMeshes = [];
+let obstacles = [], collectibles = [], platforms = [];
+let keyStates = { forward: false, backward: false, left: false, right: false, jump: false, dash: false };
+let playerVelocity = new THREE.Vector3();
+let isGrounded = false;
+let dashCooldown = 0;
+
+function initEngine() {
+    const container = document.getElementById('game-canvas');
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x05050a);
+    scene.fog = new THREE.FogExp2(0x05050a, 0.015);
+
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ canvas: container, antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0x00f3ff, 0.8);
+    dirLight.position.set(20, 40, 20);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    const pointLight = new THREE.PointLight(0x7b00ff, 1, 50);
+    pointLight.position.set(0, 10, 0);
+    scene.add(pointLight);
+
+    window.addEventListener('resize', onWindowResize);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function createCharacterMesh(color, isPlayer = false) {
+    const group = new THREE.Group();
+
+    // Body
+    const bodyMat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.3, metalness: 0.8 });
+    const bodyGeo = new THREE.BoxGeometry(0.8, 1, 0.5);
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.y = 0.5;
+    body.castShadow = true;
+    group.add(body);
+
+    // Head / Helmet
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.9 });
+    const headGeo = new THREE.SphereGeometry(0.4, 16, 16);
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 1.3;
+    group.add(head);
+
+    // Eyes / Visor
+    const visorMat = new THREE.MeshStandardMaterial({ color: isPlayer ? 0xffd700 : 0x00f3ff, emissive: isPlayer ? 0xffd700 : 0x00f3ff });
+    const visorGeo = new THREE.BoxGeometry(0.5, 0.2, 0.3);
+    const visor = new THREE.Mesh(visorGeo, visorMat);
+    visor.position.set(0, 1.3, 0.25);
+    group.add(visor);
+
+    return group;
+}
+
+function setupLevelGeometry(roundIndex) {
+    // Clear previous objects
+    clearSceneObjects();
+
+    // Create ground / platforms based on round
+    if (roundIndex === 0) {
+        // Obstacle course
+        createPlatform(0, -1, 0, 10, 1, 100, 0x101030);
+        for(let i = 10; i < 90; i += 15) {
+            createObstacle(0, 0, -i, 6, 0.5, 3, 0xff0055);
+            if(i % 30 === 0) {
+                createCollectible(2, 0.5, -i);
+                createCollectible(-2, 0.5, -i);
+            }
+        }
+    } else if (roundIndex === 1) {
+        // Disappearing platforms
+        for(let i = 0; i < 15; i++) {
+            createPlatform((i%3 - 1) * 4, -1, -i * 6, 3.5, 1, 5, 0x7b00ff);
+            createCollectible((i%3 - 1) * 4, 0.5, -i * 6);
+        }
+    } else {
+        // Final Arena (Survival)
+        const arena = new THREE.Mesh(
+            new THREE.CylinderGeometry(15, 15, 1, 32),
+            new THREE.MeshStandardMaterial({ color: 0x101030, roughness: 0.2 })
+        );
+        arena.position.set(0, -1, 0);
+        scene.add(arena);
+        platforms.push(arena);
+
+        for(let i = 0; i < 10; i++) {
+            createCollectible((Math.random() - 0.5) * 20, 0.5, (Math.random() - 0.5) * 20);
+        }
+    }
+
+    // Spawn Player
+    playerMesh = createCharacterMesh(GameData.skinColor, true);
+    playerMesh.position.set(0, 0, 5);
+    scene.add(playerMesh);
+
+    // Spawn 29 AI Bots
+    aiMeshes = [];
+    const arabicNames = ['خالد', 'سارة', 'ريان', 'فيصل', 'لين', 'عمر', 'ريم', 'تامر', 'فهد', 'نور', 'يوسف', 'دنا', 'زياد', 'رغد', 'بدر'];
+    for(let i = 0; i < 29; i++) {
+        const ai = createCharacterMesh(Math.random() * 0xffffff, false);
+        ai.position.set((Math.random() - 0.5) * 8, 0, 5 + Math.random() * 5);
+        ai.userData = { speed: 0.05 + Math.random() * 0.04, name: arabicNames[Math.floor(Math.random() * arabicNames.length)] };
+        scene.add(ai);
+        aiMeshes.push(ai);
+    }
+}
+
+function clearSceneObjects() {
+    if(playerMesh) scene.remove(playerMesh);
+    aiMeshes.forEach(ai => scene.remove(ai));
+    platforms.forEach(p => scene.remove(p));
+    obstacles.forEach(o => scene.remove(o));
+    collectibles.forEach(c => scene.remove(c));
+    platforms = [];
+    obstacles = [];
+    collectibles = [];
+}
+
+function createPlatform(x, y, z, w, h, d, color) {
+    const p = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, d),
+        new THREE.MeshStandardMaterial({ color: color, roughness: 0.4 })
+    );
+    p.position.set(x, y, z);
+    scene.add(p);
+    platforms.push(p);
+}
+
+function createObstacle(x, y, z, w, h, d, color) {
+    const o = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, d),
+        new THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.5 })
+    );
+    o.position.set(x, y, z);
+    scene.add(o);
+    obstacles.push(o);
+}
+
+function createCollectible(x, y, z) {
+    const c = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.4),
+        new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffd700, emissiveIntensity: 0.8 })
+    );
+    c.position.set(x, y, z);
+    scene.add(c);
+    collectibles.push(c);
+}
+
+// Game Loop & Physics
+let clock = new THREE.Clock();
+
+function gameLoop() {
+    if (!gameState.isPlaying) return;
+    requestAnimationFrame(gameLoop);
+
+    const delta = clock.getDelta();
+
+    // Player Movement handling from Joystick
+    let moveX = 0, moveZ = 0;
+    if (keyStates.forward) moveZ -= 1;
+    if (keyStates.backward) moveZ += 1;
+    if (keyStates.left) moveX -= 1;
+    if (keyStates.right) moveX += 1;
+
+    const moveVector = new THREE.Vector3(moveX, 0, moveZ).normalize();
+    const speed = keyStates.dash ? 0.25 : 0.12;
+
+    if (playerMesh) {
+        playerMesh.position.x += moveVector.x * speed;
+        playerMesh.position.z += moveVector.z * speed;
+
+        if (moveVector.lengthSq() > 0) {
+            playerMesh.rotation.y = Math.atan2(moveVector.x, moveVector.z);
+        }
+
+        // Gravity & Jumping
+        playerVelocity.y -= 0.015;
+        playerMesh.position.y += playerVelocity.y;
+
+        // Simple Platform Collision
+        isGrounded = false;
+        platforms.forEach(p => {
+            const box = new THREE.Box3().setFromObject(p);
+            const pBox = new THREE.Box3().setFromObject(playerMesh);
+            if (box.intersectsBox(pBox) && playerMesh.position.y >= p.position.y) {
+                playerMesh.position.y = p.position.y + 1;
+                playerVelocity.y = 0;
+                isGrounded = true;
+            }
+        });
+
+        // Fall off check
+        if (playerMesh.position.y < -10) {
+            playerMesh.position.set(0, 2, 5); // Respawn
+            playerVelocity.set(0,0,0);
+            showToast('إعادة المحاولة من نقطة التفتيش!');
+        }
+
+        // Collectibles check
+        collectibles.forEach((c, index) => {
+            c.rotation.y += 0.05;
+            if (playerMesh.position.distanceTo(c.position) < 1.2) {
+                scene.remove(c);
+                collectibles.splice(index, 1);
+                GameData.playerCrystalsCollected += 1;
+                updateUIValues();
+            }
+        });
+
+        // Camera Follow
+        camera.position.set(playerMesh.position.x, playerMesh.position.y + 6, playerMesh.position.z + 8);
+        camera.lookAt(playerMesh.position.x, playerMesh.position.y + 1, playerMesh.position.z);
+    }
+
+    // AI Logic
+    aiMeshes.forEach(ai => {
+        ai.position.z -= ai.userData.speed;
+        // Simple obstacle avoidance or random sway
+        ai.position.x += Math.sin(Date.now() * 0.003 + ai.position.z) * 0.02;
+
+        if (ai.position.z < -90) {
+            ai.position.z = 5; // Loop back or finish
+        }
+    });
+
+    // Calculate dynamic rank
+    if (playerMesh) {
+        let aheadCount = aiMeshes.filter(ai => ai.position.z < playerMesh.position.z).length;
+        gameState.playerRank = Math.max(1, 30 - aheadCount);
+        document.getElementById('hud-rank').innerText = gameState.playerRank;
+
+        // Check win/qualification condition
+        if (gameState.tournamentRound === 0 && playerMesh.position.z < -85) {
+            endRound(true);
+        } else if (gameState.tournamentRound === 1 && playerMesh.position.z < -70) {
+            endRound(true);
+        } else if (gameState.tournamentRound === 2 && aiMeshes.length < 5) {
+            endFinalWin();
+        }
+    }
+
+    renderer.render(scene, camera);
+}
+
+// App Controller
 const GameApp = {
-    currentScreen: 'screen-main',
-    
     init() {
         loadGameData();
-        this.updateUI();
+        initEngine();
         this.renderCharacters();
-        this.renderShop();
         this.renderMissions();
-        GameEngine.init();
+        this.renderAchievements();
+        this.initControls();
     },
 
     showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-        this.currentScreen = screenId;
-        if(screenId === 'screen-main') {
-            this.updateUI();
-        }
-    },
-
-    updateUI() {
-        document.getElementById('lbl-coins').innerText = GameData.coins;
-        document.getElementById('lbl-shop-coins').innerText = GameData.coins;
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('hud-screen').classList.add('hidden');
+        document.getElementById('controls-hud').classList.add('hidden');
+        
+        const target = document.getElementById(screenId);
+        if (target) target.classList.remove('hidden');
+        gameState.currentScreen = screenId;
     },
 
     renderCharacters() {
-        const grid = document.getElementById('characters-grid');
+        const grid = document.getElementById('character-grid');
         grid.innerHTML = '';
-        GameData.characters.forEach(char => {
-            const unlocked = GameData.unlockedChars.includes(char.id);
-            const selected = GameData.selectedChar === char.id;
+        GameData.characters.forEach((char, idx) => {
             const card = document.createElement('div');
-            card.className = `grid-card ${selected ? 'selected' : ''}`;
-            card.innerHTML = `
-                <div class="card-avatar" style="background:#${char.color.toString(16)}">🤖</div>
-                <div style="font-size:13px; font-weight:bold;">${char.name}</div>
-                <div style="font-size:11px; color:var(--text-dim);">${unlocked ? (selected ? 'محدد' : 'مملوك') : char.price + ' 💎'}</div>
-            `;
+            card.className = `card ${GameData.selectedCharacter === idx ? 'selected' : ''}`;
+            card.innerHTML = `<h4>${char.name}</h4><p>${char.unlocked ? 'متاح' : char.price + ' 💎'}</p>`;
             card.onclick = () => {
-                if(unlocked) {
-                    GameData.selectedChar = char.id;
+                if (char.unlocked) {
+                    GameData.selectedCharacter = idx;
                     saveGameData();
                     this.renderCharacters();
-                } else if(GameData.coins >= char.price) {
-                    GameData.coins -= char.price;
-                    GameData.unlockedChars.push(char.id);
-                    GameData.selectedChar = char.id;
+                } else if (GameData.crystals >= char.price) {
+                    GameData.crystals -= char.price;
+                    char.unlocked = true;
+                    GameData.selectedCharacter = idx;
                     saveGameData();
-                    this.updateUI();
                     this.renderCharacters();
+                    showToast('تم فتح الشخصية بنجاح!');
                 } else {
-                    alert('لا يوجد كريستال كافي!');
+                    showToast('لا توجد كريستالات كافية!');
                 }
             };
             grid.appendChild(card);
         });
     },
 
-    renderShop() {
-        const grid = document.getElementById('shop-grid');
-        grid.innerHTML = '';
-        GameData.skins.forEach(skin => {
-            const unlocked = GameData.unlockedSkins.includes(skin.id);
-            const selected = GameData.selectedSkin === skin.id;
-            const card = document.createElement('div');
-            card.className = `grid-card ${selected ? 'selected' : ''}`;
-            card.innerHTML = `
-                <div class="card-avatar" style="border: 3px solid #${skin.color.toString(16)}">✨</div>
-                <div style="font-size:13px; font-weight:bold;">${skin.name}</div>
-                <div style="font-size:11px; color:var(--text-dim);">${unlocked ? (selected ? 'محدد' : 'مملوك') : skin.price + ' 💎'}</div>
-            `;
-            card.onclick = () => {
-                if(unlocked) {
-                    GameData.selectedSkin = skin.id;
-                    saveGameData();
-                    this.renderShop();
-                } else if(GameData.coins >= skin.price) {
-                    GameData.coins -= skin.price;
-                    GameData.unlockedSkins.push(skin.id);
-                    GameData.selectedSkin = skin.id;
-                    saveGameData();
-                    this.updateUI();
-                    this.renderShop();
-                } else {
-                    alert('لا يوجد كريستال كافي!');
-                }
-            };
-            grid.appendChild(card);
-        });
+    setSkinColor(color) {
+        GameData.skinColor = color;
+        saveGameData();
+        showToast('تم تغيير لون السكن!');
     },
 
     renderMissions() {
         const list = document.getElementById('missions-list');
         list.innerHTML = '';
         GameData.missions.forEach(m => {
-            const item = document.createElement('div');
-            item.style.cssText = "background:var(--panel-bg); padding:12px 15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;";
-            item.innerHTML = `
-                <div>
-                    <div style="font-size:13px; font-weight:bold; margin-bottom:4px;">${m.title}</div>
-                    <div style="font-size:11px; color:var(--text-dim);">التقدم: ${m.progress}/${m.goal} | المكافأة: ${m.reward} 💎</div>
-                </div>
-                <div>
-                    ${m.claimed ? '<span style="color:var(--cyan); font-size:12px;">منجزة</span>' : (m.progress >= m.goal ? `<button class="btn" style="padding:6px 12px; font-size:11px;" onclick="GameApp.claimMission(${m.id})">استلام</button>` : '<span style="color:var(--text-dim); font-size:11px;">قيد التقدم</span>')}
+            list.innerHTML += `
+                <div class="list-item">
+                    <div>
+                        <strong>${m.title}</strong>
+                        <p style="font-size:0.8rem; color:#aaa;">التقدم: ${m.current}/${m.target}</p>
+                    </div>
+                    <div style="color:var(--accent);">+${m.reward} 💎</div>
                 </div>
             `;
-            list.appendChild(item);
         });
     },
 
-    claimMission(id) {
-        const m = GameData.missions.find(x => x.id === id);
-        if(m && !m.claimed && m.progress >= m.goal) {
-            m.claimed = true;
-            GameData.coins += m.reward;
-            saveGameData();
-            this.updateUI();
-            this.renderMissions();
-        }
+    renderAchievements() {
+        const list = document.getElementById('achievements-list');
+        list.innerHTML = '';
+        GameData.achievements.forEach(a => {
+            list.innerHTML += `
+                <div class="list-item" style="border-left-color: ${a.unlocked ? 'var(--success)' : '#555'}">
+                    <div>
+                        <strong>${a.title}</strong>
+                        <p style="font-size:0.8rem; color:#aaa;">${a.desc}</p>
+                    </div>
+                    <div>${a.unlocked ? 'مكتمل' : 'قفل'}</div>
+                </div>
+            `;
+        });
     },
 
     startTournament() {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('hud').style.display = 'flex';
-        document.getElementById('touch-controls').style.display = 'block';
-        GameEngine.startTournament();
+        gameState.tournamentRound = 0;
+        this.prepareRound();
     },
 
-    showModal(title, desc, callback) {
-        document.getElementById('modal-title').innerText = title;
-        document.getElementById('modal-desc').innerText = desc;
-        const btn = document.getElementById('modal-btn');
-        btn.onclick = () => {
-            document.getElementById('modal-popup').style.display = 'none';
-            if(callback) callback();
-        };
-        document.getElementById('modal-popup').style.display = 'flex';
+    prepareRound() {
+        const world = Worlds[gameState.tournamentRound];
+        document.getElementById('intro-round-title').innerText = `الجولة ${gameState.tournamentRound + 1} من 3`;
+        document.getElementById('intro-world-name').innerText = world.name;
+        document.getElementById('intro-mode-desc').innerText = world.desc;
+        this.showScreen('screen-round-intro');
     },
 
-    closeModal() {
-        document.getElementById('modal-popup').style.display = 'none';
-    },
+    startRound() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('hud-screen').classList.remove('hidden');
+        document.getElementById('controls-hud').classList.remove('hidden');
 
-    endTournament(won) {
-        document.getElementById('hud').style.display = 'none';
-        document.getElementById('touch-controls').style.display = 'none';
+        GameData.playerCrystalsCollected = 0;
+        updateUIValues();
+
+        setupLevelGeometry(gameState.tournamentRound);
+
+        gameState.isPlaying = true;
+        gameState.roundTime = 90;
+        clearInterval(gameState.timerInterval);
         
-        if(won) {
-            GameData.tournamentsWon++;
-            GameData.coins += 200;
-            saveGameData();
-            this.showModal('فوز مظفر!', 'لقد حققت المركز الأول وفزت ببطولة المجرة الكبرى وحصلت على 200 كريستال!', () => {
-                this.showScreen('screen-main');
-            });
+        gameState.timerInterval = setInterval(() => {
+            gameState.roundTime--;
+            let mins = Math.floor(gameState.roundTime / 60);
+            let secs = gameState.roundTime % 60;
+            document.getElementById('hud-timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (gameState.roundTime <= 0) {
+                clearInterval(gameState.timerInterval);
+                if (gameState.playerRank <= 16) {
+                    endRound(true);
+                } else {
+                    endRound(false);
+                }
+            }
+        }, 1000);
+
+        gameLoop();
+    },
+
+    nextTournamentStage() {
+        gameState.tournamentRound++;
+        if (gameState.tournamentRound >= 3) {
+            this.showScreen('screen-final-win');
         } else {
-            this.showModal('هزيمة!', 'لقد خرجت من المنافسة. حاول مرة أخرى!', () => {
-                this.showScreen('screen-main');
-            });
+            this.prepareRound();
         }
-    }
-};
-
-// --- Three.js 3D Game Engine ---
-const GameEngine = {
-    scene: null,
-    camera: null,
-    renderer: null,
-    player: null,
-    aiPlayers: [],
-    obstacles: [],
-    crystals: [],
-    platforms: [],
-    
-    // Game state loop
-    isPlaying: false,
-    currentRound: 1,
-    roundType: 1, // 1: Race, 2: Falling Tiles, 3: Crystal Hunt
-    roundTime: 90,
-    playerRank: 1,
-    
-    // Controls state
-    moveVector: { x: 0, z: 0 },
-    isJumping: false,
-    jumpVelocity: 0,
-    isDashing: false,
-    dashCooldown: 0,
-
-    worlds: [
-        { name: "Galaxy Stadium", bg: 0x070913, platformColor: 0x00f0ff },
-        { name: "Neon Factory", bg: 0x13071f, platformColor: 0xff007f },
-        { name: "Crystal Sky", bg: 0x071b1f, platformColor: 0x00ffb7 },
-        { name: "Storm Zone", bg: 0x1f1407, platformColor: 0xffb700 },
-        { name: "Solar Arena", bg: 0x1f0707, platformColor: 0xff3300 }
-    ],
-
-    init() {
-        const container = document.getElementById('game-container');
-        
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x070913);
-
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(this.renderer.domElement);
-
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        this.scene.add(ambientLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(20, 40, 20);
-        this.scene.add(dirLight);
-
-        // Window resize
-        window.addEventListener('resize', () => {
-            this.camera.aspect = window.innerWidth / window.innerHeight;
-            this.camera.updateProjectionMatrix();
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        this.setupControls();
     },
 
-    setupControls() {
+    resetData() {
+        if(confirm('هل أنت متأكد من إعادة ضبط البيانات؟')) {
+            localStorage.removeItem('com_mrxboss_galaxy_party');
+            location.reload();
+        }
+    },
+
+    initControls() {
+        // Virtual Joystick Logic
         const zone = document.getElementById('joystick-zone');
         const knob = document.getElementById('joystick-knob');
-        let touchId = null;
-        let startX = 0, startY = 0;
+        let tracking = false;
+        let center = { x: 0, y: 0 };
 
         zone.addEventListener('touchstart', (e) => {
-            if(touchId !== null) return;
-            const touch = e.changedTouches[0];
-            touchId = touch.identifier;
+            tracking = true;
             const rect = zone.getBoundingClientRect();
-            startX = rect.left + rect.width / 2;
-            startY = rect.top + rect.height / 2;
+            center.x = rect.left + rect.width / 2;
+            center.y = rect.top + rect.height / 2;
         });
 
         window.addEventListener('touchmove', (e) => {
-            if(touchId === null) return;
-            for(let i=0; i<e.changedTouches.length; i++) {
-                const touch = e.changedTouches[i];
-                if(touch.identifier === touchId) {
-                    let dx = touch.clientX - startX;
-                    let dy = touch.clientY - startY;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    const maxDist = 45;
-                    
-                    if(dist > maxDist) {
-                        dx = (dx / dist) * maxDist;
-                        dy = (dy / dist) * maxDist;
-                    }
-                    
-                    knob.style.transform = `translate(${dx}px, ${dy}px)`;
-                    this.moveVector.x = dx / maxDist;
-                    this.moveVector.z = dy / maxDist;
-                }
+            if (!tracking) return;
+            const touch = e.touches[0];
+            let dx = touch.clientX - center.x;
+            let dy = touch.clientY - center.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const maxDist = 45;
+
+            if (dist > maxDist) {
+                dx = (dx / dist) * maxDist;
+                dy = (dy / dist) * maxDist;
+            }
+
+            knob.style.transform = `translate(${dx}px, ${dy}px)`;
+
+            keyStates.forward = dy < -15;
+            keyStates.backward = dy > 15;
+            keyStates.left = dx < -15;
+            keyStates.right = dx > 15;
+        });
+
+        window.addEventListener('touchend', () => {
+            if (!tracking) return;
+            tracking = false;
+            knob.style.transform = `translate(0px, 0px)`;
+            keyStates.forward = false;
+            keyStates.backward = false;
+            keyStates.left = false;
+            keyStates.right = false;
+        });
+
+        // Action Buttons
+        document.getElementById('jump-btn').addEventListener('touchstart', () => {
+            if (isGrounded) {
+                playerVelocity.y = 0.35;
+                isGrounded = false;
             }
         });
 
-        const endTouch = (e) => {
-            if(touchId === null) return;
-            for(let i=0; i<e.changedTouches.length; i++) {
-                if(e.changedTouches[i].identifier === touchId) {
-                    touchId = null;
-                    knob.style.transform = `translate(0px, 0px)`;
-                    this.moveVector.x = 0;
-                    this.moveVector.z = 0;
-                }
-            }
-        };
-
-        window.addEventListener('touchend', endTouch);
-        window.addEventListener('touchcancel', endTouch);
-
-        document.getElementById('btn-jump').addEventListener('touchstart', () => {
-            if(!this.isJumping) {
-                this.isJumping = true;
-                this.jumpVelocity = 0.22;
-            }
+        document.getElementById('dash-btn').addEventListener('touchstart', () => {
+            keyStates.dash = true;
+            setTimeout(() => keyStates.dash = false, 400);
         });
-
-        document.getElementById('btn-dash').addEventListener('touchstart', () => {
-            if(this.dashCooldown <= 0) {
-                this.isDashing = true;
-                this.dashCooldown = 60;
-                setTimeout(() => { this.isDashing = false; }, 250);
-            }
-        });
-    },
-
-    startTournament() {
-        this.currentRound = 1;
-        this.startRound(1);
-    },
-
-    startRound(roundNum) {
-        this.currentRound = roundNum;
-        this.roundType = roundNum;
-        this.roundTime = 75;
-        this.isPlaying = true;
-        
-        // Setup World Theme
-        const world = this.worlds[Math.floor(Math.random() * this.worlds.length)];
-        this.scene.background = new THREE.Color(world.bg);
-
-        // Clear previous objects
-        this.clearScene();
-
-        // Build Round Track/Arena
-        this.buildRoundGeometry(world);
-
-        // Spawn Player
-        this.spawnPlayer(world.platformColor);
-
-        // Spawn 30 AI bots
-        this.spawnAI();
-
-        // Start Loop
-        if(!this.loopRunning) {
-            this.loopRunning = true;
-            this.animate();
-        }
-    },
-
-    clearScene() {
-        // Remove old dynamic objects
-        const removeList = [];
-        this.scene.traverse(child => {
-            if(child !== this.scene && child.type !== 'AmbientLight' && child.type !== 'DirectionalLight' && child !== this.camera) {
-                removeList.push(child);
-            }
-        });
-        removeList.forEach(obj => this.scene.remove(obj));
-        this.aiPlayers = [];
-        this.obstacles = [];
-        this.crystals = [];
-        this.platforms = [];
-    },
-
-    buildRoundGeometry(world) {
-        // Create 3D platforms and environment based on roundType
-        const mat = new THREE.MeshStandardMaterial({ color: world.platformColor, roughness: 0.2, metalness: 0.8 });
-        
-        if(this.roundType === 1) {
-            // Obstacle Course
-            for(let i=0; i<15; i++) {
-                const p = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 12), mat);
-                p.position.set(0, 0, -i * 14);
-                this.scene.add(p);
-                this.platforms.push(p);
-
-                // Add obstacles
-                if(i > 0 && i < 14) {
-                    const obsMat = new THREE.MeshStandardMaterial({ color: 0xff007f });
-                    const obs = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 1), obsMat);
-                    obs.position.set((Math.random()-0.5)*4, 1.5, -i * 14);
-                    this.scene.add(obs);
-                    this.obstacles.push(obs);
-                }
-            }
-        } else if(this.roundType === 2) {
-            // Falling Tiles / Platforms
-            for(let x=-2; x<=2; x++) {
-                for(let z=0; z>-15; z--) {
-                    const p = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1, 3.8), mat);
-                    p.position.set(x * 4, 0, z * 4);
-                    this.scene.add(p);
-                    this.platforms.push(p);
-                }
-            }
-        } else {
-            // Final: Big Circular Platform
-            const p = new THREE.Mesh(new THREE.CylinderGeometry(25, 25, 2, 32), mat);
-            p.position.set(0, 0, 0);
-            this.scene.add(p);
-            this.platforms.push(p);
-        }
-    },
-
-    spawnPlayer(colorHex) {
-        const charConfig = GameData.characters[GameData.selectedChar];
-        const geom = new THREE.CapsuleGeometry(0.6, 1.2, 4, 8);
-        const mat = new THREE.MeshStandardMaterial({ color: charConfig.color, roughness: 0.3 });
-        this.player = new THREE.Mesh(geom, mat);
-        this.player.position.set(0, 2, 5);
-        this.scene.add(this.player);
-    },
-
-    spawnAI() {
-        for(let i=0; i<30; i++) {
-            const geom = new THREE.CapsuleGeometry(0.6, 1.2, 4, 8);
-            const mat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
-            const ai = new THREE.Mesh(geom, mat);
-            ai.position.set((Math.random() - 0.5) * 10, 2, (Math.random() - 0.5) * 10 - 5);
-            ai.userData = { name: AiNames[i], speed: 0.05 + Math.random() * 0.04, targetZ: -200 };
-            this.scene.add(ai);
-            this.aiPlayers.push(ai);
-        }
-    },
-
-    animate() {
-        if(!this.isPlaying) return;
-        requestAnimationFrame(() => this.animate());
-
-        // Update Game Timer
-        this.roundTime -= 1/60;
-        if(this.roundTime <= 0) {
-            this.checkRoundResult(true);
-            return;
-        }
-
-        // Update HUD
-        document.getElementById('hud-round').innerText = `الجولة ${this.currentRound}/3`;
-        document.getElementById('hud-mode').innerText = this.currentRound === 1 ? 'سباق عوائق' : (this.currentRound === 2 ? 'منصات تختفي' : 'النهائي الكبير');
-        const mins = Math.floor(this.roundTime / 60).toString().padStart(2, '0');
-        const secs = Math.floor(this.roundTime % 60).toString().padStart(2, '0');
-        document.getElementById('hud-time').innerText = `${mins}:${secs}`;
-        
-        if(this.dashCooldown > 0) this.dashCooldown--;
-
-        // Player Movement
-        let speed = 0.12;
-        if(this.isDashing) speed = 0.35;
-
-        if(this.moveVector.x !== 0 || this.moveVector.z !== 0) {
-            this.player.position.x += this.moveVector.x * speed;
-            this.player.position.z += this.moveVector.z * speed;
-        }
-
-        // Jump physics
-        if(this.isJumping) {
-            this.player.position.y += this.jumpVelocity;
-            this.jumpVelocity -= 0.015;
-            if(this.player.position.y <= 1.5) {
-                this.player.position.y = 1.5;
-                this.isJumping = false;
-            }
-        }
-
-        // Camera follow
-        this.camera.position.x = this.player.position.x;
-        this.camera.position.y = this.player.position.y + 6;
-        this.camera.position.z = this.player.position.z + 10;
-        this.camera.lookAt(this.player.position);
-
-        // AI Movement
-        this.aiPlayers.forEach(ai => {
-            ai.position.z -= ai.userData.speed;
-            // Basic avoidance or wandering
-            if(Math.random() < 0.02) {
-                ai.position.x += (Math.random() - 0.5) * 0.5;
-            }
-        });
-
-        // Calculate Rank
-        let betterCount = 1;
-        this.aiPlayers.forEach(ai => {
-            if(ai.position.z < this.player.position.z) betterCount++;
-        });
-        this.playerRank = betterCount;
-        document.getElementById('hud-rank').innerText = `${this.playerRank} / 31`;
-
-        // Check win/loss condition for round
-        if(this.roundType === 1 && this.player.position.z < -160) {
-            this.checkRoundResult(true);
-        } else if(this.roundType === 2 && this.roundTime < 10 && this.playerRank <= 16) {
-            this.checkRoundResult(true);
-        } else if(this.roundType === 3 && this.playerRank <= 8) {
-            this.checkRoundResult(true);
-        }
-
-        this.renderer.render(this.scene, this.camera);
-    },
-
-    checkRoundResult(success) {
-        this.isPlaying = false;
-        if(success) {
-            if(this.currentRound < 3) {
-                GameApp.showModal('تأهل ناجح!', `تهانينا! لقد تأهلت للجولة ${this.currentRound + 1}`, () => {
-                    this.startRound(this.currentRound + 1);
-                });
-            } else {
-                GameApp.endTournament(true);
-            }
-        } else {
-            GameApp.endTournament(false);
-        }
     }
 };
+
+function endRound(qualified) {
+    gameState.isPlaying = false;
+    clearInterval(gameState.timerInterval);
+    document.getElementById('hud-screen').classList.add('hidden');
+    document.getElementById('controls-hud').classList.add('hidden');
+
+    if (qualified) {
+        const reward = 50 + (gameState.tournamentRound * 25);
+        GameData.crystals += reward + GameData.playerCrystalsCollected;
+        document.getElementById('round-reward').innerText = reward + GameData.playerCrystalsCollected;
+        saveGameData();
+        GameApp.showScreen('screen-round-over');
+    } else {
+        GameApp.showScreen('screen-game-over');
+    }
+}
+
+function endFinalWin() {
+    gameState.isPlaying = false;
+    clearInterval(gameState.timerInterval);
+    document.getElementById('hud-screen').classList.add('hidden');
+    document.getElementById('controls-hud').classList.add('hidden');
+
+    GameData.wins += 1;
+    GameData.crystals += 200;
+    saveGameData();
+    GameApp.showScreen('screen-final-win');
+}
 
 // Initialize App on Load
 window.onload = () => {
